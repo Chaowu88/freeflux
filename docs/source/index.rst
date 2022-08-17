@@ -1,22 +1,25 @@
-Welcome to Lumache's documentation!
-===================================
+Documentation for FreeFlux
+==========================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
-
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
-
-.. note::
-
-   This project is under active development.
-
-Contents
---------
+FreeFlux is a Python package for \ :sup:`13`\C metabolic flux analysis (\ :sup:`13`\C MFA). Its basic functions include metabolite (fragment) labeling pattern simulation at both metabolic steady state and isotopically nonstationary state (INST) state, and metabolic flux estimation both metabolic steady state and INST state.
 
 .. toctree::
+   :numbered:
+   :maxdepth: 2
+   :caption: Contents:
+   
+   quickstart
+   mdv
+   building_model
+   fba
+   ss_simulating
+   ss_fitting
+   inst_simulating
+   inst_fitting
 
-   usage
-   api
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
