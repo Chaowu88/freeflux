@@ -2,7 +2,7 @@
 
 # -- Project information
 
-project = 'Lumache'
+project = 'freeflux'
 copyright = '2022, Chao Wu'
 author = 'Chao Wu'
 
