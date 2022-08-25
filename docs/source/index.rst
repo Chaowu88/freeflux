@@ -8,6 +8,7 @@ FreeFlux is a Python package for \ :sup:`13`\C metabolic flux analysis (\ :sup:`
    :maxdepth: 2
    :caption: Contents:
    
+   installation
    quickstart
    mdv
    building_model
