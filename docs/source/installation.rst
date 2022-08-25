@@ -1,6 +1,8 @@
 Installation
 ============
 
+Using PIP
+---------
 FreeFlux was developed and tested in Python 3.8, it can be installed with *pip* from PyPI:
 ::
   python -m pip install --upgrade pip
