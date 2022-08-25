@@ -3,6 +3,7 @@ Installation
 
 Using PIP
 ---------
+
 FreeFlux was developed and tested in Python 3.8, it can be installed with *pip* from PyPI:
 ::
   python -m pip install --upgrade pip
@@ -16,6 +17,7 @@ or from source:
   
 Additional Dependencies
 -----------------------
+
 FreeFlux also requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. This framework can be installed using the following command:
 ::
   pip install openopt == 0.5629
