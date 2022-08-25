@@ -13,6 +13,7 @@ or from source:
   Installation within a `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ is recommendated.
   
 Additional Dependencies
+-----------------------
 FreeFlux also requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. This framework can be installed using the following command:
 ::
   pip install openopt == 0.5629
