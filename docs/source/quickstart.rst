@@ -101,7 +101,7 @@ The labeling patterns or mass isotopomer distribution vectors (MDVs) of measurab
    ``#`` is required in the header.
    
 .. list-table:: measured_MDVs.tsv
-   :widths: 25 50 50
+   :widths: 25 10 10
    :header-rows: 1
 
    * - #reaction_ID
