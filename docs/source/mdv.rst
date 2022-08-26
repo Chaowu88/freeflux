@@ -6,3 +6,8 @@ Mass isotopomer distribution vector (MDV) represents the molar fractions of isot
 Creating a MDV
 --------------
 
+A MDV object can be created by the ``MDV`` class:
+
+.. code-block:: python
+  
+  
