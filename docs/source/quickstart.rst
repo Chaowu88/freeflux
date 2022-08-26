@@ -54,6 +54,8 @@ The model can then be loaded by:
 .. code-block:: python
    
    MODEL_FILE = '../models/toy/reactions.tsv'
+   MEASURED_MDVS = '../models/toy/measured_MDVs.tsv'
+   MEASURED_FLUXES = '../models/toy/measured_fluxes.tsv'
    
    from freeflux import Model
    
@@ -81,4 +83,53 @@ The search range for all fluxes or a specific flux can be set using ``set_flux_b
   
 Reading the Measuremnets
 ------------------------
+
+The labeling patterns or mass isotopomer distribution vectors (MDVs) of measurable metabolites or metabolite fragments should be provided for the fitting as well as measured exchange reactions, e.g., substrate uptake, product secretion and specific growth rate. They can be provided in a .tsv or xlsx. file,
+
+.. list-table:: measured_MDVs.tsv
+   :widths: 25 50 50
+   :header-rows: 1
+
+   * - #fragment_ID
+     - mean
+     - sd
+   * - Glu_12345
+     - 0.328,0.276,0.274,0.088,0.03,0.004
+     - 0.01,0.01,0.01,0.01,0.01,0.01
+     
+.. Note::
+   ``#`` is required in the header.
+   
+.. list-table:: measured_MDVs.tsv
+   :widths: 25 50 50
+   :header-rows: 1
+
+   * - #reaction_ID
+     - mean
+     - sd
+   * - v1
+     - 10
+     - 1
+     
+.. Note::
+   ``#`` is required in the header.
+   
+and read by:
+
+.. code-block:: python
+   
+   fit.set_measured_MDVs_from_file(MEASURED_MDVS)
+   fit.set_measured_fluxes_from_file(MEASURED_FLUXES)
+   
+Solve the Fluxes
+----------------
+
+Now we can solve the flux distribution in the toy model by:
+
+.. code-block:: python
+   
+   fit.prepare()
+   res = fit.solve()
+   
+The ``solve`` method returns a FitResults object. The estimated net and total (includes both forward and backward fluxes in reversible reactions) fluxes can be accessed by the attributes ``opt_net_fluxes`` and ``opt_total_fluxes``.
 
