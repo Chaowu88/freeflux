@@ -84,42 +84,17 @@ The search range for all fluxes or a specific flux can be set using ``set_flux_b
 Reading the Measuremnets
 ------------------------
 
-The labeling patterns or mass isotopomer distribution vectors (MDVs) of measurable metabolites or metabolite fragments should be provided for the fitting as well as measured exchange reactions, e.g., substrate uptake, product secretion and specific growth rate. They can be provided in a .tsv or xlsx. file,
-
-.. list-table:: measured_MDVs.tsv
-   :widths: 25 50 50
-   :header-rows: 1
-
-   * - #fragment_ID
-     - mean
-     - sd
-   * - Glu_12345
-     - 0.328,0.276,0.274,0.088,0.03,0.004
-     - 0.01,0.01,0.01,0.01,0.01,0.01
-     
-.. Note::
-   ``#`` is required in the header.
-   
-.. list-table:: measured_MDVs.tsv
-   :widths: 25 10 10
-   :header-rows: 1
-
-   * - #reaction_ID
-     - mean
-     - sd
-   * - v1
-     - 10
-     - 1
-     
-.. Note::
-   ``#`` is required in the header.
-   
-and read by:
+The labeling patterns or mass isotopomer distribution vectors (MDVs) of measurable metabolites or metabolite fragments should be provided for the fitting as well as measured exchange reactions, e.g., substrate uptake, product secretion and specific growth rate. They can be provided using the lines:
 
 .. code-block:: python
    
-   fit.set_measured_MDVs_from_file(MEASURED_MDVS)
-   fit.set_measured_fluxes_from_file(MEASURED_FLUXES)
+   fit.set_measured_MDV('Glu_12345', 
+                        mean = [0.328,0.276,0.274,0.088,0.03,0.004], 
+                        sd = [0.01,0.01,0.01,0.01,0.01,0.01])
+   fit.set_measured_flux('v1', mean = 10, sd = 1)
+
+.. Note::
+   For input of a bundle of measured MDVs and fluxes, it is more convenient to read from a .tsv or xlsx. file using ``set_measured_MDVs_from_file`` and ``set_measured_fluxes_from_file``.
    
 Solve the Fluxes
 ----------------
