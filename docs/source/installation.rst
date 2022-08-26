@@ -32,5 +32,5 @@ FreeFlux also requires the numerical optimization framework `OpenOpt <https://op
   pip install FuncDesigner == 0.5629
 
 .. Warning::
-  The function *clock()* in Python built-in module time was removed since version 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, *clock* in either import statement or function calls should be replaced with *perf_counter* in scripts *ooIter.py*, *runProbSolver.py* and *result.py*.
+  The function *clock()* in Python built-in module time was removed since version 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*.
   
