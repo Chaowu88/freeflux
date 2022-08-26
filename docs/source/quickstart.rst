@@ -133,3 +133,19 @@ Now we can solve the flux distribution in the toy model by:
    
 The ``solve`` method returns a FitResults object. The estimated net and total (includes both forward and backward fluxes in reversible reactions) fluxes can be accessed by the attributes ``opt_net_fluxes`` and ``opt_total_fluxes``.
 
+With Statement
+--------------
+
+The returned *fit* object is actually a context manager, thus the above flux estimation can also be implemented using the with statement:
+
+.. code-block:: python
+   
+   with model.fitter('ss') as fit:
+       fit.set_labeling_strategy('AcCoA', ['01', '11'], [0.25, 0.25], [1, 1])
+       fit.set_flux_bounds('all', bounds = [-100, 100])
+       fit.set_measured_MDVs_from_file(MEASURED_MDVS)
+       fit.set_measured_fluxes_from_file(MEASURED_FLUXES)
+       fit.prepare(n_jobs = 3)
+       res = fit.solve(solver = 'slsqp')
+       
+       
