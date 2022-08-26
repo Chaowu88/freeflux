@@ -12,6 +12,7 @@ FreeFlux was developed and tested in Python 3.8, it can be installed with *pip* 
   pip install freeflux
 
 or from source:
+
 .. code-block:: python
 
   git clone https://github.com/Chaowu88/freeflux.git /path/to/freeflux
@@ -24,6 +25,7 @@ Additional Dependencies
 -----------------------
 
 FreeFlux also requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. This framework can be installed using the following command:
+
 .. code-block:: python
 
   pip install openopt == 0.5629
