@@ -145,7 +145,7 @@ The returned *fit* object is actually a context manager, thus the above flux est
        fit.set_flux_bounds('all', bounds = [-100, 100])
        fit.set_measured_MDVs_from_file(MEASURED_MDVS)
        fit.set_measured_fluxes_from_file(MEASURED_FLUXES)
-       fit.prepare(n_jobs = 3)
-       res = fit.solve(solver = 'slsqp')
+       fit.prepare()
+       res = fit.solve()
        
        
