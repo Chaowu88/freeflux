@@ -53,9 +53,9 @@ The model can then be loaded by:
 
 .. code-block:: python
    
-   MODEL_FILE = '../models/toy/reactions.tsv'
-   MEASURED_MDVS = '../models/toy/measured_MDVs.tsv'
-   MEASURED_FLUXES = '../models/toy/measured_fluxes.tsv'
+   MODEL_FILE = 'path/to/reactions.tsv'
+   MEASURED_MDVS = 'path/to/measured_MDVs.tsv'
+   MEASURED_FLUXES = 'path/to/measured_fluxes.tsv'
    
    from freeflux import Model
    
