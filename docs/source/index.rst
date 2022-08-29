@@ -12,11 +12,11 @@ FreeFlux is a Python package for \ :sup:`13`\C metabolic flux analysis (\ :sup:`
    quickstart
    mdv
    building_model
-   fba
    ss_simulating
    ss_fitting
    inst_simulating
    inst_fitting
+   fba
 
 Indices and tables
 ==================
