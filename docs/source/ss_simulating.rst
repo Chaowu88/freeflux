@@ -1,2 +1,0 @@
-Simulating at Steady State
-==========================
