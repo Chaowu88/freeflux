@@ -6,8 +6,14 @@ project = 'freeflux'
 copyright = '2022, Chao Wu'
 author = 'Chao Wu'
 
-from freeflux import __version__ as version
-release = version
+# import sys
+# from os.path import dirname, join
+# FREEFLUX_PATH = join(dirname(dirname(__file__)), 'src')
+# sys.path.insert(0, FREEFLUX_PATH)
+# from freeflux import __version__ as version
+# release = version
+version = '0.3.0'
+release = '0.3.0'
 
 # -- General configuration
 
