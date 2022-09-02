@@ -6,8 +6,8 @@ project = 'freeflux'
 copyright = '2022, Chao Wu'
 author = 'Chao Wu'
 
-release = '1.0'
-version = '1.0.0'
+from freeflux import __version__ as version
+release = version
 
 # -- General configuration
 
