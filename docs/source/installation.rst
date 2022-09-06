@@ -4,7 +4,7 @@ Installation
 Using PIP
 ---------
 
-FreeFlux was developed and tested in Python 3.8, it can be installed with *pip* from PyPI:
+FreeFlux was tested in Python 3.7 and 3.8, it can be installed with *pip* from PyPI:
 
 .. code-block:: python
 
@@ -21,16 +21,8 @@ or from source:
 .. Note::
   Installation within a `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ is recommendated.
   
-Additional Dependencies
------------------------
+Dependency Compatibility 
+------------------------
 
-FreeFlux also requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. This framework can be installed using the following command:
-
-.. code-block:: python
-
-  pip install openopt == 0.5629
-  pip install FuncDesigner == 0.5629
-
-.. Warning::
-  The function *clock()* in Python built-in module time was removed since version 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*.
+FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. This framework works well with Python 3.7, but will have problem with 3.8 and above. The function *clock()* in Python built-in module `time` was removed since Python 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*.
   
