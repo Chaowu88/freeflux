@@ -72,6 +72,10 @@ The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:
   fit = model.fitter('ss')
   fit.set_labeling_strategy('AcCoA', ['01', '11'], [0.25, 0.25], [1, 1])
 
+.. Note::
+   1. If the sum of percantages of specified tracers is less than 1, the remaining 1-sum will be considered as the unlabeled form.
+   2. Call this method for each substrate if multiple labeled substrates are used.
+   
 Adding Bounds for Fluxes
 ------------------------
 
