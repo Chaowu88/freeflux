@@ -28,6 +28,7 @@ FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt
   
 .. Note::
   If exception "ModuleNotFoundError: No module named 'numpy'" is raised during the installation of openopt or FuncDesigner, please install numpy first
+
 .. code-block:: python
   pip install numpy~=1.20.2
   
