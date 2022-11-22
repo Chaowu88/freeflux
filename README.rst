@@ -5,9 +5,11 @@ FreeFlux is a Python package for :sup:`13`\ C metabolic flux analysis of biologi
 
 - metabolic flux estimation
 - simulation of labeling patterns of metabolite (fragments)
-- constraint-based optimization, such as flux balance analysis and flux variability analysis
+- constraint-based optimizations, such as flux balance analysis and flux variability analysis
 
 The aim is to benefit the accessibility of :sup:`13`\ C fluxomics technique for researchers in the community of metabolic phenotyping and engineering.
+
+A detailed documentation can be found `here <https://freeflux.readthedocs.io/en/latest/index.html>`_.
 
 
 
