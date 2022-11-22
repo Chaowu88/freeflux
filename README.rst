@@ -1,8 +1,7 @@
-Template for the Read the Docs tutorial
-=======================================
+FreeFlux
+========
 
-This GitHub template includes fictional Python library
-with some basic Sphinx docs.
+FreeFlux is a Python package for <sup>13</sup>C metabolic flux analysis of biological systems at isotopic steady state and transient state which thus can be used for both heterotrophic and autotrophic organisms. 
 
 Read the tutorial here:
 
