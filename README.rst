@@ -36,7 +36,8 @@ Installation in an `virtual environment <https://docs.python.org/3.8/tutorial/ve
 Example Usage
 =============
 
-A typical use of FreeFlux starts with building a model by reading metabolic reactions with atom transitions. The model can call a handler of fitter, simulator or optimizor to perform flux estimation, labeling pattern simulation and constraint-based flux analysis, respectively. Different methods are provided for these handlers for data input and computation. Here is an example script of flux estimation at steady state using the `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`_
+A typical use of FreeFlux starts with building a model by reading metabolic reactions with atom transitions. The model can call a handler of fitter, simulator or optimizor to perform flux estimation, labeling pattern simulation and constraint-based flux analysis, respectively. Different methods are provided for these handlers for data input and computation. 
+Here is an example script of flux estimation at steady state using the `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`_.
 
 .. code-block:: python
    
