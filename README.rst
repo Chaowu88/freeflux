@@ -14,10 +14,24 @@ A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/in
 Installation
 ============
 
+FreeFlux was tested in Python 3.7 and 3.8. It can be installed using *pip* from PyPI:
+
+.. code-block:: python
+
+  python -m pip install --upgrade pip
+  pip install freeflux
+
+or from source:
+
+.. code-block:: python
+
+  git clone https://github.com/Chaowu88/freeflux.git /path/to/freeflux
+  pip install /path/to/freeflux
+  
+Installation in an `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ is recommendated.
+
+.. Note::
+  FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. It works well in Python 3.7 but may has compatibility issues in Python 3.8 and above. Please see `here <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`_ for solutions.
 
 
 
-
-Read the tutorial here:
-
-https://docs.readthedocs.io/en/stable/tutorial/
