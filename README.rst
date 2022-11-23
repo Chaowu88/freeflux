@@ -17,10 +17,9 @@ A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/in
 
 `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`_! and `*Synechocystis* <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`_ are also provided with `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`_.
 
-Here you have |optparse.OptionParser|_.
-
-.. |optparse.OptionParser| replace:: ``optparse.OptionParser`` documentation
-.. _optparse.OptionParser: http://docs.python.org/library/optparse.html sasasa
+**Lorem ipsum dolor sit amet,** `consectetur <http://www.example.com>`_ 
+**adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore 
+magna aliqua.**
 
 Installation
 ============
