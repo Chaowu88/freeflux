@@ -12,9 +12,7 @@ The aim is to benefit the accessibility of :sup:`13`\ C fluxomics technique for 
 A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/index.html>`_. The documentation illustrates the fundamental functions of FreeFlux with a `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`_. Two practical models of `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`_! and `*Synechocystis* <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`_ are also provided with `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`_.
 
 Warning: |text|_
-
 .. _text: http://www.youtube.com/watch?v=dQw4w9WgXcQ&ob=av3e
-
 .. |text| replace:: *Watch this*
 
 Installation
