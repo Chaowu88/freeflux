@@ -64,7 +64,7 @@ Here is an example script of flux estimation at steady state using the `toy mode
        fit.prepare()
        res = fit.solve()
 
-For more information, please see the `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`_.
+For more information, please refer to the `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`_.
 
 License
 =======
