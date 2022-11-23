@@ -65,3 +65,8 @@ Here is an example script of flux estimation at steady state using the `toy mode
        res = fit.solve()
 
 For more information, please see the `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`_.
+
+License
+=======
+
+FreeFlux is released under the GPL version 3 license, please see `here <https://github.com/Chaowu88/freeflux/blob/main/LICENSE>`_ for more details.
