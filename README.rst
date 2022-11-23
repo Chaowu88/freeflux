@@ -17,11 +17,10 @@ A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/in
 
 `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`_! and `*Synechocystis* <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`_ are also provided with `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`_.
 
-Warning: |text|_
+Here you have |optparse.OptionParser|_.
 
-.. _text: http://www.youtube.com/watch?v=dQw4w9WgXcQ&ob=av3e
-
-.. |text| replace:: *Watch this*
+.. |optparse.OptionParser| replace:: ``optparse.OptionParser`` documentation
+.. _optparse.OptionParser: http://docs.python.org/library/optparse.html
 
 Installation
 ============
