@@ -20,8 +20,7 @@ A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/in
 Here you have |optparse.OptionParser|_.
 
 .. |optparse.OptionParser| replace:: ``optparse.OptionParser`` documentation
-.. _optparse.OptionParser: http://docs.python.org/library/optparse.html
-sasasa
+.. _optparse.OptionParser: http://docs.python.org/library/optparse.html sasasa
 
 Installation
 ============
