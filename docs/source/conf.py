@@ -6,14 +6,17 @@ project = 'freeflux'
 copyright = '2022, Chao Wu'
 author = 'Chao Wu'
 
-# import sys
-# from os.path import dirname, join
-# FREEFLUX_PATH = join(dirname(dirname(__file__)), 'src')
-# sys.path.insert(0, FREEFLUX_PATH)
-# from freeflux import __version__ as version
-# release = version
-version = '0.3.0'
-release = '0.3.0'
+import sys
+from os.path import dirname, join
+
+SRC_PATH = join(dirname(dirname(dirname(__file__))), 'src')
+sys.path.insert(0, SRC_PATH)
+
+from freeflux import __version__ as version
+
+release = version
+# version = '0.3.0'
+# release = '0.3.0'
 
 # -- General configuration
 
@@ -23,8 +26,12 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
-    'nbsphinx'
+    'nbsphinx',
+    'autoapi.extension'
 ]
+
+autoapi_type = 'python'
+autoapi_dirs = [join(SRC_PATH, 'freeflux')]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
