@@ -39,10 +39,6 @@ exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 
 
-
-
-
-
 # ------------------------ Options for HTML output ------------------------
 import sphinx_rtd_theme
 
