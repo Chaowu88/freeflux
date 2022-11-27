@@ -1,21 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 
-# ------------------------ Project information ------------------------
-project = 'freeflux'
-copyright = '2022, Chao Wu'
-author = 'Chao Wu'
-
 import sys
 from os.path import dirname, join
 
 SRC_PATH = join(dirname(dirname(dirname(__file__))), 'src')
 sys.path.insert(0, SRC_PATH)
-
-from freeflux import __version__ as version
-
-release = version
-# version = '0.3.0'
-# release = '0.3.0'
 
 
 # ------------------------ General configuration ------------------------
@@ -31,6 +20,17 @@ autoapi_type = 'python'
 autoapi_dirs = [join(SRC_PATH, 'freeflux')]
 
 master_doc = 'index'
+
+# General information about the project
+project = 'freeflux'
+copyright = '2022, Chao Wu'
+author = 'Chao Wu'
+
+from freeflux import __version__ as version
+
+release = version
+# version = '0.3.0'
+# release = '0.3.0'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
