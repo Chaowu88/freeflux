@@ -18,6 +18,7 @@ extensions = ['sphinx.ext.autodoc',
 
 autoapi_type = 'python'
 autoapi_dirs = [join(SRC_PATH, 'freeflux')]
+autoapi_add_toctree_entry = False
 
 source_suffix = '.rst'
 master_doc = 'index'
