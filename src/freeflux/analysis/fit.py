@@ -41,7 +41,7 @@ class Fitter(Optimizer, Simulator):
         
     
     def set_measured_MDV(self, fragmentid, mean, sd):
-        """
+        '''
         set measured MDV
         
         Parameters
@@ -52,7 +52,7 @@ class Fitter(Optimizer, Simulator):
             means of measured MDV vector
         sd: array
             standard deviations of measured MDV vector
-        """
+        '''
         
         self.model.measured_MDVs[fragmentid] = [np.array(mean), np.array(sd)]
         
@@ -62,16 +62,16 @@ class Fitter(Optimizer, Simulator):
             
             
     def set_measured_MDVs_from_file(self, file):
-        """
+        '''
         read measured MDVs from file
         
         Parameters
-        
+        ----------
         file: file path
             tsv or excel file, fields are "fragmentid", "mean" and "sd",
             "fragmentid" is metabolite ID + '_' + atom NOs, e.g. 'Glu_12345',
             "mean" and "sd" are the mean and standard deviation of MDV with element seperated by ','
-        """
+        '''
         
         measMDVs = read_measurements_from_file(file)
 
