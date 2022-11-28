@@ -19,6 +19,7 @@ extensions = ['sphinx.ext.autodoc',
 autoapi_type = 'python'
 autoapi_dirs = [join(SRC_PATH, 'freeflux')]
 
+source_suffix = '.rst'
 master_doc = 'index'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -33,8 +34,6 @@ from freeflux import __version__ as version
 release = version
 
 pygments_style = 'sphinx'
-version = '0.3.0'
-release = '0.3.0'
 
 
 # ------------------------ Options for HTML output ------------------------
