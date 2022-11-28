@@ -5,16 +5,16 @@
 version: 2
 
 # Specify OS and Python version for building the docs
-build:
-  os: 'ubuntu-20.04'
-  tools:
-    python: '3.7'
+# build:
+#   os: 'ubuntu-20.04'
+#   tools:
+#     python: '3.7'
     
 # Configuration for Sphinx
 sphinx:
-  builder: html
+#   builder: html
   configuration: docs/source/conf.py
-  fail_on_warning: true
+#   fail_on_warning: true
 
 # Build the docs in formats of html, pdf, and epub
 # formats: 
