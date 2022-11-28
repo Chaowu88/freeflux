@@ -41,7 +41,8 @@ class Fitter(Optimizer, Simulator):
         
     
     def set_measured_MDV(self, fragmentid, mean, sd):
-        """set measured MDV
+        """
+        set measured MDV
         
         Parameters
         ----------
@@ -61,7 +62,8 @@ class Fitter(Optimizer, Simulator):
             
             
     def set_measured_MDVs_from_file(self, file):
-        """read measured MDVs from file
+        """
+        read measured MDVs from file
         
         Parameters
         
@@ -85,6 +87,7 @@ class Fitter(Optimizer, Simulator):
     def _unset_measured_MDVs(self, fragmentids):
         '''
         Parameters
+        ----------
         fragmentids: str or list of str
             ID(s) of measured MDVs
         '''
