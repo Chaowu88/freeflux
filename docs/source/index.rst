@@ -21,7 +21,7 @@ FreeFlux is a Python package for \ :sup:`13`\C metabolic flux analysis (\ :sup:`
    inst_simulating
    inst_fitting
    fba
-   API autoapi/freeflux/index
+   API </autoapi/freeflux/index.rst>
 
 Indices and tables
 ==================
