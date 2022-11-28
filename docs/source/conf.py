@@ -18,7 +18,6 @@ extensions = ['sphinx.ext.autodoc',
 
 autoapi_type = 'python'
 autoapi_dirs = [join(SRC_PATH, 'freeflux')]
-autoapi_add_toctree_entry = False
 
 source_suffix = '.rst'
 master_doc = 'index'
@@ -38,10 +37,7 @@ pygments_style = 'sphinx'
 
 
 # ------------------------ Options for HTML output ------------------------
-import sphinx_rtd_theme
-
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+mathjax_path = ('https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
 
 
 # ------------------------ Options for LaTeX output ------------------------
