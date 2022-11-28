@@ -17,8 +17,8 @@ sphinx:
 #   fail_on_warning: true
 
 # Build the docs in formats of html, pdf, and epub
-# formats: 
-#   - htmlzip
+formats: 
+  - htmlzip
 
 # Declare the Python requirements required to build your docs
 python:
