@@ -9,6 +9,7 @@ sys.path.insert(0, SRC_PATH)
 
 # ------------------------ General configuration ------------------------
 extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.napoleon',
               'sphinx.ext.intersphinx',
               'sphinx.ext.mathjax',
               'sphinx.ext.viewcode',
