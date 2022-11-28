@@ -33,14 +33,14 @@ author = 'Chao Wu'
 from freeflux import __version__ as version
 release = version
 
-pygments_style = 'sphinx'
+#pygments_style = 'sphinx'
 
 
 # ------------------------ Options for HTML output ------------------------
-import sphinx_rtd_theme
+# import sphinx_rtd_theme
 
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme = 'sphinx_rtd_theme'
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 
 # ------------------------ Options for LaTeX output ------------------------
