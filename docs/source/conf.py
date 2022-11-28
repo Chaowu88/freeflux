@@ -33,6 +33,8 @@ from freeflux import __version__ as version
 release = version
 
 pygments_style = 'sphinx'
+version = '0.3.0'
+release = '0.3.0'
 
 
 # ------------------------ Options for HTML output ------------------------
