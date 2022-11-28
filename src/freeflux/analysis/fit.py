@@ -45,6 +45,7 @@ class Fitter(Optimizer, Simulator):
         set measured MDV
         
         Parameters
+        ----------
         fragmentid: str
             metabolite ID + '_' + atom NOs, e.g. 'Glu_12345'
         mean: array
@@ -65,6 +66,7 @@ class Fitter(Optimizer, Simulator):
         read measured MDVs from file
         
         Parameters
+        
         file: file path
             tsv or excel file, fields are "fragmentid", "mean" and "sd",
             "fragmentid" is metabolite ID + '_' + atom NOs, e.g. 'Glu_12345',
