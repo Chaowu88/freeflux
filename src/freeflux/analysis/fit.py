@@ -12,7 +12,6 @@ from collections.abc import Iterable
 from functools import partial
 from copy import deepcopy
 from math import ceil
-from pydoc import getpager
 import numpy as np
 from multiprocessing import Pool
 from ..optim.optim import Optimizer
@@ -28,11 +27,17 @@ from time import time
 
 
 class Fitter(Optimizer, Simulator):
+    '''
+    Parameters
+    ----------
+    model: freeflux Model
+    '''
     
     def __init__(self, model):
         '''
         Parameters
-        model: Model
+        ----------
+        model: freeflux Model
         '''
         
         super().__init__(model)
@@ -42,16 +47,16 @@ class Fitter(Optimizer, Simulator):
     
     def set_measured_MDV(self, fragmentid, mean, sd):
         '''
-        set measured MDV
+        Set measured MDV
         
         Parameters
         ----------
         fragmentid: str
-            metabolite ID + '_' + atom NOs, e.g. 'Glu_12345'
+            Metabolite ID + "_" + atom NOs, e.g., "Glu_12345"
         mean: array
-            means of measured MDV vector
+            Means of measured MDV vector
         sd: array
-            standard deviations of measured MDV vector
+            Standard deviations of measured MDV vector
         '''
         
         self.model.measured_MDVs[fragmentid] = [np.array(mean), np.array(sd)]
@@ -63,14 +68,16 @@ class Fitter(Optimizer, Simulator):
             
     def set_measured_MDVs_from_file(self, file):
         '''
-        read measured MDVs from file
+        Read measured MDVs from file
         
         Parameters
         ----------
         file: file path
-            tsv or excel file, fields are "fragmentid", "mean" and "sd",
-            "fragmentid" is metabolite ID + '_' + atom NOs, e.g. 'Glu_12345',
-            "mean" and "sd" are the mean and standard deviation of MDV with element seperated by ','
+            tsv or excel file with fields "fragmentid", "mean" and "sd".
+
+            "fragmentid" is metabolite ID + "_" + atom NOs, e.g., 'Glu_12345';
+            "mean" and "sd" are the mean and standard deviation of MDV with element 
+            seperated by ","
         '''
         
         measMDVs = read_measurements_from_file(file)
@@ -89,7 +96,7 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         fragmentids: str or list of str
-            ID(s) of measured MDVs
+            measured MDV ID(s)
         '''
         
         if not isinstance(fragmentids, Iterable):
@@ -105,9 +112,10 @@ class Fitter(Optimizer, Simulator):
         set measured flux
         
         Parameters
+        ----------
         fluxid: str
-            flux ID, i.e. reaction ID, typically measured fluxes are substrate 
-            consumption and product or biomass formation which are irreversible
+            flux ID, i.e., reaction ID. typically, measured fluxes are substrate 
+            consumption product formation or cell growth, and they are irreversible
         mean: float
             mean of measured flux
         sd: float
@@ -126,6 +134,7 @@ class Fitter(Optimizer, Simulator):
         read measured fluxes from file
         
         Parameters
+        ----------
         file: file path
             tsv or excel file, fields are "fluxid", "mean" and "sd"
             "fluxid" is reaction ID, typically measured fluxes are substrate 
@@ -146,8 +155,9 @@ class Fitter(Optimizer, Simulator):
     def _unset_measured_fluxes(self, fluxids):
         '''
         Parameters
+        ----------
         fluxids: str or list of str
-            ID of measured fluxes
+            measured flux ID(s)
         '''
         
         if not isinstance(fluxids, Iterable):
@@ -161,8 +171,9 @@ class Fitter(Optimizer, Simulator):
     def set_unbalanced_metabolites(self, metabids):
         '''
         Parameters
+        ----------
         metabids: str or list of str
-            ID of unbalanced metabolite(s)
+            unbalanced metabolite ID(s)
         '''
         
         if not isinstance(metabids, Iterable):
@@ -178,6 +189,7 @@ class Fitter(Optimizer, Simulator):
     def _unset_unbalanced_metabolites(self, metabids):
         '''
         Parameters
+        ----------
         metabids: list of str
             unbalanced metabolite IDs
         '''
@@ -192,8 +204,9 @@ class Fitter(Optimizer, Simulator):
         set lower and upper bounds of flux
         
         Parameters
+        ----------
         fluxid: str or 'all'
-            flux ID, i.e. reaction ID, since typically forward and backward fluxes of 
+            flux ID, i.e., reaction ID, since typically forward and backward fluxes of 
             reversible reaction are largely unknown, the method is used to set the range
             of net flux
             for irreversible reaction, the lower bound will be set to zero ignorant of bounds[0]
