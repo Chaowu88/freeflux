@@ -18,16 +18,17 @@ from threading import Thread
 class Progress():
     '''
     Progress instances can be either used in a WITH statement or assigned to a variable. 
-    In the second case, the start and close method should be called explicitely.
+    In the second case, the start and stop method should be called explicitely.
     '''
     
     def __init__(self, descp, silent = False):
         '''
         Parameters
+        ----------
         descp: str
-            description
+            Description.
         silent: bool
-            whether to show progress bar
+            Whether to show progress bar.
         '''
         
         self.descp = descp

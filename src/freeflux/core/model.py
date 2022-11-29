@@ -34,166 +34,182 @@ from os import getpid
 
 class Model():
     '''
-    Model can be built by adding reactions one by one or reading set of reactions from .tsv or .xlsx file
+    Model class is the fundamental class of FreeFlux hosting operations in 13C MFA.
+
+    Model can be built by adding reactions one by one or reading set of reactions from .tsv or .xlsx file.
     
-    Attributes
+    Parameters
+    ----------
     name: str
-        model name
+        Model name.
+
+    Attributes
+    ----------
+    name: str
+        Model name.
     
     metabolites_info: dict
-        metabolite IDs => list of Metabolites 
+        Metabolite ID => list of Metabolites.
     
     reactions_info: OrderedDict
-        reaction IDs => Reaction
+        Reaction ID => Reaction.
     
     metabolites: list
-        metabolite IDs, in alphabetical order 
+        Metabolite IDs, in alphabetical order.
     
     metabolites_with_atoms: list
-        IDs of metabolite with atom assignment, in alphabetical order 
+        IDs of metabolite with atom assignment, in alphabetical order. 
     
     end_substrates: list
-        initial substrates, in alphabetical order 
+        Initial substrates of the model, in alphabetical order. 
     
     end_products: list
-        initial products, in alphabetical order 
+        Final products of the model, in alphabetical order. 
     
     reactions: list
-        reaction IDs, in order of addition
+        Reaction IDs, in order of addition.
     
     n_metabolites: int
-        # of metabolites
+        # of metabolites.
     
     n_reactions: int
-        # of reactions
+        # of reactions.
     
     _full_net_stoichiometric_matrix: df
-        complete stoichiometric matrix for net reaction, all metabolites in rows, net reactions in columns
+        Complete stoichiometric matrix for net reaction with all metabolites in rows, 
+        net reactions in columns.
     
     _full_total_stoichiometric_matrix: df
-        complete stoichiometric matrix for total reaction, all metabolites in rows, total reactions in columns
+        Complete stoichiometric matrix for total reaction with all metabolites in rows, 
+        total reactions in columns.
     
     metabolite_adjacency_matrix: df
-        metabolite adjacency matrix (MAM), metabolites with atoms in index and columns (no duplicates), 
-        list of Reactions in cells if reactions exists between (sub, pro), [] otherwise
+        Metabolite adjacency matrix (MAM). Metabolites with atoms are in index and 
+        columns (no duplicates). List of Reactions are in cells if reactions exists 
+        between (sub, pro), [] otherwise.
         
     net_fluxes_bounds: dict
-        reaction ID => set [lb, ub]
+        Reaction ID => [lb, ub] by setting.
         
     net_fluxes_range: dict
-        reaction ID => estimeted [lb, ub], all required net fluxes are included
+        Reaction ID => estimeted [lb, ub]. All required net fluxes are included.
         
     netfluxids: list
-        net flux IDs, alias of reactions
+        Net flux IDs, alias of reactions.
     
     concentrations: ser
-        concentrations, metabolite ID => float
+        Concentrations, metabolite ID => float.
         
     concentrations_bounds: dict
-        metabolite ID => set [lb, ub]
+        Metabolite ID => [lb, ub] by setting.
         
     concentrations_range: dict
-        metabolite ID => [lb, ub], all required concentrations are included
+        Metabolite ID => [lb, ub]. All required concentrations are included.
         
     concids: list
-        concentration IDs (used only in computation)
+        Concentration IDs (used only in computation process).
         
     total_fluxes: ser
-        total fluxes, fluxe ID (e.g. 'v1_f' or 'v2') => float
+        Total fluxes, fluxe ID (e.g., 'v1_f' or 'v2') => float.
         
     totalfluxids: list
-        total flux IDs
+        Total flux IDs.
         
     target_EMUs: list
-        target EMU IDs
+        Target EMU IDs.
         
     timepoints: list
-        sorted time points to simulate MDVs
+        Sorted time points for MDV simulation.
         
     substrate_MDVs: dict
-        substrate EMU => MDV
+        Substrate EMU => MDV.
         
     substrate_MDVs_der_p: dict
-        substrate EMU => derivatives of substrate MDV w.r.t. variables in shape of (len(MDV), # of vars),
-        # of vars = # of free fluxes for steady state MFA
-        # of vars = # of free fluxes + # of concentrations for INST MFA
+        Substrate EMU => derivatives of substrate MDV w.r.t. variables 
+        in shape of (len(MDV), # of vars).
+        # of vars = # of free fluxes for steady state MFA;
+        # of vars = # of free fluxes + # of concentrations for INST MFA.
     
     initial_matrix_Xs: dict
-        size => initial MDVs of EMU in matrix X, i.e. natural MDVs.
-        the initial MDV matrix has the same shape of matrix X
+        Size => initial MDVs of EMU in matrix X, i.e., the natural MDVs.
+        The initial MDV matrix has the same shape of matrix X.
         
     initial_matrix_Ys: dict
-        size => initial MDVs of EMU in matrix Y, could be natural MDVs or labeled MDVs.
-        the initial MDV matrix has the same shape of matrix Y    
+        Size => initial MDVs of EMU in matrix Y, i.e., either natural MDVs or labeled MDVs.
+        The initial MDV matrix has the same shape of matrix Y.    
         
     initial_matrix_Xs_der_p, initial_matrix_Ys_der_p: dict
-        size => 3-D array in shape of (# of vars), X(Y).shape[0], X(Y).shape[1])
-        as initial MDV derivatives of EMUs in matrix X(Y) w.r.t. variables 
-        # of vars = # of free fluxes + # of concentrations for INST MFA
+        Size => 3-D array in shape of (# of vars), X(Y).shape[0], X(Y).shape[1])
+        which is the initial MDV derivatives of EMUs in matrix X(Y) w.r.t. variables. 
+        # of vars = # of free fluxes + # of concentrations for INST MFA.
         
     initial_sim_MDVs: dict
-        EMU ID => {t0 => MDV}, MDV of target EMUs at t0
+        EMU ID => {t0 => MDV}. MDV of target EMUs at t0.
     
     EAMs: dict of df
-        size => EMU adjacency matrix (EAM), cells are symbolic expression of flux
+        Size => EMU adjacency matrix (EAM). Cells are symbolic expression of flux.
         
     matrix_As, matrix_Bs: dict
-        size => [lambdified matrix A(B), [flux IDs], [EMUs]]    
+        Size => [lambdified matrix A(B), [flux IDs], [EMUs]].    
      
     matrix_As_der_p, matrix_Bs_der_p: dict
-        size => 3-D array in shape of (# of vars, A(B).shape[0], A(B).shape[1]),
-        derivatives of matrix A(B) w.r.t. variables
-        # of vars = # of free fluxes for steady state MFA
-        # of vars = # of free fluxes + # of concentrations for INST MFA
+        Size => 3-D array in shape of (# of vars, A(B).shape[0], A(B).shape[1])
+        which is the derivatives of matrix A(B) w.r.t. variables.
+        # of vars = # of free fluxes for steady state MFA;
+        # of vars = # of free fluxes + # of concentrations for INST MFA.
         
     matrix_Ms: dict
-        size => [lambdified matrix M, [metabolite IDs]]    
+        Size => [lambdified matrix M, [metabolite IDs]].    
     
     matrix_Ms_der_p: dict
-        size => 3-D array in shape of (# of vars, M.shape[0], M.shape[1]),
-        derivatives of matrix M w.r.t. variables
-        # of vars = # of free fluxes for steady state MFA
-        # of vars = # of free fluxes + # of concentrations for INST MFA
+        Size => 3-D array in shape of (# of vars, M.shape[0], M.shape[1]),
+        which is the derivatives of matrix M w.r.t. variables.
+        # of vars = # of free fluxes for steady state MFA;
+        # of vars = # of free fluxes + # of concentrations for INST MFA.
         
     labeling_strategy: dict
-        metabolite ID => [labeling_pattern(s), percentage(s), purity(s)]
+        Metabolite ID => [labeling_pattern(s), percentage(s), purity(s)].
         
     measured_MDVs: dict
-        EMU ID (metabolite ID + '_' + atom NOs) => [means of MDV, SDs of MDV]
+        EMU ID (metabolite ID + '_' + atom NOs) => [means of MDV, SDs of MDV].
         
     measured_MDVs_inv_cov: array
-        inversed covariance matrix of measured MDVs with variances on the diagnol, other elements are zero
+        Inversed covariance matrix of measured MDVs with variances on the diagnol, 
+        other elements are zero.
         
     measured_fluxes: dict
-        flux ID (e.g. 'v1_f' or 'v2') => [mean, SD]
+        Flux ID (e.g., 'v1_f' or 'v2') => [mean, SD].
         
     measured_fluxes_inv_cov: array
-        inversed covariance matrix of measured fluxes with variances on the diagnol, other elements are zero
+        Inversed covariance matrix of measured fluxes with variances on the diagnol, 
+        other elements are zero.
         
     measured_fluxes_der_p: array
-        derivative of measured fluxes w.r.t. variables in shape of (# of measured fluxes, # of vars),
-        # of vars = # of free fluxes for steady state MFA
-        # of vars = # of free fluxes + # of concentrations for INST MFA
+        Derivative of measured fluxes w.r.t. variables in shape of 
+        (# of measured fluxes, # of vars),
+        # of vars = # of free fluxes for steady state MFA;
+        # of vars = # of free fluxes + # of concentrations for INST MFA.
     
     measured_inst_MDVs: dict
-        EMU ID (metabolite ID + '_' + atom NOs) => {timepoint => [means of MDV, SDs of MDV]}    
+        EMU ID (metabolite ID + '_' + atom NOs) => {timepoint => [means of MDV, SDs of MDV]}.    
     
     measured_inst_MDVs_inv_cov: array
-        inversed covariance matrix of measured concatenated MDVs with variances on the diagnol, 
-        other elements are zero, variances are concatenated from timepoints except t0     
+        Inversed covariance matrix of measured concatenated MDVs with variances on the diagnol, 
+        other elements are zero. Timepoints are concatenated except t0.     
    
     null_space: 2-D array
-        null space of total stoichiometric matrix
+        Null space of total stoichiometric matrix.
         
     transform_matrix: 2-D array
-        vnet = transform_matrix*v
+        Transform matrix letting vnet = transform_matrix*v.
     '''
     
     def __init__(self, name = 'unnamed'):
         '''
         Parameters
+        ----------
         name: str
-            model name
+            Model name.
         '''
         
         self.name = name
@@ -246,7 +262,7 @@ class Model():
     def __eq__(self, other):
         '''
         Parameters
-        other: Model instance
+        other: Model
         '''
         
         return self.name == other.name
@@ -255,7 +271,8 @@ class Model():
     def add_reactions(self, reactions):
         '''
         Parameters
-        reactions: Reaction instance or list of Reaction instances
+        ----------
+        reactions: Reaction or list of Reaction
         '''
         
         if not isinstance(reactions, list):
@@ -274,7 +291,8 @@ class Model():
     def remove_reactions(self, reactions):
         '''
         Parameters
-        reactions: Reaction instance or list of Reaction instances
+        ----------
+        reactions: Reaction or list of Reaction
         '''
         
         if not isinstance(reactions, list):
@@ -293,9 +311,12 @@ class Model():
     def read_from_file(self, file):
         '''
         Parameters
+        ----------
         file: file path
-            tsv or excel file with reactions, fields are reaction ID, substrate IDs(atom), 
-            product IDs(atom) and reversibility
+            tsv or excel file with reactions with fields "reaction_ID", "substrate_IDs(atom)", 
+            "product_IDs(atom)" and "reversibility".
+
+            Header line starts with "#", and will be skiped.
         '''
         
         # read reactions
@@ -330,6 +351,7 @@ class Model():
     def metabolites_info(self):
         '''
         Returns
+        -------
         metabsInfo: dict
             metabolite ID => list of Metabolites
         '''
@@ -388,8 +410,10 @@ class Model():
     def _full_net_stoichiometric_matrix(self):
         '''
         Returns
-        df, complete stoichiometric matrix for net reaction, all metabolites in rows, 
-        net reactions in columns
+        -------
+        netS: df
+            Complete stoichiometric matrix for net reaction with all metabolites in rows and 
+            net reactions in columns.
         '''
         
         netS = pd.DataFrame(0, index = self.metabolites, columns = self.reactions)
@@ -416,8 +440,10 @@ class Model():
     def _full_total_stoichiometric_matrix(self):
         '''
         Returns
-        df, complete stoichiometric matrix for total reaction, all metabolites in rows, 
-        total reactions in columns
+        -------
+        totalS: df
+            Complete stoichiometric matrix for total reaction with all metabolites in rows and
+            total reactions in columns.
         '''
         
         netS = self._full_net_stoichiometric_matrix
@@ -458,13 +484,15 @@ class Model():
     def get_net_stoichiometric_matrix(self, exclude_metabs = None, include_ends = False):
         '''
         Parameters
+        ----------
         exclude_metabs: list or set
-            excluded metabolites
+            Excluded metabolites.
         include_ends: bool
-            whether to include end metabolites (initial substrates and final products)
+            Whether to include end metabolites (i.e., initial substrates and final products).
         
         Returns
-        df, net stoichiometric matrix, balanced metabolites in rows, net reactions in columns
+        netS: df
+            Net stoichiometric matrix with balanced metabolites in rows and net reactions in columns
         '''
         
         if exclude_metabs is None:
@@ -483,13 +511,15 @@ class Model():
     def get_total_stoichiometric_matrix(self, exclude_metabs = None, include_ends = False):
         '''
         Parameters
+        ----------
         exclude_metabs: list or set
-            excluded metabolites
+            Excluded metabolites.
         include_ends: bool
-            whether to include end metabolites (initial substrates and final products)
+            Whether to include end metabolites (initial substrates and final products).
         
         Returns
-        df, total stoichiometric matrix, balanced metabolites in rows, total reactions in columns
+        totalS: df
+            Total stoichiometric matrix with balanced metabolites in rows and total reactions in columns
         '''
         
         if exclude_metabs is None:
@@ -544,8 +574,10 @@ class Model():
     def metabolite_adjacency_matrix(self):
         '''
         Returns
-        df, metabolite adjacency matrix (MAM), metabolites with atoms in index and columns (no duplicates), 
-        list of Reactions in cells if reactions exists between sub (index) and pro (columns), [] otherwise
+        -------
+        MAM: df
+            Metabolite adjacency matrix (MAM). Metabolites with atoms are in index and columns (no duplicates). 
+            List of Reactions are in cells if reactions exists between sub (index) and pro (columns), [] otherwise
         '''
         
         MAM = pd.DataFrame(index = self.metabolites_with_atoms, columns = self.metabolites_with_atoms)
@@ -576,13 +608,15 @@ class Model():
     def _BFS(self, iniEMU):
         '''
         Parameters
-        iniEMU: EMU instance
-            from which the EMU decomposition starts. 
-            NOTE iniEMU.metabolite can be any Metabolite instance with the same Metabolite.id
+        ----------
+        iniEMU: EMU
+            Starting EMU of the decomposition. 
+            Metabolite of iniEMU can be any Metabolite instance with the same id.
         
         Returns
+        -------
         EAMsInfo: dict of list
-            size => list of [EMU, [precursor EMUs], symbolic expression of flux]
+            Size => list of [EMU, [precursor EMUs], symbolic expression of flux].
         '''
         
         MAM = self.metabolite_adjacency_matrix
@@ -642,12 +676,14 @@ class Model():
     def _get_original_EAMs(self, iniEMU):
         '''
         Parameters
-        iniEMU: EMU instance
-            from which the EMU decomposition starts
+        ----------
+        iniEMU: EMU
+            Starting EMU of the decomposition.
             
         Returns
+        -------
         EAMs: dict of df
-            size => original EMU adjacency matrix (EAM), cells are symbolic expression of flux
+            Size => original EMU adjacency matrix (EAM), cells are symbolic expression of flux。
         '''
         
         # find all precursor EMUs using breadth first search (BSF)
@@ -681,16 +717,18 @@ class Model():
     def _replace_list_item(self, iterable, toReplace, value):
         '''
         Parameters
+        ----------
         iterable: iterable
-            can be nested
+            Iterable can be nested.
         toReplace: scalar
-            value that will be replaced
+            Value to be replaced.
         value: scalar
-            value that will replace toReplace
+            Value that replaces toReplace.
             
         Returns
+        -------
         newLst: tuple
-            new tuple with toReplace recursively replaced
+            New tuple with toReplace recursively replaced.
         '''
         
         newLst = []
@@ -709,12 +747,14 @@ class Model():
     def _uniquify_dataFrame_index(self, df):
         '''
         Parameters
+        ----------
         df: df
-            df to be uniquify
+            DataFrame to be uniquify.
             
         Returns
+        -------
         uniqueDf: df
-            df with duplicate rows combined (summated)
+            DataFrame with duplicate rows combined (summated).
         '''
         
         sortedDf = df.sort_index()
@@ -729,14 +769,16 @@ class Model():
     def _lump_linear_EMUs(self, EAMs, iniEMU):
         '''
         Parameters
+        ----------
         EAMs: dict of df
-            size => original EMU adjacency matrix (EAM), cells are symbolic expression of flux
-        iniEMU: EMU instance
-            from which the EMU decomposition starts
+            Size => original EMU adjacency matrix (EAM), cells are symbolic expression of flux.
+        iniEMU: EMU
+            Starting EMU of the decomposition.
         
         Returns
+        -------
         lumpedEAMs: dict of df
-            size => lumped EMU adjacency matrix (EAM), cells are symbolic expression of flux
+            Size => lumped EMU adjacency matrix (EAM), cells are symbolic expression of flux.
         '''
         
         lumpedEAMs = {}
@@ -778,12 +820,14 @@ class Model():
     def _combine_equivalent_EMUs(self, EAMs):
         '''
         Parameters
+        ----------
         EAMs: dict of df
-            size => original EMU adjacency matrix (EAM), cells are symbolic expression of flux
+            Size => original EMU adjacency matrix (EAM), cells are symbolic expression of flux.
             
         Returns
-        combinedEAMs: df
-            equivalent combined EMU adjacency matrix (EAM) of different size, cells are symbolic expression of flux
+        -------
+        combinedEAMs: dict df
+            Size => EAM with equivalent EMUs combined, cells are symbolic expression of flux.
         '''
         
         combinedEAMs = {}
@@ -816,15 +860,21 @@ class Model():
     def get_emu_adjacency_matrices(self, iniEMU, lump = True):
         '''
         Parameters
-        iniEMU: EMU instance
-            from which the EMU decomposition starts
+        ----------
+        iniEMU: EMU
+            Starting EMU of the decomposition.
         lump: bool
-            whether to lump linear EMUs. NOTE EMUs can not be lumped in 13C nonstationary MFA
+            Whether to lump linear EMUs.
         
         Returns
+        -------
         EAMs: dict of df
-            size => final EMU adjacency matrix (EAM) after lumping of linear EMUs and combination
-            of equivalent EMUs, index and columns are EMUs, cells are symbolic expression of flux
+            Size => EMU adjacency matrix (EAM) after lumping of linear EMUs and combination
+            of equivalent EMUs. Index and columns are EMUs, cells are symbolic expression of flux.
+
+        Notes
+        -----
+        EMUs in sequential reactions can not be lumped in transient MFA.
         '''
         
         # set CPU affinity in Linux
@@ -847,10 +897,14 @@ class Model():
     def _merge_EAMs(self, EAM1, EAM2):
         '''
         Parameters
-        EAM1, EAM2: df
+        ----------
+        EAM1: df
+            EMU adjacency matrix (EAM) to merge
+        EAM2: df
             EMU adjacency matrix (EAM) to merge
             
         Returns
+        -------
         mergedEAM: df
             merged EAM
         '''
@@ -869,19 +923,23 @@ class Model():
         return mergedEAM
     
     
-    def _merge_all_EAMs(self, *args):
+    def _merge_all_EAMs(self, *EAMsAll):
         '''
-        args: tuple of EAMs
-            EAMs is dict of df with EMU adjacency matrix (EAM) of different size
-            
-        mergedEAMs: df
-            EAMs with EAM merged by size    
+        Parameters
+        ----------
+        EAMsAll: tuple of EAMs
+            EAMs is dict of DataFrame, i.e., Size => EMU adjacency matrix (EAM).
+
+        Returns
+        -------    
+        mergedEAMs: dict of df
+            Size => merged EAM     
         '''
         
         mergedEAMs = {}
-        maxsize = max([max(EAMs) for EAMs in args])
+        maxsize = max([max(EAMs) for EAMs in EAMsAll])
         for size in range(1, maxsize+1):
-            EAMCurrentSize = list(filter(lambda x: isinstance(x, pd.DataFrame), [EAMs.get(size, 0) for EAMs in args]))
+            EAMCurrentSize = list(filter(lambda x: isinstance(x, pd.DataFrame), [EAMs.get(size, 0) for EAMs in EAMsAll]))
             if EAMCurrentSize:   # in case there is no EAM in current size
                 mergedEAMs[size] = reduce(self._merge_EAMs, EAMCurrentSize)
         
@@ -895,7 +953,7 @@ class Model():
             list of metabolite IDs from which initial EMU will be generated to start the decomposition
         atom_nos: list of int list or list of str
             atom NOs of corresponding metabolites, len(atom_nos) should be equal to len(metabolites),
-            e.g. [[1,2,3], [1,2,3,4]] or ['123', '1234']
+            e.g., [[1,2,3], [1,2,3,4]] or ['123', '1234']
             
         Returns
         mergedEAMs: dict of df
@@ -923,18 +981,24 @@ class Model():
     def _decompose_network(self, metabolites, atom_nos, lump = True, n_jobs = 1):
         '''
         Parameters
+        ----------
         metabolites: list of str
-            list of metabolite IDs from which initial EMU will be generated to start the decomposition
+            List of metabolite IDs from which initial EMU will be generated to start the decomposition.
         atom_nos: list of str
-            atom NOs of corresponding metabolites, len(atom_nos) should be equal to len(metabolites)
+            Atom NOs of corresponding metabolites, len(atom_nos) should be equal to len(metabolites).
         lump: bool
-            whether to lump linear EMUs. NOTE EMUs can not be lumped in 13C nonstationary MFA    
+            Whether to lump linear EMUs.    
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
         
         Returns
+        -------
         mergedEAMs: dict of df
-            EMU adjacency matrix (EAM) of different size by merging results of all EMUs
+            Size => merged EMU adjacency matrix (EAM).
+
+        Notes
+        -----
+        EMUs in sequential reactions can not be lumped in transient MFA.    
         '''
         
         emus = []
@@ -966,17 +1030,23 @@ class Model():
     def decompose_network(self, ini_emus, lump = True, n_jobs = 1):
         '''
         Parameters
+        ----------
         ini_emus: dict
-            metabolite ID => atom NOs or list of atom NOs, atom NOs can be int list or str, 
-            e.g. {'Ala': [[1,2,3], '23'], 'Ser': '123'}
+            Metabolite ID => atom NOs or list of atom NOs. Atom NOs can be int list or str, 
+            e.g., {'Ala': [[1,2,3], '23'], 'Ser': '123'}
         lump: bool
-            whether to lump linear EMUs. NOTE EMUs can not be lumped in 13C nonstationary MFA
+            Whether to lump linear EMUs.
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
             
         Returns
+        -------
         mergedEAMs: dict of df
-            size => EMU adjacency matrix (EAM) by merging results of all EMUs    
+            Size => merged EMU adjacency matrix (EAM)
+
+        Notes
+        -----
+        EMUs in sequential reactions can not be lumped in transient MFA.      
         '''
         
         metabids = []
@@ -1008,8 +1078,10 @@ class Model():
     def simulator(self, kind):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
-            "ss" and "inst" representing STEADY STEAT and ISOTOPICALLY NONSTATIONARY STATE, respectively
+            * If "ss", simulation at isotopic steady state is performed.
+            * If "inst", simulation at isotopically nonstationary state is performed.
         '''
         
         if kind.lower() == 'ss':
@@ -1024,7 +1096,8 @@ class Model():
         '''
         Parameters
         kind: {"ss", "inst"}
-            "ss" and "inst" representing STEADY STEAT and ISOTOPICALLY NONSTATIONARY STATE, respectively
+            * If "ss", fitting at isotopic steady state is performed.
+            * If "inst", fitting at isotopically nonstationary state is performed.
         '''
         
         if kind.lower() == 'ss':
@@ -1033,5 +1106,3 @@ class Model():
             return InstFitter(self)
         else:
             raise ValueError('kind should be either "ss" or "inst"')
-        
-

@@ -18,8 +18,9 @@ import pandas as pd
 def read_model_from_file(file):
     '''
     Parameters
+    ----------
     file: file path
-        tsv or excel file with reactions
+        tsv or excel file with reactions.
     '''
     
     ext = splitext(file)[1]
@@ -38,8 +39,9 @@ def read_model_from_file(file):
 def read_preset_values_from_file(file):
     '''
     Parameters
+    ----------
     file: file path
-        tsv or excel file
+        tsv or excel file.
     '''
     
     ext = splitext(file)[1]
@@ -58,10 +60,11 @@ def read_preset_values_from_file(file):
 def read_initial_values(ini, ids):
     '''
     Parameters
+    ----------
     ini: ser of file in .tsv or .xlsx
-        initial values
+        Initial values.
     ids: list
-        ids of fluxes or concentrations in correct order
+        IDs of fluxes or concentrations in correct order.
     '''
 
     if isfile(ini):
@@ -78,10 +81,11 @@ def read_initial_values(ini, ids):
 def read_measurements_from_file(file, inst_data = False):
     '''
     Parameters
+    ----------
     file: file path
-        tsv or excel file
+        tsv or excel file.
     inst_data: bool
-        if True, additional column of timepoints is used as index (multiindex)
+        If True, additional column of timepoints is used as index (multiindex).
     '''
     
     if inst_data:
@@ -100,5 +104,3 @@ def read_measurements_from_file(file, inst_data = False):
         raise TypeError('can only read from .tsv or excel file')
         
     return data
-
-    

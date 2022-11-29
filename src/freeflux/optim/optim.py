@@ -19,11 +19,19 @@ from ..utils.context import Context
 
 
 class Optimizer():
+    '''
+    Parameters
+    ----------
+    model: Model
+        Freeflux Model.
+    '''
     
     def __init__(self, model):
         '''
         Parameters
+        ----------
         model: Model
+            Freeflux Model.
         '''
         
         self.model = model
@@ -46,12 +54,12 @@ class Optimizer():
     def _set_flux_bounds(self, fluxid, bounds):
         '''
         Parameters
+        ----------
         fluxid: str
-            flux ID, i.e. reaction ID, for irreversible reaction, the lower bound of range will 
-            be set to zero ignorant of bounds[0]
-            
+            Flux ID, i.e. reaction ID. For irreversible reaction, the lower bound of range will 
+            be set to zero ignorant of bounds[0].
         bounds: 2-list
-            [lower bound, upper bound]
+            [lower bound, upper bound].
         '''
         
         bounds = list(map(float, bounds))
@@ -67,16 +75,18 @@ class Optimizer():
     
     def set_flux_bounds(self, fluxid, bounds):
         '''
-        set lower and upper bounds for metabolic flux. If called several times, 
+        Set lower and upper bounds for metabolic flux. If called several times, 
         the lastest setting overrides previous ones if conflicted.
         
         Parameters
+        ----------
         fluxid: str or 'all'
-            flux ID, i.e. reaction ID, the method is used to set the range of net flux
-            for irreversible reaction, the lower bound will be set to zero ignorant of bounds[0]
-            if 'all', all fluxes will be set to the range
+            Flux ID, i.e. reaction ID. This method is used to set the range of net flux.
+            For irreversible reaction, the lower bound will be set to zero ignorant of bounds[0].
+            
+            If 'all', all fluxes will be set to the range.
         bounds: 2-list
-            [lower bound, upper bound], equal lower and upper bound indicates fixed value
+            [lower bound, upper bound]. Let lower bound equals upper bound to set fixed value.
         '''
         
         fluxids = []
@@ -100,8 +110,8 @@ class Optimizer():
                 
     def _set_default_flux_bounds(self):
         '''
-        This method assign bounds of [-100, 100] for reversible reactions and 
-        [0, 100] for irreversible reactions not set by set_flux_bounds
+        This method assigns bounds of [-100, 100] for reversible reactions and 
+        [0, 100] for irreversible reactions not yet set by set_flux_bounds
         '''
         
         defBunds = [-100, 100]
@@ -120,8 +130,9 @@ class Optimizer():
     def _unset_flux_bounds(self, fluxids):
         '''
         Parameters
+        ----------
         fluxids: str or list of str
-            fluxe ID(s)
+            Fluxe ID(s).
         '''
         
         if not isinstance(fluxids, Iterable):
@@ -143,11 +154,12 @@ class Optimizer():
         
     def _check_stoichiometric_matrix(self, exclude_metabs):
         '''
-        check and delete zero rows or columns usually caused by dilution reactions
+        Check and delete zero rows or columns usually caused by dilution reactions.
 
         Parameters
+        ----------
         exclude_metabs: list
-            metabolite IDs, metabolites excluded from mass balance
+            Metabolite IDs, i.e., metabolites excluded from mass balance.
         '''
         
         netfluxids = self.model.netfluxids.copy()
@@ -181,17 +193,19 @@ class Optimizer():
         This method performs flux balance analysis by maximizing the objective.
         
         Parameters
+        ----------
         objective: dict
-            reaction ID => coefficient, objective function
+            Reaction ID => coefficient, i.e., objective function.
         direction: {"max", "min"}
-            optimization direction    
+            Optimization direction.    
         exclude_metabs: list
-            metabolite IDs, metabolites excluded from mass balance
+            Metabolite IDs, i.e., metabolites excluded from mass balance.
         show_progress: bool
-            whether to show the progress bar
+            Whether to show the progress bar.
             
         Returns
-        FBAResults
+        -------
+        FBAResults: FBAResults
         '''
         
         netfluxids, net_fluxes_bounds, stoy_mat = self._check_stoichiometric_matrix(exclude_metabs)
@@ -213,18 +227,20 @@ class Optimizer():
         If an objective is provided, it will be optimized in maximizing direction.
         
         Parameters
+        ----------
         objective: dict
-            reaction ID => coefficient, objective function
+            Reaction ID => coefficient, i.e., objective function.
         gamma: float
-            during evaluation of each flux, objective value is required to be >= gamma*max(objective), 
+            During evaluation of each flux, objective value is required to be >= gamma*max(objective) with 
             gamma in [0, 1]
         exclude_metabs: list
-            metabolite IDs, metabolites excluded from mass balance
+            Metabolite IDs, i.e., metabolites excluded from mass balance.
         show_progress: bool
-            whether to show the progress bar    
+            Whether to show the progress bar.    
             
         Returns
-        FVAResults
+        -------
+        FVAResults: FVAResults
         '''
         
         netfluxids, net_fluxes_bounds, stoy_mat = self._check_stoichiometric_matrix(exclude_metabs)
@@ -259,6 +275,4 @@ class Optimizer():
                 fluxRanges[fluxid] = [fluxLB, fluxUB]
 
         return FVAResults(fluxRanges)
-            
-        
     

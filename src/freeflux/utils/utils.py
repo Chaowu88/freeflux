@@ -27,11 +27,19 @@ from time import time
 
     
 class Calculator():
+    '''
+    Parameters
+    ----------
+    model: Model
+        Freeflux Model.
+    '''
     
     def __init__(self, model):
         '''
         Parameters
+        ----------
         model: Model
+            Freeflux Model.
         '''
         
         self.model = model
@@ -131,7 +139,10 @@ class Calculator():
     def _calculate_substrate_MDV_derivatives_p(self, kind, extra_subs = None):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
+            * "ss" if isotopic steady state.
+            * "inst" if isotopically nonstationary state.
         extra_subs: list or None
         '''
         
@@ -176,7 +187,10 @@ class Calculator():
     def _calculate_measured_fluxes_derivative_p(self, kind):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
+            * "ss" if isotopic steady state.
+            * "inst" if isotopically nonstationary state.
         '''
         
         if kind == 'ss':
@@ -262,14 +276,16 @@ class Calculator():
     def _calculate_matrix_A_and_B_derivatives_v(EAM, fluxids):
         '''
         Parameters
+        ----------
         EAMstr: df
-            EMU adjacency matrix of some size
+            EMU adjacency matrix of some size.
         fluxids: list
-            total fluxes IDs
+            Total fluxes IDs.
             
         Returns
+        -------
         matrix_A_der, matrix_B_der: 3-D array
-            derivatives of A(B) w.r.t. total fluxes in shape of (len(total fluxes), A(B).shape[0], A(B).shape[1])
+            Derivatives of A(B) w.r.t. total fluxes in shape of (len(total fluxes), A(B).shape[0], A(B).shape[1]).
         '''
         
         # set CPU affinity in Linux
@@ -298,12 +314,16 @@ class Calculator():
     def _calculate_matrix_As_and_Bs_derivatives_u(self, n_jobs):
         '''
         Parameters
+        ----------
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
 
         Returns
-        matrix_A_der, matrix_B_der: 3-D array
-            derivatives of A(B) w.r.t. free fluxes in shape of (len(free fluxes), A(B).shape[0], A(B).shape[1])    
+        -------
+        matrix_A_der: 3-D array
+            Derivatives of A(B) w.r.t. free fluxes in shape of (len(free fluxes), A(B).shape[0], A(B).shape[1]).
+        matrix_B_der: 3-D array
+            Derivatives of A(B) w.r.t. free fluxes in shape of (len(free fluxes), A(B).shape[0], A(B).shape[1]).        
         '''
             
         matrix_ABs_der = {}
@@ -346,8 +366,11 @@ class Calculator():
     def _calculate_matrix_As_and_Bs_derivatives_c(self):
         '''
         Returns
-        matrix_A_der, matrix_B_der: 3-D array
-            derivatives of A(B) w.r.t. total fluxes in shape of (len(concs), A(B).shape[0], A(B).shape[1])
+        -------
+        matrix_A_der: 3-D array
+            Derivatives of A(B) w.r.t. total fluxes in shape of (len(concs), A(B).shape[0], A(B).shape[1]).
+        matrix_B_der: 3-D array
+            Derivatives of A(B) w.r.t. total fluxes in shape of (len(concs), A(B).shape[0], A(B).shape[1]).    
         '''
         
         nmetabs = len(self.model.concids)
@@ -367,9 +390,12 @@ class Calculator():
     def _calculate_matrix_As_and_Bs_derivatives_p(self, kind, n_jobs):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
+            * "ss" if isotopic steady state.
+            * "inst" if isotopically nonstationary state.
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
         '''
         
         if kind == 'ss':
@@ -512,11 +538,12 @@ class Calculator():
     # simulated MDV and its derivative    
     def _calculate_MDVs(self):
         '''
-        this method simulate MDVs at isotopically steady state
+        This method simulate MDVs at isotopically steady state.
         
         Returns
+        -------
         simMDVs: dict
-            EMU ID => MDV (in array)
+            EMU ID => MDV (in array).
         '''
         
         simMDVs = {}
@@ -549,13 +576,14 @@ class Calculator():
     
     def _calculate_MDVs_and_derivatives_p(self):
         '''
-        this method simulate MDVs and their derivatives at isotopically steady state
+        This method simulate MDVs and their derivatives at isotopically steady state.
         
         Returns
+        -------
         simMDVs: dict
-            EMU ID => MDV (in array)
+            EMU ID => MDV (in array).
         simMDVsDer: dict
-            EMU ID => 2-D array in shape of (len(MDV), len(u))
+            EMU ID => 2-D array in shape of (len(MDV), len(u)).
         '''
         
         simMDVs = {}
@@ -613,11 +641,12 @@ class Calculator():
     
     def _calculate_inst_MDVs(self):
         '''
-        this method simulate MDVs at isotopically nonstationary state
+        This method simulate MDVs at isotopically nonstationary state.
         
         Returns
+        -------
         simInstMDVs: dict
-            EMU ID => {t => MDV (in array)} (start from t1)
+            EMU ID => {t => MDV (in array)} (starting from t1).
         '''
         
         simInstMDVs = {}
@@ -691,13 +720,14 @@ class Calculator():
 
     def _calculate_inst_MDVs_and_derivatives_p(self):
         '''
-        this method simulate MDVs and their derivatives at isotopically nonstationary state
+        This method simulate MDVs and their derivatives at isotopically nonstationary state.
         
         Returns
+        -------
         simInstMDVs: dict
-            EMU ID => {t => MDV (in array)} (start from t1)
+            EMU ID => {t => MDV (in array)} (starting from t1).
         simInstMDVsDer: dict
-            EMU ID => {t => 2-D array in shape of (len(MDV), len(u)+len(c))} (start from t1)
+            EMU ID => {t => 2-D array in shape of (len(MDV), len(u)+len(c))} (starting from t1).
         '''
         
         simInstMDVs = {}

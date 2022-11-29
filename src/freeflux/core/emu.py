@@ -17,48 +17,60 @@ from .metabolite import Metabolite
 
 class EMU():
     '''
+    EMU class defines EMU (i.e., elementary metabolite unit) object and its operations.
+
     EMUs in the same metabolite and with the same atom NOs are considered as identical, 
-    while EMU.metabolite could be different
+    while metabolites which they derived from could be different.
     
-    EMU can be compared according to self.metabolite_id and self.atom_nos
+    EMUs can be compared based self.metabolite_id and self.atom_nos.
+    EMU and iterable object of EMUs can also be compared. In this case EMU will be put into
+    the same iterable object with single item, and comparison between two iterables are performed.
     
-    EMU and iterable object of EMUs can also be compared, in this case EMU will be transformed into
-    iterable with single item
+    Currently only binary equivalents are considered.
     
-    Only binary equivalents are considered
-    
+    Parameters
+    ----------
+    id: str
+        EMU ID
+    metabolite: Metabolite or str
+        Which metabolite the EMU comes from.
+    atom_nos: list of int or str
+        Atom NOs, sorted by number.
+
     Attributes
+    ----------
     id: str
         EMU ID
     
     metabolite: Metabolite
-        which metabolite the EMU comes from
+        Which metabolite the EMU comes from.
         
     metabolite_id: str
-        ID of metabolite the EMU comes from
+        Metabolite ID.
     
     atom_nos: list of int
-        atom NOs, sorted by number
+        Atom NOs, sorted by number.
     
     size: int
-        size of EMU
+        Size of EMU.
     
     equivalent_atom_nos: None or list of int
-        equivalent atom NOs, sorted by number
+        Equivalent atom NOs, sorted by number.
         
     equivalent: EMU
-        equivalent of EMU
+        Equivalent of EMU.
     '''
     
     def __init__(self, id, metabolite, atom_nos):
         '''
         Parameters
+        ----------
         id: str
             EMU ID
         metabolite: Metabolite or str
-            which metabolite the EMU comes from
+            Which metabolite the EMU comes from.
         atom_nos: list of int or str
-            atom NOs, sorted by number
+            Atom NOs, sorted by number.
         '''
         
         self.id = id
@@ -83,6 +95,7 @@ class EMU():
     def __eq__(self, other):
         '''
         Parameters
+        ----------
         other: EMU or iterable
         '''
         
@@ -95,6 +108,7 @@ class EMU():
     def __lt__(self, other):
         '''
         Parameters
+        ----------
         other: EMU or iterable
         '''
         
@@ -110,6 +124,7 @@ class EMU():
     def __gt__(self, other):
         '''
         Parameters
+        ----------
         other: EMU or iterable
         '''
         
@@ -127,7 +142,9 @@ class EMU():
     def equivalent_atom_nos(self):
         '''
         Returns
-        list of int or None, equivalent atom NOs, sorted by number
+        -------
+        equivAtomNOs: list of int or None
+            Equivalent atom NOs, sorted by number.
         '''
         
         if len(self.metabolite.atoms_info) == 1:
@@ -151,7 +168,9 @@ class EMU():
     def equivalent(self):
         '''
         Returns
-        EMU, equivalent of current EMU
+        -------
+        EMU: EMU
+            Equivalent of current EMU.
         '''
         
         equivAtomNOs = self.equivalent_atom_nos
@@ -167,5 +186,4 @@ class EMU():
     def __repr__(self):
         
         return '%s %s_%s' % (self.__class__.__name__, self.metabolite_id, ''.join(map(str, self.atom_nos)))
-        
         

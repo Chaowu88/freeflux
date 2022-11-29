@@ -24,10 +24,11 @@ class FBAModel():
     def build_flux_variables(self, fluxids, flux_bounds):
         '''
         Parameters
+        ----------
         fluxids: list
-            flux IDs
+            Flux IDs.
         flux_bounds: dict
-            reaction ID => [lower bound, upper bound]
+            Reaction ID => [lower bound, upper bound].
         '''
         
         if set(fluxids) != flux_bounds.keys():
@@ -44,10 +45,11 @@ class FBAModel():
     def build_objective(self, objective, direction):
         '''
         Parameters
+        ----------
         objective: dict
-            reaction ID => coefficient, objective function
+            Reaction ID => coefficient, i.e., objective function.
         direction: {"max", "min"}
-            optimization direction
+            Optimization direction.
         '''
         
         if direction == 'max':
@@ -64,8 +66,9 @@ class FBAModel():
     def build_mass_balance_constraints(self, stoy_mat):
         '''
         Parameters
+        ----------
         stoy_mat: df
-            stoichiometric matrix
+            Stoichiometric matrix.
         '''
         
         def mb_rule(model, metabid):
@@ -77,12 +80,13 @@ class FBAModel():
     def build_objective_constraint(self, objective, max_obj, gamma):
         '''
         Parameters
+        ----------
         objective: dict
-            reaction ID => coefficient, objective function
+            Reaction ID => coefficient, i.e., objective function.
         max_obj: float
-            max objective
+            Optimal objective.
         gamma: float
-            varies in [0, 1]
+            A value in [0, 1].
         '''
         
         def objcstr_rule(model):

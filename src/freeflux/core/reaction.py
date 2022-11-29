@@ -21,59 +21,70 @@ from .emu import EMU
 
 class Reaction():
     '''
-    Duplicate substrates or products could appear in one reaction, but with different atoms
+    Reaction class defines Reaction object and its operations.
+
+    Duplicate substrates or products could appear in one reaction, but with different atoms.
     
-    Attributes
+    Parameters
+    ----------
     id: str
-        reaction ID
+        Reaction ID.
+    reversible: bool
+        Reversibility.
+
+    Attributes
+    ----------
+    id: str
+        Reaction ID.
     
     reversible: bool
-        reversibility
+        Reversibility.
     
     substrates_info: df
-        index are substrate IDs (there could be duplicate substrates), 
-        columns are Metabolite and stoichiometry
+        Index are substrate IDs (there could be duplicate substrates), 
+        Columns are Metabolite object and its stoichiometric number.
     
     products_info: df
-        index are product IDs (there could be duplicate products), 
-        columns are Metabolite and stoichiometry
+        Index are product IDs (there could be duplicate products), 
+        Columns are Metabolite object and stoichiometrc number.
     
     substrates: list
-        unique substrate IDs, in order of alphabet
+        Unique substrate IDs, in order of alphabet.
     
     products: list
-        unique product IDs, in order of alphabet
+        Unique product IDs, in order of alphabet.
     
     substrates_with_atoms: list
-        unique IDs of substrates with atoms, in order of alphabet
+        Unique IDs of substrates with atoms, in order of alphabet.
     
     products_with_atoms: list    
-        unique IDs of products with atoms, in order of alphabet
+        Unique IDs of products with atoms, in order of alphabet.
     
     _substrates_atom_mapping: list of dict or None
-        reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
+        For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]
     
     _products_atom_mapping: list of dict or None
-        reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
+        For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]    
     
-    flux (fflux and bflux for reversible reaction): sym
-        reaction flux (forward flux and backward flux for reversible reaction)
+    flux (fflux and bflux for reversible reaction): Symbol
+        Reaction flux (reversible reaction is splitted into forward flux and backward flux)
         
     host_models: set of Model or None
-        model reaction is involved in
+        Model hosting the reaction.
     '''
     
     def __init__(self, id, reversible = True):
         '''
         Parameters
+        ----------
         id: str
-            reaction ID
+            Reaction ID.
         reversible: bool
-            reversibility
+            Reversibility.
         '''
         
         self.id = id
@@ -91,9 +102,10 @@ class Reaction():
     def add_substrates(self, substrates, stoichiometry):
         '''
         Parameters
-        substrates: Metabolite or list of Metabolites
+        ----------
+        substrates: Metabolite or list of Metabolite
         stoichiometry: float or list of float
-            stoichiometry of corresponding substrates
+            Stoichiometric number(s) of corresponding substrate(s).
         '''
         
         if not isinstance(substrates, list):
@@ -116,9 +128,10 @@ class Reaction():
     def add_products(self, products, stoichiometry):
         '''
         Parameters
-        products: Metabolite or list of Metabolites
+        ----------
+        products: Metabolite or list of Metabolite.
         stoichiometry: float or list of float
-            stoichiometry of corresponding products
+            stoichiometric number(s) of corresponding product(s).
         '''
         
         if not isinstance(products, list):
@@ -140,7 +153,8 @@ class Reaction():
     def remove_substrates(self, substrates):
         '''
         Parameters
-        substrates: Metabolite or list of Metabolites
+        ----------
+        substrates: Metabolite or list of Metabolite
         '''
         
         if not isinstance(substrates, list):
@@ -160,7 +174,8 @@ class Reaction():
     def remove_products(self, products):
         '''
         Parameters
-        products: Metabolite or list of Metabolites
+        ----------
+        products: Metabolite or list of Metabolite
         '''
         
         if not isinstance(products, list):
@@ -207,13 +222,16 @@ class Reaction():
     
     def _atom_mapping(self, reactant):
         '''
-        reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
-        [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
-         {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]
-        
         Parameters
+        ----------
         reactant: str,
             'substrate' or 'product'
+
+        Notes
+        -----
+        Reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
+        [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
+         {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}].
         '''
         
         if reactant == 'substrate':
@@ -263,22 +281,26 @@ class Reaction():
     
     def _find_precursor_EMUs(self, emu, direction = 'forward'):
         '''
-        for reaction like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) -> C({'abc': 0.5, 'cba': 0.5})
+        Parameters
+        ----------
+        emu: EMU
+        direction: str
+            * For reversible reaction,
+            'forward' if emu is product and precursor emu(s) are substrates;
+            'backward' if emu is substrate and precursor emu(s) are products.
+            * For irreversible reaction, only 'forward' is acceptable.
+            
+        Returns
+        -------
+        preEMUsInfo: list
+
+        Notes
+        -----
+        For reaction like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) -> C({'abc': 0.5, 'cba': 0.5}),
         _find_precursor_EMUs(C12) returns
         [[[A_12], 0.5],
          [[B_1, A_2], 0.25],
-         [[B_1, A_1], 0.25]]
-        
-        Parameters
-        emu: EMU
-        direction: str
-            for reversible reaction,
-            'forward' if emu is product and precursor emu(s) are substrates,
-            'backward' if emu is substrate and precursor emu(s) are products;
-            for irreversible reaction, only 'forward' is acceptable
-            
-        Returns
-        preEMUsInfo: list
+         [[B_1, A_1], 0.25]].
         '''        
         
         if self.reversible:
@@ -335,11 +357,3 @@ class Reaction():
         prosStr = '+'.join(self.products)
         
         return '%s %s: %s%s%s' % (self.__class__.__name__, self.id, subsStr, arrow, prosStr)        
-
-
-
-
-
-
-
-

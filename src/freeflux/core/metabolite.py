@@ -15,30 +15,42 @@ import re
 
 class Metabolite():
     '''
-    Metabolites are considered identical when they have the same IDs and atoms
+    Metabolite class defines Metabolite object and its operations.
+
+    Metabolites are considered identical when they have the same IDs and atoms.
     
-    Attributes
+    Parameters
+    ----------
     id: str
-        metabolite ID
+        Metabolite ID.
+    atoms: str or list of str or None
+        Carbons in metabolite, e.g., 'abcd' for metabolite without equivalents, 
+        and ['abcd', 'dcba'] for metabolite with equivalents.
+
+    Attributes
+    ----------
+    id: str
+        Metabolite ID.
     
     atoms_info: dict
-        keys are equivalents, values are coefficient, like {'abcd': 1.0} or {'abcd': 0.5, 'dcba': 0.5}
+        equivalent => coefficient, e.g., {'abcd': 1.0} or {'abcd': 0.5, 'dcba': 0.5}.
     
     n_carbons: int
-        # of carbons in metabolite
+        # of carbons in metabolite.
         
     host_reactions: set of Reaction or None
-        reactions metabolite is involved in
+        Reactions hosting the metabolite.
     '''
     
     def __init__(self, id, atoms = None):
         '''
         Parameters
+        ----------
         id: str
-            metabolite ID
+            Metabolite ID.
         atoms: str or list of str or None
-            carbons in metabolite, e.g. 'abcd' for metabolite without equivalents, 
-            ['abcd', 'dcba'] for metabolite with equivalents
+            Carbons in metabolite, e.g., 'abcd' for metabolite without equivalents, 
+            and ['abcd', 'dcba'] for metabolite with equivalents.
         '''
         
         self.id = id
@@ -60,6 +72,7 @@ class Metabolite():
     def __eq__(self, other):
         '''
         Parameters
+        ----------
         other: Metabolite
         '''
         
@@ -96,4 +109,3 @@ class Metabolite():
     def __repr__(self):
         
         return '%s %s%s' % (self.__class__.__name__, self.id, '(' + ','.join(self.atoms) + ')' if self.atoms else '')
-            

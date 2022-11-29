@@ -24,16 +24,29 @@ from ..utils.utils import Calculator
 
 
 class MFAModel():
+    '''
+    Parameters
+    ----------
+    model: Model
+        Freeflux Model.
+    fit_measured_fluxes: bool
+        Whether to fit measured fluxes.
+    solvor: {"slsqp", "ralg"}
+        * If "slsqp", scipy.optimize.minimze will be used.
+        * If "ralg", openopt NLP solver will be used.
+    '''
     
     def __init__(self, model, fit_measured_fluxes, solver = 'slsqp'):
         '''
         Parameters
+        ----------
         model: Model
+            Freeflux Model.
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         solvor: {"slsqp", "ralg"}
-            if "slsqp", scipy.optimize.minimze will be used;
-            if "ralg", openopt NLP solver will be used
+            * If "slsqp", scipy.optimize.minimze will be used.
+            * If "ralg", openopt NLP solver will be used.
         '''
         
         self.model = model
@@ -186,8 +199,9 @@ class MFAModel():
     def build_initial_flux_values(self, ini_netfluxes = None):
         '''
         Parameters
+        ----------
         ini_netfluxes: array
-            initial guess of net fluxes
+            Initial guess of net fluxes.
         '''
         
         if ini_netfluxes is None:
@@ -477,10 +491,11 @@ class InstMFAModel(MFAModel):
     def build_initial_flux_and_conc_values(self, ini_netfluxes = None, ini_concs = None):
         '''
         Parameters
+        ----------
         ini_netfluxes: array
-            initial guess of net fluxes
+            Initial guess of net fluxes.
         ini_concs: array
-            initial guess of concentrations
+            Initial guess of concentrations.
         '''
         
         if ini_netfluxes is None:
@@ -580,5 +595,4 @@ class InstMFAModel(MFAModel):
         return (opt_totalfluxes, opt_netfluxes, opt_concs, opt_obj, opt_resids, nmeas, nparams, sim_inst_MDVs, 
                 exp_inst_MDVs, sim_fluxes, exp_fluxes, hess, self.N, self.T, dxsim_du, dvsim_du, 
                 self.model.measured_inst_MDVs_inv_cov, self.model.measured_fluxes_inv_cov, is_success)
-        
         

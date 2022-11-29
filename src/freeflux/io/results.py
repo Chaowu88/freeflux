@@ -47,24 +47,35 @@ class pDict(dict):
     
 class FBAResults():
     '''
+    Parameters
+    ----------
+    obj: dict
+        Reaction ID => coefficient, i.e., the objective function.
+    opt_obj: float
+        Optimal objective.
+    opt_fluxes: OrderedDict
+        Optimal fluxes.
+
     Attributes
+    ----------
     objective: str
-        objective function
+        Objective function.
     opt_objective: float
-        optimal objective value
+        Optimal objective value.
     opt_fluxes: dict
-        optimal net fluxes
+        Optimal net fluxes.
     '''
         
     def __init__(self, obj, opt_obj, opt_fluxes):
         '''
         Parameters
+        ----------
         obj: dict
-            reaction ID => coefficient, objective function
+            Reaction ID => coefficient, i.e., the objective function.
         opt_obj: float
-            optimal objective
+            Optimal objective.
         opt_fluxes: OrderedDict
-            optimal fluxes
+            Optimal fluxes.
         '''
         
         self._obj = obj
@@ -110,16 +121,23 @@ class FBAResults():
 
 class FVAResults():
     '''
-    Attributes
+    Parameters
+    ----------
     flux_ranges: dict
-        flux rangs by flux variability analysis
+        Reaction ID => [lower bound, upper bound].
+
+    Attributes
+    ----------
+    flux_ranges: dict
+        Flux rangs by flux variability analysis.
     '''
     
     def __init__(self, flux_ranges):
         '''
         Parameters
+        ----------
         flux_ranges: dict
-            reaction ID => [lower bound, upper bound]
+            Reaction ID => [lower bound, upper bound].
         '''
         
         self._flux_ranges = flux_ranges
@@ -140,16 +158,23 @@ class FVAResults():
         
 class SimResults():
     '''
+    Parameters
+    ----------
+    simulated_MDVs: dict
+        EMU ID => MDV.
+
     Attributes
+    ----------
     simulated_EMUs: list
-        IDs of simulated EMUs
+        IDs of simulated EMUs.
     '''
     
     def __init__(self, simulated_MDVs):
         '''
         Parameters
+        ----------
         simulated_MDVs: dict
-            EMU ID => MDV
+            EMU ID => MDV.
         '''
         
         self._simulated_MDVs = simulated_MDVs
@@ -181,18 +206,25 @@ class SimResults():
         
 class InstSimResults():
     '''
+    Parameters
+    ----------
+    simulated_inst_MDVs: dict
+        EMU IDs => {timepoints => MDV}.
+
     Attributes
+    ----------
     simulated_EMUs: list
-        IDs of simulated EMUs
+        IDs of simulated EMUs.
     timepoints: list
-        timepoints to sample MDVs
+        Timepoints to sample MDVs.
     '''
     
     def __init__(self, simulated_inst_MDVs):
         '''
         Parameters
+        ----------
         simulated_inst_MDVs: dict
-            EMU IDs => {timepoints => MDV}
+            EMU IDs => {timepoints => MDV}.
         '''
         
         self._simulated_inst_MDVs = simulated_inst_MDVs
@@ -215,8 +247,9 @@ class InstSimResults():
     def simulated_MDV(self, emuid):
         '''
         Parameters
+        ----------
         emuid: str
-            EMU ID
+            EMU ID.
         '''
         
         return pDict(self._simulated_inst_MDVs[emuid])        
@@ -225,12 +258,13 @@ class InstSimResults():
     def plot_MDV_kinetics(self, emuid, show_fig = True, output_dir = None):
         '''
         Parameters
+        ----------
         emuid: str
-            EMU ID
+            EMU ID.
         show_fig: bool
-            whether to show figure
+            Whether to show figure.
         output_dir: str
-            output directorys
+            Output directory.
         '''    
         
         _MDV_kinetics(emuid, self._simulated_inst_MDVs[emuid], show_fig, output_dir)
@@ -250,13 +284,53 @@ class InstSimResults():
         
 class FitResults():
     '''
+    Parameters
+    ----------
+    opt_total_fluxes: ser
+        Total fluxes at optimal objective.
+    opt_net_fluxes: ser
+        Net fluxes at optimal objective.
+    opt_obj: float
+        Optimal value of objective.
+    opt_resids: array
+        Optimal weighted residuals.
+    n_meas: int
+        # of measurements.
+    n_params: int
+        # of parameters.
+    sim_MDVs: dict
+        EMU ID => simulated MDV.
+    exp_MDVs: dict
+        EMU ID => [means, sds].
+    sim_fluxes: dict
+        Flux ID => simulated flux.
+    exp_fluxes: dict
+        Flux ID => [mean, sd].
+    hessian: array
+        Hessian matrix at convergence.
+    null_space: array
+        Null space of stoichiometric matrix.
+    transform_matrix: array
+        Transform matrix from total fluxes to net fluxes.
+    sim_MDVs_der_u: array
+        Derivative of simulated MDVs w.r.t. free fluxes.
+    sim_fluxes_der_u: array
+        Derivative of simualted fluxes w.r.t. free fluxes.
+    exp_MDVs_inv_cov: array
+        Inversed covariance matrix of measured MDVs.
+    exp_fluxes_inv_cov: array
+        Inversed covariance matrix of measured fluxes.
+    is_success: bool
+        Whether the optimization is successful.
+
     Attributes
+    ----------
     opt_objective: float
-        optimal objective value
+        Optimal objective value.
     opt_total_fluxes: dict
-        optimal total fluxes
+        Optimal total fluxes.
     opt_net_fluxes: dict
-        optimal net fluxes
+        Optimal net fluxes.
     '''
     
     def __init__(self, opt_total_fluxes, opt_net_fluxes, opt_obj, opt_resids, n_meas, n_params, sim_MDVs, 
@@ -264,42 +338,43 @@ class FitResults():
                  sim_fluxes_der_u, exp_MDVs_inv_cov, exp_fluxes_inv_cov, is_success):
         '''
         Parameters
+        ----------
         opt_total_fluxes: ser
-            total fluxes at optimal objective
+            Total fluxes at optimal objective.
         opt_net_fluxes: ser
-            net fluxes at optimal objective
+            Net fluxes at optimal objective.
         opt_obj: float
-            optimal value of objective
+            Optimal value of objective.
         opt_resids: array
-            optimal weighted residuals
+            Optimal weighted residuals.
         n_meas: int
-            # of measurements
+            # of measurements.
         n_params: int
-            # of parameters
+            # of parameters.
         sim_MDVs: dict
-            EMU ID => simulated MDV
+            EMU ID => simulated MDV.
         exp_MDVs: dict
-            EMU ID => [means, sds]
+            EMU ID => [means, sds].
         sim_fluxes: dict
-            flux ID => simulated flux
+            Flux ID => simulated flux.
         exp_fluxes: dict
-            flux ID => [mean, sd]
+            Flux ID => [mean, sd].
         hessian: array
-            Hessian matrix at convergence
+            Hessian matrix at convergence.
         null_space: array
-            null space of stoichiometric matrix
+            Null space of stoichiometric matrix.
         transform_matrix: array
-            transform matrix from total fluxes to net fluxes
+            Transform matrix from total fluxes to net fluxes.
         sim_MDVs_der_u: array
-            derivative of simulated MDVs w.r.t. free fluxes
+            Derivative of simulated MDVs w.r.t. free fluxes.
         sim_fluxes_der_u: array
-            derivative of simualted fluxes w.r.t. free fluxes
+            Derivative of simualted fluxes w.r.t. free fluxes.
         exp_MDVs_inv_cov: array
-            inversed covariance matrix of measured MDVs
+            Inversed covariance matrix of measured MDVs.
         exp_fluxes_inv_cov: array
-            inversed covariance matrix of measured fluxes
+            Inversed covariance matrix of measured fluxes.
         is_success: bool
-            if optimization successful
+            Whether the optimization is successful.
         '''
         
         self._opt_total_fluxes = opt_total_fluxes
@@ -371,8 +446,9 @@ class FitResults():
         Actually, SSR < LB of chi square interval can be also considered as successful.
         
         Parameters
+        ----------
         confidence_level: float
-            confidence level, e.g. 0.95 as 95% confidence level
+            Confidence level, e.g. 0.95 as 95% confidence level.
         '''
         
         _chi2_test(self._opt_obj, self.dof, confidence_level)
@@ -383,10 +459,11 @@ class FitResults():
         This method performs normal probability plot for residuals.
         
         Parameters
+        ----------
         show_fig: bool
-            whether to show figure
+            Whether to show figure.
         output_dir: str
-            output directory 
+            Output directory. 
         '''
         
         _normal_probability(self.opt_resids, show_fig, output_dir)
@@ -397,10 +474,11 @@ class FitResults():
         This method plots simulated and measured MDVs.
         
         Parameters
+        ----------
         show_fig: bool
-            whether to show figure
+            Whether to show figure.
         output_dir: str
-            output directorys
+            Output directory.
         '''
         
         _simulated_vs_measured_MDVs(self.simulated_MDVs, self.measured_MDVs, show_fig, output_dir)
@@ -408,13 +486,14 @@ class FitResults():
         
     def plot_simulated_vs_measured_fluxes(self, show_fig = True, output_dir = None):
         '''
-        Parameters
         This method plots simulated and measured fluxes.
         
+        Parameters
+        ----------
         show_fig: bool
-            whether to show figure
+            Whether to show figure.
         output_dir: str
-            output directorys
+            Output directory.
         '''
         
         _simulated_vs_measured_fluxes(self.simulated_fluxes, self.measured_fluxes, show_fig, output_dir)
@@ -422,13 +501,15 @@ class FitResults():
     
     def estimate_confidence_intervals(self, which = 'net', confidence_level = 0.95):
         '''
-        This method calculates CI of net fluxes or total fluxes using local estimation.
+        This method calculates CI of net (total) fluxes using local estimation.
         
         Parameters
-        which: str
-            "net" representing net fluxes, and "total" representing total fluxes
+        ----------
+        which: {"net", "total"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
         confidence_level: float
-            confidence level, e.g. 0.95 as 95% confidence level    
+            Confidence level, e.g. 0.95 as 95% confidence level.    
         '''
         
         if which == 'net':
@@ -454,11 +535,13 @@ class FitResults():
 
     def estimate_contribution_matrix(self, which = 'net'):
         '''
-        This method calculates contribution matrix of measurement variance to total/net flux variance.
+        This method calculates contribution matrix of measurement variance to net (total) flux variance.
 
         Parameters
-        which: str
-            "net" representing net fluxes, "total" representing total fluxes
+        ----------
+        which: {"net", "total"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
         '''
 
         freeFluxesCov = pinv2(self.hessian)
@@ -489,11 +572,13 @@ class FitResults():
 
     def estimate_sensitivity(self, which = 'net'):
         '''
-        This method calculates sensitivity matrix of estimated total/net flux w.r.t. measurement changes
+        This method calculates sensitivity matrix of estimated net (total) flux w.r.t. measurement changes
         
         Parameters
-        which: str
-            "net" representing net fluxes, "total" representing total fluxes
+        ----------
+        which: {"net", "total"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
         '''
 
         freeFluxesCov = pinv2(self.hessian)
@@ -524,8 +609,9 @@ class FitResults():
     def _get_name_of_measurements(measured_MDVs):
         '''
         Parameters
+        ----------
         measured_MDVs: dict
-            EMU ID => [means, sds]
+            EMU ID => [means, sds].
         '''
 
         names = []
@@ -549,10 +635,11 @@ class FitMCResults():
     def __init__(self, total_fluxes_set, net_fluxes_set):
         '''
         Parameters
+        ----------
         total_fluxes_set: list of ser
-            set of optimal total fluxes
+            Set of optimal total fluxes.
         net_fluxes_set: list of ser
-            set of optimal net fluxes    
+            Set of optimal net fluxes.    
         '''
         
         self.total_fluxes_set = total_fluxes_set
@@ -564,10 +651,12 @@ class FitMCResults():
         This method estimates CI from a set of fluxes.
         
         Parameters
-        which: str
-            "net" representing net fluxes, and "total" representing total fluxes
+        ----------
+        which: {"net", "total"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
         confidence_level: float
-            confidence level, e.g. 0.95 as 95% confidence level    
+            Confidence level, e.g. 0.95 as 95% confidence level.    
         '''
         
         if which == 'net':
@@ -592,50 +681,93 @@ class FitMCResults():
         
         
 class InstFitResults(FitResults):
+    '''
+    Parameters
+    ----------
+    opt_total_fluxes: ser
+        Total fluxes at optimal objective.
+    opt_net_fluxes: ser
+        Net fluxes at optimal objective.
+    opt_concs: ser
+        Concentrations at optimal objective.
+    opt_obj: float
+        Optimal value of objective.
+    opt_resids: array
+        Optimal weighted residuals.
+    n_meas: int
+        # of measurements.
+    n_params: int
+        # of parameters.
+    sim_inst_MDVs: dict
+        EMU ID => {t => simulated MDV}.
+    exp_inst_MDVs: dict
+        EMU ID => {t => [means, sds]}.
+    sim_fluxes: dict
+        Flux ID => simulated flux.
+    exp_fluxes: dict
+        Flux ID => [mean, sd].
+    hessian: array
+        Hessian matrix at convergence.
+    null_space: array
+        Null space of stoichiometric matrix.
+    transform_matrix: array
+        Transform matrix from total fluxes to net fluxes.
+    sim_inst_MDVs_der_u: array
+        Derivative of simulated MDVs w.r.t. free fluxes.
+    sim_fluxes_der_u: array
+        Derivative of simualted fluxes w.r.t. free fluxes.
+    exp_inst_MDVs_inv_cov: array
+        Inversed covariance matrix of measured MDVs.
+    exp_fluxes_inv_cov: array
+        Inversed covariance matrix of measured fluxes.
+    is_success: bool
+        Whether the optimization is successful.
+    '''
     
     def __init__(self, opt_total_fluxes, opt_net_fluxes, opt_concs, opt_obj, opt_resids, n_meas, n_params, 
                  sim_inst_MDVs, exp_inst_MDVs, sim_fluxes, exp_fluxes, hessian, null_space, transform_matrix,
                  sim_inst_MDVs_der_u, sim_fluxes_der_u, exp_inst_MDVs_inv_cov, exp_fluxes_inv_cov, is_success):
         '''
         Parameters
+        ----------
         opt_total_fluxes: ser
-            total fluxes at optimal objective
+            Total fluxes at optimal objective.
         opt_net_fluxes: ser
-            net fluxes at optimal objective
+            Net fluxes at optimal objective.
         opt_concs: ser
-            concentrations at optimal objective
+            Concentrations at optimal objective.
         opt_obj: float
-            optimal value of objective
+            Optimal value of objective.
         opt_resids: array
-            optimal weighted residuals
+            Optimal weighted residuals.
         n_meas: int
-            # of measurements
+            # of measurements.
         n_params: int
-            # of parameters
+            # of parameters.
         sim_inst_MDVs: dict
-            EMU ID => {t => simulated MDV}
+            EMU ID => {t => simulated MDV}.
         exp_inst_MDVs: dict
-            EMU ID => {t => [means, sds]}
+            EMU ID => {t => [means, sds]}.
         sim_fluxes: dict
-            flux ID => simulated flux
+            Flux ID => simulated flux.
         exp_fluxes: dict
-            flux ID => [mean, sd]
+            Flux ID => [mean, sd].
         hessian: array
-            Hessian matrix at convergence
+            Hessian matrix at convergence.
         null_space: array
-            null space of stoichiometric matrix
+            Null space of stoichiometric matrix.
         transform_matrix: array
-            transform matrix from total fluxes to net fluxes
+            Transform matrix from total fluxes to net fluxes.
         sim_inst_MDVs_der_u: array
-            derivative of simulated MDVs w.r.t. free fluxes
+            Derivative of simulated MDVs w.r.t. free fluxes.
         sim_fluxes_der_u: array
-            derivative of simualted fluxes w.r.t. free fluxes
+            Derivative of simualted fluxes w.r.t. free fluxes.
         exp_inst_MDVs_inv_cov: array
-            inversed covariance matrix of measured MDVs
+            Inversed covariance matrix of measured MDVs.
         exp_fluxes_inv_cov: array
-            inversed covariance matrix of measured fluxes
+            Inversed covariance matrix of measured fluxes.
         is_success: bool
-            if optimization successful    
+            Whether the optimization is successful.
         '''
         
         self._opt_total_fluxes = opt_total_fluxes
@@ -677,10 +809,11 @@ class InstFitResults(FitResults):
         This method plots simulated and measured MDVs.
         
         Parameters
+        ----------
         show_fig: bool
-            whether to show figure
+            Whether to show figure.
         output_dir: str
-            output directorys
+            Output directory.
         '''
         
         _simulated_vs_measured_inst_MDVs(self.simulated_inst_MDVs, self.measured_inst_MDVs, 
@@ -692,11 +825,13 @@ class InstFitResults(FitResults):
         This method calculates CI of fluxes and concentrations using local estimation.
         
         Parameters
-        which: str
-            "net" representing net fluxes, "total" representing total fluxes and
-            "conc" representing concentrations
+        ----------
+        which: {"net", "total", "conc"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
+            * "conc" if concentrations.
         confidence_level: float
-            confidence level, e.g. 0.95 as 95% confidence level    
+            Confidence level, e.g. 0.95 as 95% confidence level.    
         '''
         
         if which == 'net':
@@ -733,11 +868,13 @@ class InstFitResults(FitResults):
 
     def estimate_contribution_matrix(self, which = 'net'):
         '''
-        This method calculates contribution matrix of measurement variance to total/net flux variance.
+        This method calculates contribution matrix of measurement variance to net (total) flux variance.
 
         Parameters
-        which: str
-            "net" representing net fluxes, "total" representing total fluxes
+        ----------
+        which: {"net", "total"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
         '''
 
         fluxHessian = self.hessian[:self.n_free_fluxes,:self.n_free_fluxes]
@@ -769,11 +906,13 @@ class InstFitResults(FitResults):
 
     def estimate_sensitivity(self, which = 'net'):
         '''
-        This method calculates sensitivity matrix of estimated total/net flux w.r.t. measurement changes
+        This method calculates sensitivity matrix of estimated net (total) flux w.r.t. measurement changes.
         
         Parameters
-        which: str
-            "net" representing net fluxes, "total" representing total fluxes
+        ----------
+        which: {"net", "total"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
         '''
 
         fluxHessian = self.hessian[:self.n_free_fluxes,:self.n_free_fluxes]
@@ -805,8 +944,9 @@ class InstFitResults(FitResults):
     def _get_name_of_measurements(measured_MDVs):
         '''
         Parameters
+        ----------
         measured_MDVs: dict
-            EMU ID => {t => [means, sds]}
+            EMU ID => {t => [means, sds]}.
         '''
 
         names = []
@@ -823,16 +963,27 @@ class InstFitResults(FitResults):
 
 
 class InstFitMCResults(FitMCResults):
+    '''
+    Parameters
+    ----------
+    total_fluxes_set: list of ser
+        Set of optimal total fluxes.
+    net_fluxes_set: list of ser
+        Set of optimal net fluxes.
+    concs_set: list of ser
+        Set of optimal concentrations.
+    '''
     
     def __init__(self, total_fluxes_set, net_fluxes_set, concs_set):
         '''
         Parameters
+        ----------
         total_fluxes_set: list of ser
-            set of optimal total fluxes
+            Set of optimal total fluxes.
         net_fluxes_set: list of ser
-            set of optimal net fluxes
+            Set of optimal net fluxes.
         concs_set: list of ser
-            set of optimal concentrations
+            Set of optimal concentrations.
         '''
         
         super().__init__(total_fluxes_set, net_fluxes_set)
@@ -845,11 +996,13 @@ class InstFitMCResults(FitMCResults):
         This method estimates CI from a set of fluxes.
         
         Parameters
-        which: str
-            "net" representing net fluxes, "total" representing total fluxes and
-            "conc" representing concentrations
+        ----------
+        which: {"net", "total", "conc"}
+            * "net" if net fluxes.
+            * "total" if total fluxes.
+            * "conc" if concentrations.
         confidence_level: float
-            confidence level, e.g. 0.95 as 95% confidence level    
+            Confidence level, e.g. 0.95 as 95% confidence level.    
         '''
 
         if which == 'net':

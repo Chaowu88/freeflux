@@ -31,40 +31,58 @@ natAbuns = {'H': [0.999885, 0.000115],
 
 class MDV():
     '''
-    MDV can be built base on H, C, N, O, Si, and S by setting base_atom
+    MDV class defines MDV (i.e., mass isotopomer distribution vector) object and its operations.
+
+    In addition to C, MDV can be built base on H, N, O, Si, and S.
     
-    Convolution between mdv1 and mdv2 is implemented by mdv1.conv(mdv2) or mdv1 * mdv2 or mdv.conv(mdv1, mdv2)
+    Convolution between mdv1 and mdv2 can be performed by 
+        * mdv1.conv(mdv2)
+        * mdv1*mdv2
+        * mdv.conv(mdv1, mdv2)
     
-    The zero element for convolution is MDV([0]), and the one element is MDV([1])
+    The zero element for convolution is MDV([0]), and the identity element is MDV([1]).
     
-    Scalar multiplication is implemented by a * mdv, and MDV addition by mdv1 + mdv2, in these
-    cases the resulting MDV are not automatically normalized
+    Scalar multiplication (a*mdv) and MDV addition (mdv1 + mdv2) are supported.
+    In these cases, the resulting MDV are not automatically normalized.
     
-    Attribute
+    Parameters
+    ----------
+    fractions: list or array
+        MDV vector.
+    nonnegative: bool
+        Whether to keep the elements >= 0.
+    normalize: bool
+        Whether to normalize MDV vector to ensure the sum == 1.
+    base_atom: str
+        Base atom for MDV.
+            
+    Attributes
+    ----------
     value: array
-        MDV vector
+        MDV vector.
     
     n_atoms: int
-        # of atom (fragment length)
+        # of atom.
     
     base_atom: str
-        base atom for MDV
+        Base atom for MDV.
     
     fl: float
-        fractional labeling
+        Fractional labeling.
     '''
     
     def __init__(self, fractions, nonnegative = True, normalize = True, base_atom = 'C'):
         '''
         Parameters
+        ----------
         fractions: list or array
-            MDV vector
+            MDV vector.
         nonnegative: bool
-            keep the elements >= 0
+            Whether to keep the elements >= 0.
         normalize: bool
-            normalize MDV vector to ensure the sum == 1
+            Whether to normalize MDV vector to ensure the sum == 1.
         base_atom: str
-            base atom for MDV
+            Base atom for MDV.
         '''
         
         self.value = np.array(fractions)
@@ -86,8 +104,9 @@ class MDV():
     def __getitem__(self, key):
         '''
         Parameters
+        ----------
         key: int or slice
-            index
+            Index.
         '''
         
         return self.value[key]
@@ -101,6 +120,7 @@ class MDV():
     def conv(self, mdv):
         '''
         Parameters
+        ----------
         mdv: list or array or MDV 
         '''
         
@@ -133,6 +153,7 @@ class MDV():
     def __mul__(self, other):
         '''
         Parameters
+        ----------
         other: scalar, list, array or MDV
         '''
         
@@ -147,6 +168,7 @@ class MDV():
     def __rmul__(self, other):
         '''
         Parameters
+        ----------
         other: MDV
         '''
         
@@ -156,6 +178,7 @@ class MDV():
     def __add__(self, other):
         '''
         Parameters
+        ----------
         other: MDV
         '''
         
@@ -168,6 +191,7 @@ class MDV():
     def __radd__(self, other):
         '''
         Parameters
+        ----------
         other: MDV
         '''
         
@@ -177,10 +201,11 @@ class MDV():
     def _correction_matrix(self, X, n_Xs):
         '''
         Parameters
+        ----------
         X: str
-            of which element the correction matrix will be generated
+            Which element the correction matrix will be generated for.
         n_Xs: int
-            # of X atoms in metabolite or metabolite fragment, these atoms will be corrected
+            # of X atoms in metabolite or metabolite fragment, these atoms will be corrected.
         '''
         
         corrMat = np.zeros((self.n_atoms+1, self.n_atoms+1))
@@ -200,9 +225,9 @@ class MDV():
     def correct_for_natural_abundance(self, atom_dict):
         '''
         Parameters
+        ----------
         atom_dict: dict
-            keys are the element needed to correct, values are the # of corresponding atoms in metabolite 
-            or metabolite fragment
+            element needs to be corrected => # of corresponding atoms in metabolite (fragment).
         '''
         
         corrMat = np.eye(self.n_atoms+1)
@@ -218,8 +243,9 @@ class MDV():
     def correct_for_inoculum(self, fraction):
         '''
         Parameters
+        ----------
         fraction: float in [0, 1]
-            fraction of inoculum in total biomass
+            Fraction of inoculum in biomass measured.
         '''
         
         natMDV = get_natural_MDV(self.n_atoms, base_atom = self.base_atom)
@@ -252,16 +278,19 @@ class MDV():
     
 def _isotopomer_combination(n_atoms, n_natural_isotops):
     '''
-    Parameters    
+    Parameters
+    ----------    
     n_atoms: int
-        # of atoms
+        # of atoms.
     n_natural_isotops: int
-        # of natural isotopmers
+        # of natural isotopmers.
     
     Returns
+    -------
     combs2: dict
     
     Example
+    -------
     >>> _isotopomer_combination(2, 3)
     OrderedDict([(0, [Counter({0: 2})]), (1, [Counter({0: 1, 1: 1})]), (2, [Counter({0: 1, 2: 1}), 
     Counter({1: 2})]), (3, [Counter({1: 1, 2: 1})]), (4, [Counter({2: 2})])])
@@ -284,10 +313,11 @@ def _isotopomer_combination(n_atoms, n_natural_isotops):
 def get_natural_MDV(n_atoms, base_atom = 'C'):
     '''
     Parameters
+    ----------
     n_atoms: int
-        # of atoms
+        # of atoms.
     base_atom: str
-        base atom for MDV
+        Base atom for MDV.
     '''
     
     natAbun = natAbuns[base_atom]
@@ -311,25 +341,36 @@ def get_natural_MDV(n_atoms, base_atom = 'C'):
 
 def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
     '''
-    currently, the function is only applicable in C labeled substrate
+    Currently, this function only supports C-labeled substrate.
     
     Parameters
+    ----------
     atom_nos: list of int
-        atom NOs 
+        Atom NOs. 
     labeling_pattern: str or list of str
-        labeling pattern of substrate, '0' for unlabeled atom, '1' for labeled atom, 
-        e.g. '100000' for 1-13C glucose; list if multiple tracers are used. 
-        natural substrate (all '0') don't need to be explicitly set
-        if str, labeling_pattern should not be natural substrate
+        Labeling pattern of substrate, '0' for unlabeled atom, '1' for labeled atom, 
+        e.g., '100000' for 1-13C glucose. 
+        
+        List if tracer with multiple labeling patterns are used. 
+        
+        Natural substrate (with all '0's) don't need to be explicitly set.
+        
+        If str, labeling_pattern should not be natural substrate.
     percentage: float or list of float
-        molar percentage of corresponding tracer, list if multiple tracers are used. 
-        sum of percentage should be <= 1, and the rest will be considered as natural substrate.
-        if list, len(percentage) should be equal to len(labeling_pattern)
-        if float, labeling_pattern should not be natural substrate
+        Molar percentage (in range of [0,1]) of corresponding tracer. 
+        Sum of percentage should be <= 1, and the rest will be considered as natural substrate.
+        
+        List if tracer with multiple labeling patterns are used. 
+        
+        * If list, len(percentage) should be equal to len(labeling_pattern).
+        * If float, labeling_pattern should not be natural substrate.
     purity: float or list of float
-        labeled atom purity of corresponding tracer, list if multiple tracers are used
-        if list, len(purity) should be equal to len(labeling_pattern)
-        if float, labeling_pattern should not be natural substrate
+        Labeled atom purity (in range of [0,1]) of corresponding tracer.
+            
+        List if tracer with multiple labeling patterns are used.
+
+        * If list, len(purity) should be equal to len(labeling_pattern).
+        * If float, labeling_pattern should not be natural substrate.
     '''
     
     if not isinstance(labeling_pattern, list):
@@ -374,8 +415,9 @@ def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
 def gen_conv(arr1, arr2):
     '''
     Parameters
+    ----------
     arr1, arr2: list or array
-        if one of the arrs is 2-D, the function performs 2-D convolution of MDV (or array) and MDV derivative
+        If one of the arrs is 2-D, the function performs 2-D convolution of MDV (array) and MDV derivative.
     '''
     
     nAtoms1 = len(arr1) - 1
@@ -400,9 +442,12 @@ def gen_conv(arr1, arr2):
 def conv(mdv1, mdv2):
     '''
     Parameters
-    mdv1, mdv2: list or array or MDV
+    ----------
+    mdv1: list or array or MDV
+    mdv2: list or array or MDV
     
     Returns
+    -------
     mdv: MDV
     '''
     
@@ -418,12 +463,17 @@ def conv(mdv1, mdv2):
 def diff_conv(mdv_mdvder1, mdv_mdvder2):
     '''
     Parameters
-    mdv_mdvder1, mdv_mdvder2: 2-list of arrays
+    ----------
+    mdv_mdvder1: 2-list of arrays
+        namely [MDV, MDVder], MDVder in shape of (len(MDV), len(v))
+    mdv_mdvder2:: 2-list of arrays
         namely [MDV, MDVder], MDVder in shape of (len(MDV), len(v))
         
     Returns
+    -------
     mdv: array
-    mdvder: 2-D array in shape of (len(MDV), len(v))
+    mdvder: 2-D array
+        In shape of (len(MDV), len(v)).
     '''
     
     mdv1, mdvder1 = mdv_mdvder1
@@ -439,4 +489,3 @@ def diff_conv(mdv_mdvder1, mdv_mdvder2):
     mdvder = gen_conv(mdv1, mdvder2) + gen_conv(mdv2, mdvder1)
     
     return mdv, mdvder
-

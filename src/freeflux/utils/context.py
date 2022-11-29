@@ -18,8 +18,9 @@ class Context():
     def add_undo(self, op):
         '''
         Parameters
+        ----------
         op: callable
-            operation to reset the model
+            Operation to reset the model.
         '''
         
         self.operations.append(op)
@@ -30,8 +31,3 @@ class Context():
         while self.operations:
             op = self.operations.pop()
             op()
-
-
-
-
-
