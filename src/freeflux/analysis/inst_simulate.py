@@ -21,18 +21,20 @@ from time import time#!!!
 
 class InstSimulator(Simulator):
     '''
-    fluxes in unit of umol/gCDW/s if concentrations in unit of umol/gCDW and timepoints in unit of s
+    Provided fluxes should be in the unit of umol/gCDW/s if concentrations in the unit of 
+    umol/gCDW and timepoints in the unit of s.
     '''
     
     def set_concentration(self, metabid, value):
         '''
-        set metabolite concentration in unit of umol/gCDW
+        Set metabolite concentration in unit of umol/gCDW.
         
         Parameters
+        ----------
         metabid: str
-            metabolite ID
+            Metabolite ID.
         value: float
-            intracellular concentration
+            Intracellular concentration.
         '''
         
         self.model.concentrations[metabid] = value
@@ -44,11 +46,12 @@ class InstSimulator(Simulator):
         
     def set_concentrations_from_file(self, file):
         '''
-        read metabolite concentrations (umol/gCDW) from file
+        Read metabolite concentrations (umol/gCDW) from file.
         
         Parameters
+        ----------
         file: file path
-            tsv or excel file, fields are metabolite ID and value
+            tsv or excel file with fields "metabolite_ID" and "value".
         '''
         
         concs = read_preset_values_from_file(file)
@@ -64,8 +67,9 @@ class InstSimulator(Simulator):
     def _unset_concentrations(self, metabids):
         '''
         Parameters
+        ----------
         metabids: str or list of str
-            metabolite ID(s)
+            Metabolite ID(s).
         '''
         
         if not isinstance(metabids, Iterable):
@@ -78,11 +82,11 @@ class InstSimulator(Simulator):
                 
     def set_timepoints(self, timepoints):
         '''
-        set timepoints in unit of s
+        Set timepoints in unit of s.
         
         Parameters
         timepoints: list of float
-            timepoints when MDVs will be simulated
+            Timepoints when MDVs are simulated.
         '''
         
         self.model.timepoints = sorted(set(self.model.timepoints + timepoints))
@@ -162,8 +166,9 @@ class InstSimulator(Simulator):
     def prepare(self, n_jobs = 1):
         '''
         Parameters
+        ----------
         n_jobs: int
-            if n_jobs > 1, decomposition job will run in parallel
+            If n_jobs > 1, decomposition job will run in parallel.
         '''
         
         # network decomposition
@@ -212,9 +217,9 @@ class InstSimulator(Simulator):
     def simulate(self):
         '''
         Returns
-        instTargetMDVs: dict
-            keys are request EMU IDs, values are dict of which keys are measurement timepoints,
-            values are simulated MDVs
+        -------
+        instTargetMDVs: dict of dict
+           EMU IDs => {measurement timepoints => simulated MDVs}
         '''
         
         simInstMDVs = self.calculator._calculate_inst_MDVs()
@@ -226,4 +231,3 @@ class InstSimulator(Simulator):
             targetInstMDVs[emuid] = instMDVs
         
         return InstSimResults(targetInstMDVs)
-        

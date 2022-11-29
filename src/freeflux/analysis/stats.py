@@ -21,12 +21,13 @@ import matplotlib.pyplot as plt
 def _chi2_test(obj_value, dof, confidence_level):
     '''
     Parameters
+    ----------
     obj_value: float
-        objective value
+        Objective value.
     dof: int
-        degree of freedom
+        Degree of freedom.
     confidence_level: float
-        confidence level, e.g. 0.95 as 95% confidence level
+        Confidence level, e.g., 0.95 as 95% confidence level.
     '''
     
     chi2Lb = chi2.ppf((1-confidence_level)/2, dof)
@@ -45,12 +46,13 @@ def _chi2_test(obj_value, dof, confidence_level):
 def _normal_probability(resids, show_fig, output_dir):
     '''
     Parameters
+    ----------
     resids: array
-        residuals
+        Residuals.
     show_fig: bool
-        whether to show figure
+        Whether to show figure.
     output_dir: str
-        output directory
+        Output directory.
     '''
     
     probplot(resids, plot = plt)
@@ -74,24 +76,25 @@ def _simulated_vs_measured_measurements(sim_meas, exp_meas, exp_meas_err, xlabel
                                         xticklabels, filename, show_fig, output_dir):
     '''
     Parameters
+    ----------
     sim_meas: array or list
-        simulated measurements
+        Simulated measurements.
     exp_meas: array or list
-        measured measurements
+        Measured measurements.
     exp_meas_err: array or list
-        error of measured measurements
+        Errors of measured measurements.
     xlabel: str
-        xlabel
+        Xlabel.
     ylabel: str
-        ylabel
+        Ylabel.
     xticklabels: array or list
-        xticklabels
+        Xticklabels.
     filename: str
-        file name    
+        File name.    
     show_fig: bool
-        whether to show figure
+        Whether to show figure.
     output_dir: str
-        output directory
+        Output directory.
     '''
     
     sim_meas = np.array(sim_meas)
@@ -125,14 +128,15 @@ def _simulated_vs_measured_measurements(sim_meas, exp_meas, exp_meas_err, xlabel
 def _simulated_vs_measured_MDVs(simulated_MDVs, measured_MDVs, show_fig, output_dir):
     '''
     Parameters
+    ----------
     simulated_MDVs: dict
-        EMU ID => simulated MDV
+        EMU ID => simulated MDV.
     measured_MDVs: dict
-        EMU ID => [means, sds]
+        EMU ID => [means, sds].
     show_fig: bool
-        whether to show figure
+        Whether to show figure.
     output_dir: str
-        output directory    
+        Output directory.    
     '''
     
     for emuid in measured_MDVs:
@@ -146,14 +150,15 @@ def _simulated_vs_measured_MDVs(simulated_MDVs, measured_MDVs, show_fig, output_
 def _simulated_vs_measured_fluxes(simulated_fluxes, measured_fluxes, show_fig, output_dir):
     '''
     Parameters
+    ----------
     simulated_fluxes: dict
-        flux ID => simulated flux
+        Flux ID => simulated flux.
     measured_fluxes: dict
-        flux ID => [mean, sd]
+        Flux ID => [mean, sd].
     show_fig: bool
-        whether to show figure
+        Whether to show figure.
     output_dir: str
-        output directory
+        Output directory.
     '''
     
     simFluxes = []
@@ -175,17 +180,18 @@ def _simulated_vs_measured_fluxes(simulated_fluxes, measured_fluxes, show_fig, o
 def _confidence_intervals_le(res, irr, cov, dof, confidence_level):
     '''
     Parameters
+    ----------
     res: ser
-        optimal results, e.g., net fluxes, total fluxes or concentrations
+        Optimal results, e.g., net fluxes, total fluxes or concentrations.
     irr: list
-        irreversible items, total fluxes and concentrations are all deemed
-        irreversible
+        Irreversible items. total fluxes and concentrations are all considered
+        irreversible.
     cov: array
-        corvariance matrix of free fluxes obtained from hessian at convergence
+        Corvariance matrix of free fluxes obtained from hessian at convergence.
     dof: int
-        degree of freedom
+        Degree of freedom.
     confidence_level: float
-        confidence level, e.g. 0.95 as 95% confidence level
+        Confidence level, e.g., 0.95 as 95% confidence level.
     '''
     
     #errors = t.ppf((1+confidence_level)/2, dof)*np.diag(cov)**0.5
@@ -206,13 +212,14 @@ def _confidence_intervals_le(res, irr, cov, dof, confidence_level):
 def _confidence_intervals_mc(res_set, irr, confidence_level):
     '''
     Parameters
+    ----------
     res_set: list of ser
-        set of optimal net fluxes, total fluxes or concentrations
+        Set of optimal net fluxes. Total fluxes or concentrations.
     irr: list
-        irreversible items, total fluxes and concentrations are all deemed
-        irreversible
+        Irreversible items. Total fluxes and concentrations are all considered
+        irreversible.
     confidence_level: float
-        confidence level, e.g. 0.95 as 95% confidence level
+        Confidence level, e.g., 0.95 as 95% confidence level.
     '''
     
     resSet = pd.DataFrame(res_set)
@@ -238,14 +245,15 @@ def _confidence_intervals_mc(res_set, irr, confidence_level):
 def _MDV_kinetics(emuid, simulated_inst_MDVs, show_fig, output_dir):
     '''
     Parameters
+    ----------
     emuid: str
-        EMU ID
+        EMU ID.
     simulated_inst_MDVs: dict
-        timepoint => MDV
+        Timepoint => MDV.
     show_fig: bool
-        whether to show figure
+        Whether to show figure.
     output_dir: str
-        output directory
+        Output directory.
     '''
     
     tpoints = sorted(simulated_inst_MDVs)
@@ -274,14 +282,15 @@ def _MDV_kinetics(emuid, simulated_inst_MDVs, show_fig, output_dir):
 def _simulated_vs_measured_inst_MDVs(simulated_inst_MDVs, measured_inst_MDVs, show_fig, output_dir):
     '''
     Parameters
+    ----------
     simulated_inst_MDVs: dict
-        EMU ID => {t => simulated MDV}
+        EMU ID => {t => simulated MDV}.
     measured_inst_MDVs: dict
-        EMU ID => {t => [means, sds]}
+        EMU ID => {t => [means, sds]}.
     show_fig: bool
-        whether to show figure
+        Whether to show figure.
     output_dir: str
-        output directory
+        Output directory.
     '''
     
     for emuid in measured_inst_MDVs:
@@ -332,15 +341,16 @@ def _simulated_vs_measured_inst_MDVs(simulated_inst_MDVs, measured_inst_MDVs, sh
 def _contribution_matrix(cov, trans_mat, simulated_der, measured_cov):
     '''
     Parameters
+    ----------
     cov: array
-        corvariance matrix of free fluxes obtained from hessian at convergence
+        Corvariance matrix of free fluxes obtained from hessian at convergence.
     trans_mat: array
-        transformation matrix from free flux to total flux or net flux, i.e.,
-        N for total flux, T@N for net flux
+        Transformation matrix from free flux to total flux or net flux, i.e.,
+        N to total flux, T@N to net flux.
     simulated_der: array
-        derivative of simulated measurements w.r.t. free fluxes
+        Derivative of simulated measurements w.r.t. free fluxes.
     measured_cov: array
-        corvariance matrix of measurements
+        Corvariance matrix of measurements.
     '''
 
     fluxesCov = trans_mat@cov@trans_mat.T
@@ -357,16 +367,16 @@ def _contribution_matrix(cov, trans_mat, simulated_der, measured_cov):
 def _sensitivity(cov, trans_mat, simulated_der, measured_inv_cov):
     '''
     Parameters
+    ----------
     cov: array
-        corvariance matrix of free fluxes obtained from hessian at convergence
+        Corvariance matrix of free fluxes obtained from hessian at convergence.
     trans_mat: array
-        transformation matrix from free flux to total flux or net flux, i.e.,
-        N for total flux, T@N for net flux
+        Transformation matrix from free flux to total flux or net flux, i.e.,
+        N to total flux, T@N to net flux.
     simulated_der: array
-        derivative of simulated measurements w.r.t. free fluxes
+        Derivative of simulated measurements w.r.t. free fluxes.
     measured_inv_cov: array
-        inversed corvariance matrix of measurements
+        Inversed corvariance matrix of measurements.
     '''
 
     return trans_mat@cov@simulated_der.T@measured_inv_cov
-

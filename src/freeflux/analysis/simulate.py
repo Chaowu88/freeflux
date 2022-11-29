@@ -22,11 +22,19 @@ from time import time
 
 
 class Simulator():
+    '''
+    Parameters
+    ----------
+    model: Model
+        Freeflux Model.
+    '''
     
     def __init__(self, model):
         '''
         Parameters
+        ----------
         model: Model
+            Freeflux Model.
         '''
         
         self.model = model
@@ -50,9 +58,10 @@ class Simulator():
     def set_target_EMUs(self, target_emus):
         '''
         Parameters
+        ----------
         target_emus: dict
-            metabolite ID => atom NOs or list of atom NOs, atom NOs can be int list or str, 
-            e.g. {'Ala': [[1,2,3], [2,3]], 'Ser': '123'}
+            Metabolite ID => atom NOs or list of atom NOs. Atom NOs can be int list or str, 
+            e.g.,, {'Ala': [[1,2,3], [2,3]], 'Ser': '123'}.
         '''
         
         emuids = []
@@ -89,25 +98,36 @@ class Simulator():
         
     def set_labeling_strategy(self, labeled_substrate, labeling_pattern, percentage, purity):
         '''
-        use this method for every substrate tracer
+        Use this method for every substrate tracer.
         
         Parameters
+        ----------
         labeled_substrate: str
-            metabolite ID
+            Metabolite ID.
         labeling_pattern: str or list of str
-            labeling pattern of substrate, '0' for unlabeled atom, '1' for labeled atom, 
-            e.g. '100000' for 1-13C glucose; list if multiple tracers are used. 
-            natural substrate (all '0') don't need to be explicitly set
-            if str, labeling_pattern should not be natural substrate
+            Labeling pattern of substrate, '0' for unlabeled atom, '1' for labeled atom, 
+            e.g., '100000' for 1-13C glucose. 
+            
+            List if tracer with multiple labeling patterns are used. 
+            
+            Natural substrate (with all '0's) don't need to be explicitly set.
+            
+            If str, labeling_pattern should not be natural substrate.
         percentage: float or list of float
-            molar percentage of corresponding tracer, list if multiple tracers are used. 
-            sum of percentage should be <= 1, and the rest will be considered as natural substrate.
-            if list, len(percentage) should be equal to len(labeling_pattern)
-            if float, labeling_pattern should not be natural substrate
+            Molar percentage (in range of [0,1]) of corresponding tracer. 
+            Sum of percentage should be <= 1, and the rest will be considered as natural substrate.
+            
+            List if tracer with multiple labeling patterns are used. 
+            
+            * If list, len(percentage) should be equal to len(labeling_pattern).
+            * If float, labeling_pattern should not be natural substrate.
         purity: float or list of float
-            labeled atom purity of corresponding tracer, list if multiple tracers are used
-            if list, len(purity) should be equal to len(labeling_pattern)
-            if float, labeling_pattern should not be natural substrate
+            Labeled atom purity (in range of [0,1]) of corresponding tracer.
+            
+            List if tracer with multiple labeling patterns are used.
+
+            * If list, len(purity) should be equal to len(labeling_pattern).
+            * If float, labeling_pattern should not be natural substrate.
         '''
     
         self.model.labeling_strategy[labeled_substrate] = [labeling_pattern, percentage, purity]
@@ -120,8 +140,9 @@ class Simulator():
     def _unset_labeling_strategy(self, labeled_substrate):
         '''
         Parameters
+        ----------
         labeled_substrate: str
-            metabolite ID
+            Metabolite ID.
         '''
         
         if labeled_substrate in self.model.labeling_strategy:
@@ -130,14 +151,15 @@ class Simulator():
     
     def set_flux(self, fluxid, value):
         '''
-        set metabolic flux
+        Set metabolic flux value.
         
         Parameters
+        ----------
         fluxid: str 
-            flux IDs, i.e. reaction ID + '_f' or '_b' for reversible reaction, 
-            reaction ID for irreversible reaction
+            Flux IDs, i.e., reaction ID + '_f' or '_b' for reversible reaction, 
+            and reaction ID for irreversible reaction.
         value: float
-            flux value
+            Flux value.
         '''
         
         self.model.total_fluxes[fluxid] = value
@@ -149,13 +171,14 @@ class Simulator():
     
     def set_fluxes_from_file(self, file):
         '''
-        read metabolic fluxes from file
+        Read metabolic flux values from file.
         
         Parameters
+        ----------
         file: file path
             tsv or excel file, fields are flux ID and value, 
             flux ID is reaction ID + '_f' or '_b' for reversible reaction, 
-            and reaction ID for irreversible reaction
+            and reaction ID for irreversible reaction.
         '''
         
         fluxes = read_preset_values_from_file(file)
@@ -171,8 +194,9 @@ class Simulator():
     def _unset_fluxes(self, fluxids):
         '''
         Parameters
+        ----------
         fluxids: str or list of str
-            flux ID(s)
+            Flux ID(s).
         '''
         
         if not isinstance(fluxids, Iterable):
@@ -186,10 +210,11 @@ class Simulator():
     def _decompose_network(self, n_jobs, lump = True):
         '''
         Parameters
+        ----------
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
         lump: bool
-            whether to lump linear EMUs
+            Whether to lump linear EMUs.
         '''
         
         if not self.model.target_EMUs:
@@ -239,8 +264,9 @@ class Simulator():
     def _calculate_substrate_MDVs(self, extra_subs = None):
         '''
         Parameters
+        ----------
         extra_subs: str or list of str
-            metabolite ID(s), additional metabolites considered as substrates
+            Metabolite ID(s). Additional metabolites that are considered as substrates.
         '''
 
         if extra_subs is not None and not isinstance(extra_subs, list):
@@ -262,8 +288,9 @@ class Simulator():
     def prepare(self, n_jobs = 1):
         '''
         Parameters
+        ----------
         n_jobs: int
-            if n_jobs > 1, decomposition job will run in parallel
+            If n_jobs > 1, decomposition job will run in parallel.
         '''
         
         # network decomposition

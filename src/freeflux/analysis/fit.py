@@ -75,8 +75,8 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         file: file path
-            tsv or excel file with fields "fragmentid", "mean" and "sd". 
-            "fragmentid" is metabolite ID + "_" + atom NOs, e.g., 'Glu_12345'; 
+            tsv or excel file with fields "fragment_ID", "mean" and "sd". 
+            "fragment_ID" is metabolite ID + "_" + atom NOs, e.g., 'Glu_12345'; 
             "mean" and "sd" are the mean and standard deviation of MDV with 
             element seperated by ",".
 
@@ -139,8 +139,8 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         file: file path
-            tsv or excel file, fields are "fluxid", "mean" and "sd".
-            "fluxid" is reaction ID, typically measured fluxes are substrate 
+            tsv or excel file with fields "reaction_ID", "mean" and "sd".
+            "reaction_ID" is reaction ID, typically measured fluxes are substrate 
             consumption, product formation or cell growth, etc. They should be irreversible;
             "mean" and "sd" are the mean and standard deviation of measured flux.
 
@@ -211,7 +211,7 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         fluxid: str or 'all'
-            flux ID, i.e., reaction ID. Since forward and backward fluxes of 
+            Flux ID, i.e., reaction ID. Since forward and backward fluxes of 
             reversible reaction are usually unknown, the method is used to set 
             the range of net fluxes.
             

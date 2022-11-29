@@ -38,7 +38,7 @@ class InstFitter(Fitter, InstSimulator):
         Parameters
         ----------
         fragmentid: str
-            Metabolite ID + '_' + atom NOs, e.g. 'Glu_12345'.
+            Metabolite ID + '_' + atom NOs, e.g., 'Glu_12345'.
         timepoints: float or list of float
             Timepoint(s).
         means: array or list of array
@@ -67,10 +67,12 @@ class InstFitter(Fitter, InstSimulator):
         Parameters
         ----------
         file: file path
-            Path of tsv or excel file with fields "fragmentid", "time", "mean" and "sd".
-            "fragmentid" is metabolite ID + '_' + atom NOs, e.g. 'Glu_12345';
+            Path of tsv or excel file with fields "fragment_ID", "time", "mean" and "sd".
+            "fragment_ID" is metabolite ID + '_' + atom NOs, e.g., 'Glu_12345';
             "time" is timepoint when MDVs are measured (while some timepoints could be missing);
             "mean" and "sd" are the mean and standard deviation of MDV with element seperated by ','.
+
+            Header line starts with "#", and will be skiped.
         '''
         
         measMDVs = read_measurements_from_file(file, inst_data = True)
