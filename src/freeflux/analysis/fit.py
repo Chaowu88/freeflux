@@ -30,14 +30,16 @@ class Fitter(Optimizer, Simulator):
     '''
     Parameters
     ----------
-    model: freeflux Model
+    model: Model
+        Freeflux Model.
     '''
     
     def __init__(self, model):
         '''
         Parameters
         ----------
-        model: freeflux Model
+        model: Model
+            Freeflux Model.
         '''
         
         super().__init__(model)
@@ -47,16 +49,16 @@ class Fitter(Optimizer, Simulator):
     
     def set_measured_MDV(self, fragmentid, mean, sd):
         '''
-        Set measured MDV
+        Set measured MDV.
         
         Parameters
         ----------
         fragmentid: str
-            Metabolite ID + "_" + atom NOs, e.g., "Glu_12345"
+            Metabolite ID + "_" + atom NOs, e.g., "Glu_12345".
         mean: array
-            Means of measured MDV vector
+            Means of measured MDV vector.
         sd: array
-            Standard deviations of measured MDV vector
+            Standard deviations of measured MDV vector.
         '''
         
         self.model.measured_MDVs[fragmentid] = [np.array(mean), np.array(sd)]
@@ -68,16 +70,17 @@ class Fitter(Optimizer, Simulator):
             
     def set_measured_MDVs_from_file(self, file):
         '''
-        Read measured MDVs from file
+        Read measured MDVs from file.
         
         Parameters
         ----------
         file: file path
-            tsv or excel file with fields "fragmentid", "mean" and "sd".
+            tsv or excel file with fields "fragmentid", "mean" and "sd". 
+            "fragmentid" is metabolite ID + "_" + atom NOs, e.g., 'Glu_12345'; 
+            "mean" and "sd" are the mean and standard deviation of MDV with 
+            element seperated by ",".
 
-            "fragmentid" is metabolite ID + "_" + atom NOs, e.g., 'Glu_12345';
-            "mean" and "sd" are the mean and standard deviation of MDV with element 
-            seperated by ","
+            Header line starts with "#", and will be skiped.
         '''
         
         measMDVs = read_measurements_from_file(file)
@@ -96,7 +99,7 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         fragmentids: str or list of str
-            measured MDV ID(s)
+            Measured MDV ID(s).
         '''
         
         if not isinstance(fragmentids, Iterable):
@@ -109,17 +112,17 @@ class Fitter(Optimizer, Simulator):
         
     def set_measured_flux(self, fluxid, mean, sd):
         '''
-        set measured flux
+        Set measured flux.
         
         Parameters
         ----------
         fluxid: str
-            flux ID, i.e., reaction ID. typically, measured fluxes are substrate 
-            consumption product formation or cell growth, and they are irreversible
+            Flux ID, i.e., reaction ID. Typically, measured fluxes are substrate 
+            consumption product formation or cell growth, etc. They should be irreversible.
         mean: float
-            mean of measured flux
+            Mean of measured flux.
         sd: float
-            standard deviation of measured flux
+            Standard deviation of measured flux.
         '''
         
         self.model.measured_fluxes[fluxid] = [mean, sd]
@@ -131,15 +134,17 @@ class Fitter(Optimizer, Simulator):
             
     def set_measured_fluxes_from_file(self, file):
         '''
-        read measured fluxes from file
+        Read measured fluxes from file.
         
         Parameters
         ----------
         file: file path
-            tsv or excel file, fields are "fluxid", "mean" and "sd"
+            tsv or excel file, fields are "fluxid", "mean" and "sd".
             "fluxid" is reaction ID, typically measured fluxes are substrate 
-            consumption and product or biomass formation which are irreversible,
-            "mean" and "sd" are the mean and standard deviation of measured flux
+            consumption, product formation or cell growth, etc. They should be irreversible;
+            "mean" and "sd" are the mean and standard deviation of measured flux.
+
+            Header line starts with "#", and will be skiped.
         '''
         
         measFluxes = read_measurements_from_file(file)
@@ -157,7 +162,7 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         fluxids: str or list of str
-            measured flux ID(s)
+            Measured flux ID(s).
         '''
         
         if not isinstance(fluxids, Iterable):
@@ -173,7 +178,7 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         metabids: str or list of str
-            unbalanced metabolite ID(s)
+            Unbalanced metabolite ID(s).
         '''
         
         if not isinstance(metabids, Iterable):
@@ -191,7 +196,7 @@ class Fitter(Optimizer, Simulator):
         Parameters
         ----------
         metabids: list of str
-            unbalanced metabolite IDs
+            Unbalanced metabolite IDs.
         '''
         
         for metabid in metabids:
@@ -201,19 +206,23 @@ class Fitter(Optimizer, Simulator):
     
     def set_flux_bounds(self, fluxid, bounds):
         '''
-        set lower and upper bounds of flux
+        Set lower and upper bounds of flux.
         
         Parameters
         ----------
         fluxid: str or 'all'
-            flux ID, i.e., reaction ID, since typically forward and backward fluxes of 
-            reversible reaction are largely unknown, the method is used to set the range
-            of net flux
-            for irreversible reaction, the lower bound will be set to zero ignorant of bounds[0]
-            if 'all', all fluxes will be set to the range
+            flux ID, i.e., reaction ID. Since forward and backward fluxes of 
+            reversible reaction are usually unknown, the method is used to set 
+            the range of net fluxes.
+            
+            If 'all', all fluxes will be set to the range.
         bounds: 2-list
-            [lower bound, upper bound], lower bound is not allow to equal upper bound,
-            use set_measured_flux (or set_measured_fluxes_from_file) to set fixed flux value
+            [lower bound, upper bound]. Lower bound is not allow to equal upper bound.
+            Use set_measured_flux (or set_measured_fluxes_from_file) to set fixed value
+            of flux.
+
+            For irreversible reaction, the lower bound will be set to zero ignorant 
+            of bounds[0].
         '''
         
         fluxids = []
@@ -238,8 +247,9 @@ class Fitter(Optimizer, Simulator):
     def _decompose_network(self, n_jobs):
         '''
         Parameters
+        ----------
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
         '''
         
         if not self.model.measured_MDVs:
@@ -275,8 +285,10 @@ class Fitter(Optimizer, Simulator):
     def _calculate_matrix_As_and_Bs_derivatives_p(self, kind, n_jobs):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
-            if "ss", variables are free fluxes only; if "inst", variables include free fluxes and concentrations
+            * If "ss", variables are free fluxes only.
+            * If "inst", variables include both free fluxes and concentrations.
         '''
         
         if not self.model.matrix_As_der_p or not self.model.matrix_Bs_der_p:
@@ -296,10 +308,12 @@ class Fitter(Optimizer, Simulator):
     def _calculate_substrate_MDV_derivatives_p(self, kind, extra_subs = None):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
-            if "ss", variables are free fluxes only; if "inst", variables include free fluxes and concentrations
+            * If "ss", variables are free fluxes only.
+            * If "inst", variables include free fluxes and concentrations.
         extra_subs: str or list of str
-            metabolite ID(s), additional metabolites considered as substrates    
+            Metabolite ID(s), additional metabolites considered as substrates.    
         '''
         
         if extra_subs is not None and not isinstance(extra_subs, list):
@@ -381,8 +395,10 @@ class Fitter(Optimizer, Simulator):
     def _calculate_measured_fluxes_derivative_p(self, kind):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
-            if "ss", variables are free fluxes only; if "inst", variables include free fluxes and concentrations
+            * If "ss", variables are free fluxes only.
+            * If "inst", variables include free fluxes and concentrations.
         '''
         
         if self.model.measured_fluxes_der_p is None:
@@ -401,13 +417,15 @@ class Fitter(Optimizer, Simulator):
     def _estimate_fluxes_range(self, exclude_metabs = None):
         '''
         Parameters
+        ----------
         exclude_metabs: list
-            metabolite IDs, metabolites excluded from mass balance
+            Metabolite IDs, metabolites excluded from mass balance.
         '''
         
         fluxids = []
         if not self.model.net_fluxes_range:
-            FVAres = self.estimate_fluxes_range(exclude_metabs = exclude_metabs, show_progress = False)
+            FVAres = self.estimate_fluxes_range(exclude_metabs = exclude_metabs, 
+                                                show_progress = False)
             for fluxid, fluxRange in FVAres.flux_ranges.items():
                 self.model.net_fluxes_range[fluxid] = fluxRange
                 fluxids.append(fluxid)
@@ -420,8 +438,9 @@ class Fitter(Optimizer, Simulator):
     def _unset_net_fluxes_range(self, fluxids):
         '''
         Parameters
+        ----------
         fluxids: str or list of str
-            fluxe ID(s)
+            Fluxe ID(s).
         '''
         
         if not isinstance(fluxids, Iterable):
@@ -435,11 +454,12 @@ class Fitter(Optimizer, Simulator):
     def prepare(self, dilution_from = None, n_jobs = 1):
         '''
         Parameters
+        ----------
         dilution_from: str or list of str
-            ID(s) of unlabeled (inactive) metabolite leading to dilution effect, those metabolites have zero
-            stoichiometric coefficient in reaction network
+            ID(s) of unlabeled (inactive) metabolite leading to dilution effect.
+            These metabolites have zero stoichiometric coefficients in reaction network.
         n_jobs: int
-            if n_jobs > 1, preparation work will run in parallel
+            If n_jobs > 1, preparation will run in parallel.
         '''
         
         # network decomposition
@@ -482,8 +502,9 @@ class Fitter(Optimizer, Simulator):
     def _check_dependencies(self, fit_measured_fluxes):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         '''
 
         if not self.model.net_fluxes_bounds:
@@ -517,19 +538,20 @@ class Fitter(Optimizer, Simulator):
               tol = 1e-6, max_iters = 400, show_progress = True):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         ini_fluxes: ser or file in .tsv or .xlsx
-            initial values of net fluxes
+            Initial values of net fluxes
         solver: {"slsqp", "ralg"}
-            if "slsqp", scipy.optimize.minimze will be used;
-            if "ralg", openopt NLP solver will be used
+            * If "slsqp", scipy.optimize.minimze will be used.
+            * If "ralg", openopt NLP solver will be used.
         tol: float
-            tolerance for termination
+            Tolerance for termination.
         max_iters: int
-            max # of iterations
+            Maximum # of iterations.
         show_progress: bool
-            whether to show the progress bar    
+            Whether to show the progress bar.    
         '''
         
         self._check_dependencies(fit_measured_fluxes)
@@ -555,19 +577,20 @@ class Fitter(Optimizer, Simulator):
                                          tol, max_iters, nruns):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         ini_fluxes: ser or file in .tsv or .xlsx or None
-            initial values of net fluxes    
+            Initial values of net fluxes.   
         solver: {"slsqp", "ralg"}
-            if "slsqp", scipy.optimize.minimze will be used;
-            if "ralg", openopt NLP solver will be used
+            * If "slsqp", scipy.optimize.minimze will be used.
+            * If "ralg", openopt NLP solver will be used.
         tol: float
-            tolerance for termination
+            Tolerance for termination.
         max_iters: int
-            max # of iterations
+            Maximum # of iterations.
         nruns: int
-            # of estimations in each worker    
+            # of estimations in each worker. 
         '''
         
         # set CPU affinity in Linux
@@ -614,23 +637,24 @@ class Fitter(Optimizer, Simulator):
                                         n_runs = 100, n_jobs = 1, show_progress = True):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         ini_fluxes: ser or file in .tsv or .xlsx
-            initial values of net fluxes    
+            Initial values of net fluxes.  
         solver: {"slsqp", "ralg"}
-            if "slsqp", scipy.optimize.minimze will be used;
-            if "ralg", openopt NLP solver will be used
+            * If "slsqp", scipy.optimize.minimze will be used.
+            * If "ralg", openopt NLP solver will be used.
         tol: float
-            tolerance for termination
+            Tolerance for termination.
         max_iters: int
-            max # of iterations
+            Maximum # of iterations.
         show_progress: bool
-            whether to show the progress bar
+            Whether to show the progress bar.
         n_runs: int
-            # of runs to estimate confidence intervals
+            # of runs to estimate confidence intervals.
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
         '''
         
         self._check_dependencies(fit_measured_fluxes)
