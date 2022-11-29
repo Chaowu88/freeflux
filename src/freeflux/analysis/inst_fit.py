@@ -27,22 +27,24 @@ from time import time
 
 class InstFitter(Fitter, InstSimulator):
     '''
-    fluxes in unit of umol/gCDW/s if concentrations in unit of umol/gCDW and timepoints in unit of s
+    Estimated fluxes are in the unit of umol/gCDW/s if concentrations in the unit of 
+    umol/gCDW and timepoints in the unit of s.
     '''
     
     def set_measured_MDVs(self, fragmentid, timepoints, means, sds):
         '''
-        set measured MDVs at various timepoints
+        Set measured MDVs at various timepoints.
         
         Parameters
+        ----------
         fragmentid: str
-            metabolite ID + '_' + atom NOs, e.g. 'Glu_12345'
+            Metabolite ID + '_' + atom NOs, e.g. 'Glu_12345'.
         timepoints: float or list of float
-            timepoint(s)
+            Timepoint(s).
         means: array or list of array
-            mean of measured MDV(s), len(means) should be equal to len(timepoints)
+            Mean of measured MDV(s). len(means) should be equal to len(timepoints).
         sds: array or list of array
-            standard deviation of measured MDV(s), len(sds) should be equal to len(timepoints)
+            Standard deviation of measured MDV(s). len(sds) should be equal to len(timepoints).
         '''
         
         if not isinstance(timepoints, Iterable):
@@ -60,14 +62,15 @@ class InstFitter(Fitter, InstSimulator):
     
     def set_measured_MDVs_from_file(self, file):
         '''
-        read measured MDVs at various timepoints from file
+        Read measured MDVs at various timepoints from file.
         
         Parameters
+        ----------
         file: file path
-            path of tsv or excel file, fields are "fragmentid", "time", "mean" and "sd"
-            "fragmentid" is metabolite ID + '_' + atom NOs, e.g. 'Glu_12345',
-            "time" is timepoint when MDVs are measured. Note some timepoints could be missing
-            "mean" and "sd" are the mean and standard deviation of MDV with element seperated by ','
+            Path of tsv or excel file with fields "fragmentid", "time", "mean" and "sd".
+            "fragmentid" is metabolite ID + '_' + atom NOs, e.g. 'Glu_12345';
+            "time" is timepoint when MDVs are measured (while some timepoints could be missing);
+            "mean" and "sd" are the mean and standard deviation of MDV with element seperated by ','.
         '''
         
         measMDVs = read_measurements_from_file(file, inst_data = True)
@@ -87,8 +90,9 @@ class InstFitter(Fitter, InstSimulator):
     def _unset_measured_MDVs(self, fragmentid_tpoints):
         '''
         Parameters
+        ----------
         fragmentid_tpoints: dict
-            ID of measured MDV => list of timepoints
+            measured MDV ID => list of timepoints.
         '''
         
         for fragmentid, timepoints in fragmentid_tpoints.items():
@@ -103,13 +107,14 @@ class InstFitter(Fitter, InstSimulator):
             
     def set_concentration_bounds(self, metabid, bounds):
         '''
-        set lower and upper bounds for concentration in unit of umol/gCDW
+        Set lower and upper bounds for concentration in unit of umol/gCDW.
         
         Parameters
+        ----------
         metabid: str or 'all'
-            metabolite ID, if 'all', all concentrations will be set to the range
+            Metabolite ID. If 'all', all concentrations will be set to the range.
         bounds: 2-list
-            [lower bound, upper bound], lower bound is not allow to equal upper bound
+            [lower bound, upper bound]. Lower bound is not allow to equal upper bound.
         '''
         
         bounds = list(map(float, bounds))
@@ -155,8 +160,9 @@ class InstFitter(Fitter, InstSimulator):
     def _unset_concentration_bounds(self, metabids):
         '''
         Parameters
+        ----------
         metabids: str or list of str
-            metabolite ID(s)
+            Metabolite ID(s).
         '''
         
         if not isinstance(metabids, Iterable):
@@ -170,8 +176,9 @@ class InstFitter(Fitter, InstSimulator):
     def _decompose_network(self, n_jobs):
         '''
         Parameters
+        ----------
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
         '''
         
         if not self.model.measured_inst_MDVs:
@@ -283,8 +290,9 @@ class InstFitter(Fitter, InstSimulator):
     def _unset_concentrations_range(self, metabids):
         '''
         Parameters
+        ----------
         metabids: str or list of str
-            metabolite ID(s)
+            Metabolite ID(s).
         '''
         
         if not isinstance(metabids, Iterable):
@@ -298,11 +306,12 @@ class InstFitter(Fitter, InstSimulator):
     def prepare(self, dilution_from = None, n_jobs = 1):
         '''
         Parameters
+        ----------
         dilution_from: str or list of str
-            ID(s) of unlabeled (inactive) metabolite leading to dilution effect, those metabolites have zero
-            stoichiometric coefficient in reaction network
+            ID(s) of unlabeled (inactive) metabolite leading to dilution effect.
+            These metabolites have zero stoichiometric coefficients in reaction network.
         n_jobs: int
-            if n_jobs > 1, decomposition job will run in parallel
+            If n_jobs > 1, decomposition job will run in parallel.
         '''    
         
         # network decomposition
@@ -368,8 +377,9 @@ class InstFitter(Fitter, InstSimulator):
     def _check_dependencies(self, fit_measured_fluxes):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         '''
 
         if not self.model.net_fluxes_bounds:
@@ -412,21 +422,22 @@ class InstFitter(Fitter, InstSimulator):
               solver = 'slsqp', tol = 1e-6, max_iters = 400, show_progress = True):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         ini_fluxes: ser or file in .tsv or .xlsx
-            initial values of net fluxes
+            Initial values of net fluxes.
         ini_concs: ser or file in .tsv or .xlsx
-            initial values of concentrations
+            Initial values of concentrations.
         solvor: {"slsqp", "ralg"}
-            if "slsqp", scipy.optimize.minimze will be used;
-            if "ralg", openopt NLP solver will be used
+            * If "slsqp", scipy.optimize.minimze will be used.
+            * If "ralg", openopt NLP solver will be used.
         tol: float
-            tolerance for termination
+            Tolerance for termination.
         max_iters: int
-            max # of iterations
+            Maximum # of iterations.
         show_progress: bool
-            whether to show the progress bar    
+            Whether to show the progress bar. 
         '''            
                 
         self._check_dependencies(fit_measured_fluxes)
@@ -457,21 +468,22 @@ class InstFitter(Fitter, InstSimulator):
                                          solver, tol, max_iters, nruns):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         ini_fluxes: ser or file in .tsv or .xlsx or None
-            initial values of net fluxes
+            Initial values of net fluxes.
         ini_concs: ser or file in .tsv or .xlsx or None
-            initial values of concentrations    
+            Initial values of concentrations.    
         solvor: {"slsqp", "ralg"}
-            if "slsqp", scipy.optimize.minimze will be used;
-            if "ralg", openopt NLP solver will be used
+            * If "slsqp", scipy.optimize.minimze will be used.
+            * If "ralg", openopt NLP solver will be used.
         tol: float
-            tolerance for termination
+            Tolerance for termination.
         max_iters: int
-            max # of iterations
+            Maximum # of iterations.
         nruns: int
-            # of estimations in each worker    
+            # of estimations in each worker.
         '''
 
         # set CPU affinity in Linux
@@ -526,25 +538,26 @@ class InstFitter(Fitter, InstSimulator):
                                         n_runs = 100, n_jobs = 1, show_progress = True):
         '''
         Parameters
+        ----------
         fit_measured_fluxes: bool
-            whether to fit measured fluxes
+            Whether to fit measured fluxes.
         ini_fluxes: ser or file in .tsv or .xlsx
-            initial values of net fluxes
+            Initial values of net fluxes.
         ini_concs: ser or file in .tsv or .xlsx
-            initial values of concentrations    
+            Initial values of concentrations.   
         solvor: {"slsqp", "ralg"}
-            if "slsqp", scipy.optimize.minimze will be used;
-            if "ralg", openopt NLP solver will be used
+            * If "slsqp", scipy.optimize.minimze will be used.
+            * If "ralg", openopt NLP solver will be used.
         tol: float
-            tolerance for termination
+            Tolerance for termination.
         max_iters: int
-            max # of iterations
+            Max # of iterations.
         show_progress: bool
-            whether to show the progress bar
+            Whether to show the progress bar.
         n_runs: int
-            # of runs to estimate confidence intervals
+            # of runs to estimate confidence intervals.
         n_jobs: int
-            # of jobs to run in parallel
+            # of jobs to run in parallel.
         '''
         
         self._check_dependencies(fit_measured_fluxes)
