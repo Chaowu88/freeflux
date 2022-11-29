@@ -34,16 +34,16 @@ class MDV():
     MDV class defines MDV (i.e., mass isotopomer distribution vector) object and its operations.
 
     Convolution between mdv1 and mdv2 can be performed in three ways: 
-    * mdv1.conv(mdv2)
-    * mdv1*mdv2
-    * mdv.conv(mdv1, mdv2)
+    1. mdv1.conv(mdv2)
+    2. mdv1*mdv2
+    3. mdv.conv(mdv1, mdv2)
     
     The zero element for convolution is MDV([0]), and the identity element is MDV([1]).
     
     Scalar multiplication (a*mdv) and MDV addition (mdv1 + mdv2) are also supported.
     In these cases, the resulting MDV are not automatically normalized.
     
-    In addition to C, MDV can be built base on H, N, O, Si, and S.
+    In addition to C, MDV can be built based on H, N, O, Si, and S.
 
     Parameters
     ----------
