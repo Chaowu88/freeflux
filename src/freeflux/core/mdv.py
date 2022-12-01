@@ -31,12 +31,12 @@ natAbuns = {'H': [0.999885, 0.000115],
 
 class MDV():
     '''
-    MDV class defines MDV (i.e., mass isotopomer distribution vector) object and its operations.
+    Define MDV (i.e., mass isotopomer distribution vector) object and its operations.
 
     Convolution between mdv1 and mdv2 can be performed in three ways: 
-    1. mdv1.conv(mdv2)
-    2. mdv1*mdv2
-    3. mdv.conv(mdv1, mdv2)
+    1. mdv1.conv(mdv2);
+    2. mdv1*mdv2;
+    3. mdv.conv(mdv1, mdv2).
     
     The zero element for convolution is MDV([0]), and the identity element is MDV([1]).
     
@@ -312,6 +312,8 @@ def _isotopomer_combination(n_atoms, n_natural_isotops):
     
 def get_natural_MDV(n_atoms, base_atom = 'C'):
     '''
+    Calculate the MDV of an unlabeled fragment.
+
     Parameters
     ----------
     n_atoms: int
@@ -341,7 +343,8 @@ def get_natural_MDV(n_atoms, base_atom = 'C'):
 
 def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
     '''
-    Currently, this function only supports C-labeled substrate.
+    Calculate the MDV of a fragment from labeled substrate. 
+    Currently this function only supports C-labeled substrate.
     
     Parameters
     ----------
@@ -441,6 +444,8 @@ def gen_conv(arr1, arr2):
     
 def conv(mdv1, mdv2):
     '''
+    Perform convolution between two MDVs.
+
     Parameters
     ----------
     mdv1: list or array or MDV

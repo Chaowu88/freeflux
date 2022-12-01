@@ -34,7 +34,7 @@ from os import getpid
 
 class Model():
     '''
-    Model class is the fundamental class of FreeFlux hosting operations in 13C MFA.
+    Model class is the fundamental class of FreeFlux hosting operations for 13C MFA.
 
     Model can be built by adding reactions one by one or reading set of reactions from .tsv or .xlsx file.
     

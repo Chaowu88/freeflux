@@ -15,7 +15,7 @@ import re
 
 class Metabolite():
     '''
-    Metabolite class defines Metabolite object and its operations.
+    Define Metabolite object which constitutes a Reaction.
 
     Metabolites are considered identical when they have the same IDs and atoms.
     

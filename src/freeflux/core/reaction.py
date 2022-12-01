@@ -13,7 +13,6 @@ from itertools import product
 from functools import reduce, lru_cache
 import numpy as np
 import pandas as pd
-from sympy import Symbol
 from .emu import EMU
 
 
@@ -21,7 +20,7 @@ from .emu import EMU
 
 class Reaction():
     '''
-    Reaction class defines Reaction object and its operations.
+    Define Reaction object which constitute a Model.
 
     Duplicate substrates or products could appear in one reaction, but with different atoms.
     
@@ -62,17 +61,16 @@ class Reaction():
     
     _substrates_atom_mapping: list of dict or None
         For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
+        
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]
     
     _products_atom_mapping: list of dict or None
         For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
+        
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]    
     
-    flux (fflux and bflux for reversible reaction): Symbol
-        Reaction flux (reversible reaction is splitted into forward flux and backward flux)
-        
     host_models: set of Model or None
         Model hosting the reaction.
     '''
@@ -91,12 +89,6 @@ class Reaction():
         self.reversible = reversible
         self.substrates_info = pd.DataFrame(columns = ['metab', 'stoy'])
         self.products_info = pd.DataFrame(columns = ['metab', 'stoy'])
-        if self.reversible:
-            self.fflux = Symbol(self.id+'_f')
-            self.bflux = Symbol(self.id+'_b')
-        else:
-            self.flux = Symbol(self.id)
-        self.host_models = None
     
     
     def add_substrates(self, substrates, stoichiometry):

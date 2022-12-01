@@ -17,7 +17,7 @@ from .metabolite import Metabolite
 
 class EMU():
     '''
-    EMU class defines EMU (i.e., elementary metabolite unit) object and its operations.
+    Define EMU (i.e., elementary metabolite unit) object and its operations.
 
     EMUs in the same metabolite and with the same atom NOs are considered as identical, 
     while metabolites which they derived from could be different.
