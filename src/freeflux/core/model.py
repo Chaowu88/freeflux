@@ -47,159 +47,115 @@ class Model():
     ----------
     name: str
         Model name.
-    
     metabolites_info: dict
         Metabolite ID => list of Metabolites.
-    
     reactions_info: OrderedDict
         Reaction ID => Reaction.
-    
     metabolites: list
         Metabolite IDs, in alphabetical order.
-    
     metabolites_with_atoms: list
         IDs of metabolite with atom assignment, in alphabetical order. 
-    
     end_substrates: list
         Initial substrates of the model, in alphabetical order. 
-    
     end_products: list
         Final products of the model, in alphabetical order. 
-    
     reactions: list
         Reaction IDs, in order of addition.
-    
     n_metabolites: int
         # of metabolites.
-    
     n_reactions: int
         # of reactions.
-    
     _full_net_stoichiometric_matrix: df
         Complete stoichiometric matrix for net reaction with all metabolites in rows, 
         net reactions in columns.
-    
     _full_total_stoichiometric_matrix: df
         Complete stoichiometric matrix for total reaction with all metabolites in rows, 
         total reactions in columns.
-    
     metabolite_adjacency_matrix: df
         Metabolite adjacency matrix (MAM). Metabolites with atoms are in index and 
         columns (no duplicates). List of Reactions are in cells if reactions exists 
-        between (sub, pro), [] otherwise.
-        
+        between (sub, pro), [] otherwise.    
     net_fluxes_bounds: dict
-        Reaction ID => [lb, ub] by setting.
-        
+        Reaction ID => [lb, ub] by setting.   
     net_fluxes_range: dict
-        Reaction ID => estimeted [lb, ub]. All required net fluxes are included.
-        
+        Reaction ID => estimeted [lb, ub]. All required net fluxes are included.  
     netfluxids: list
-        Net flux IDs, alias of reactions.
-    
+        Net flux IDs, alias of reactions. 
     concentrations: ser
-        Concentrations, metabolite ID => float.
-        
+        Concentrations, metabolite ID => float.    
     concentrations_bounds: dict
-        Metabolite ID => [lb, ub] by setting.
-        
+        Metabolite ID => [lb, ub] by setting.    
     concentrations_range: dict
-        Metabolite ID => [lb, ub]. All required concentrations are included.
-        
+        Metabolite ID => [lb, ub]. All required concentrations are included.    
     concids: list
-        Concentration IDs (used only in computation process).
-        
+        Concentration IDs (used only in computation process).    
     total_fluxes: ser
-        Total fluxes, fluxe ID (e.g., 'v1_f' or 'v2') => float.
-        
+        Total fluxes, fluxe ID (e.g., 'v1_f' or 'v2') => float.   
     totalfluxids: list
-        Total flux IDs.
-        
+        Total flux IDs.    
     target_EMUs: list
-        Target EMU IDs.
-        
+        Target EMU IDs.   
     timepoints: list
-        Sorted time points for MDV simulation.
-        
+        Sorted time points for MDV simulation.   
     substrate_MDVs: dict
-        Substrate EMU => MDV.
-        
+        Substrate EMU => MDV.   
     substrate_MDVs_der_p: dict
         Substrate EMU => derivatives of substrate MDV w.r.t. variables 
         in shape of (len(MDV), # of vars).
         # of vars = # of free fluxes for steady state MFA;
         # of vars = # of free fluxes + # of concentrations for INST MFA.
-    
     initial_matrix_Xs: dict
         Size => initial MDVs of EMU in matrix X, i.e., the natural MDVs.
-        The initial MDV matrix has the same shape of matrix X.
-        
+        The initial MDV matrix has the same shape of matrix X.   
     initial_matrix_Ys: dict
         Size => initial MDVs of EMU in matrix Y, i.e., either natural MDVs or labeled MDVs.
-        The initial MDV matrix has the same shape of matrix Y.    
-        
+        The initial MDV matrix has the same shape of matrix Y.        
     initial_matrix_Xs_der_p, initial_matrix_Ys_der_p: dict
         Size => 3-D array in shape of (# of vars), X(Y).shape[0], X(Y).shape[1])
         which is the initial MDV derivatives of EMUs in matrix X(Y) w.r.t. variables. 
-        # of vars = # of free fluxes + # of concentrations for INST MFA.
-        
+        # of vars = # of free fluxes + # of concentrations for INST MFA.  
     initial_sim_MDVs: dict
         EMU ID => {t0 => MDV}. MDV of target EMUs at t0.
-    
     EAMs: dict of df
-        Size => EMU adjacency matrix (EAM). Cells are symbolic expression of flux.
-        
+        Size => EMU adjacency matrix (EAM). Cells are symbolic expression of flux.    
     matrix_As, matrix_Bs: dict
-        Size => [lambdified matrix A(B), [flux IDs], [EMUs]].    
-     
+        Size => [lambdified matrix A(B), [flux IDs], [EMUs]].     
     matrix_As_der_p, matrix_Bs_der_p: dict
         Size => 3-D array in shape of (# of vars, A(B).shape[0], A(B).shape[1])
         which is the derivatives of matrix A(B) w.r.t. variables.
         # of vars = # of free fluxes for steady state MFA;
-        # of vars = # of free fluxes + # of concentrations for INST MFA.
-        
+        # of vars = # of free fluxes + # of concentrations for INST MFA.    
     matrix_Ms: dict
         Size => [lambdified matrix M, [metabolite IDs]].    
-    
     matrix_Ms_der_p: dict
         Size => 3-D array in shape of (# of vars, M.shape[0], M.shape[1]),
         which is the derivatives of matrix M w.r.t. variables.
         # of vars = # of free fluxes for steady state MFA;
-        # of vars = # of free fluxes + # of concentrations for INST MFA.
-        
+        # of vars = # of free fluxes + # of concentrations for INST MFA.    
     labeling_strategy: dict
-        Metabolite ID => [labeling_pattern(s), percentage(s), purity(s)].
-        
+        Metabolite ID => [labeling_pattern(s), percentage(s), purity(s)].    
     measured_MDVs: dict
-        EMU ID (metabolite ID + '_' + atom NOs) => [means of MDV, SDs of MDV].
-        
+        EMU ID (metabolite ID + '_' + atom NOs) => [means of MDV, SDs of MDV].    
     measured_MDVs_inv_cov: array
         Inversed covariance matrix of measured MDVs with variances on the diagnol, 
-        other elements are zero.
-        
+        other elements are zero.    
     measured_fluxes: dict
-        Flux ID (e.g., 'v1_f' or 'v2') => [mean, SD].
-        
+        Flux ID (e.g., 'v1_f' or 'v2') => [mean, SD].    
     measured_fluxes_inv_cov: array
         Inversed covariance matrix of measured fluxes with variances on the diagnol, 
-        other elements are zero.
-        
+        other elements are zero.    
     measured_fluxes_der_p: array
         Derivative of measured fluxes w.r.t. variables in shape of 
         (# of measured fluxes, # of vars),
         # of vars = # of free fluxes for steady state MFA;
         # of vars = # of free fluxes + # of concentrations for INST MFA.
-    
     measured_inst_MDVs: dict
         EMU ID (metabolite ID + '_' + atom NOs) => {timepoint => [means of MDV, SDs of MDV]}.    
-    
     measured_inst_MDVs_inv_cov: array
         Inversed covariance matrix of measured concatenated MDVs with variances on the diagnol, 
         other elements are zero. Timepoints are concatenated except t0.     
-   
     null_space: 2-D array
-        Null space of total stoichiometric matrix.
-        
+        Null space of total stoichiometric matrix.    
     transform_matrix: 2-D array
         Transform matrix letting vnet = transform_matrix*v.
     '''
