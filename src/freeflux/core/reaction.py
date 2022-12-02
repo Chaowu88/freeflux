@@ -35,42 +35,33 @@ class Reaction():
     ----------
     id: str
         Reaction ID.
-    
     reversible: bool
         Reversibility.
-    
     substrates_info: df
         Index are substrate IDs (there could be duplicate substrates), 
-        Columns are Metabolite object and its stoichiometric number.
-    
+        columns are Metabolite object and its stoichiometric number.
     products_info: df
         Index are product IDs (there could be duplicate products), 
-        Columns are Metabolite object and stoichiometrc number.
-    
+        columns are Metabolite object and stoichiometrc number.
     substrates: list
         Unique substrate IDs, in order of alphabet.
-    
     products: list
         Unique product IDs, in order of alphabet.
     
     substrates_with_atoms: list
         Unique IDs of substrates with atoms, in order of alphabet.
-    
     products_with_atoms: list    
         Unique IDs of products with atoms, in order of alphabet.
-    
     _substrates_atom_mapping: list of dict or None
         For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
         
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]
-    
     _products_atom_mapping: list of dict or None
         For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
         
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]    
-    
     host_models: set of Model or None
         Model hosting the reaction.
     '''
