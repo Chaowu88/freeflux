@@ -54,12 +54,10 @@ class Reaction():
         Unique IDs of products with atoms, in order of alphabet.
     _substrates_atom_mapping: list of dict or None
         For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
-        
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]
     _products_atom_mapping: list of dict or None
         For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
-        
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]    
     host_models: set of Model or None
