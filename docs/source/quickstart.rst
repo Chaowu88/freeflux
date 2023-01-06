@@ -79,7 +79,7 @@ The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:
 Adding Bounds for Fluxes
 ------------------------
 
-The search range for all fluxes or a specific flux can be set using ``set_flux_bounds``. Here we constrained fluxes in the range of -100 and 100.
+The search range for all fluxes or a specific flux can be set using ``set_flux_bounds``. Here we constrain the fluxes to the range from -100 to 100.
 
 .. code-block:: python
 
@@ -88,7 +88,7 @@ The search range for all fluxes or a specific flux can be set using ``set_flux_b
 Reading the Measuremnets
 ------------------------
 
-The labeling patterns or mass isotopomer distribution vectors (MDVs) of measurable metabolites or metabolite fragments should be provided for the fitting as well as measured exchange reactions, e.g., substrate uptake, product secretion and specific growth rate. They can be provided using the lines:
+The labeling pattern or mass isotopomer distribution vector (MDV) of measurable metabolites or metabolite fragments should be provided for the fitting as well as measured exchange reactions, e.g., substrate uptake, product secretion and specific growth rate. They can be provided using the lines:
 
 .. code-block:: python
    
@@ -98,7 +98,7 @@ The labeling patterns or mass isotopomer distribution vectors (MDVs) of measurab
    fit.set_measured_flux('v1', mean = 10, sd = 1)
 
 .. Note::
-   For input of a bundle of measured MDVs and fluxes, it is more convenient to read from a .tsv or xlsx. file using ``set_measured_MDVs_from_file`` and ``set_measured_fluxes_from_file``.
+   For input of a set of measured MDVs and fluxes, it is more convenient to read from a .tsv or xlsx. file by methods ``set_measured_MDVs_from_file`` and ``set_measured_fluxes_from_file``.
    
 Solve the Fluxes
 ----------------
@@ -110,12 +110,12 @@ Now we can solve the flux distribution in the toy model by:
    fit.prepare()
    res = fit.solve()
    
-The ``solve`` method returns a FitResults object. The estimated net and total (includes both forward and backward fluxes in reversible reactions) fluxes can be accessed by the attributes ``opt_net_fluxes`` and ``opt_total_fluxes``.
+The ``solve`` method returns a FitResults object. The estimated net and total (including both forward and backward fluxes in reversible reactions) fluxes can be accessed by the attributes ``opt_net_fluxes`` and ``opt_total_fluxes``.
 
 With Statement
 --------------
 
-The returned *fit* object is actually a context manager, thus the above flux estimation can also be implemented using the with statement:
+The returned Fitter object is actually a context manager, thus the above flux estimation can also be done by using the with statement:
 
 .. code-block:: python
    
