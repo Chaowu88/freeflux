@@ -115,7 +115,7 @@ The ``solve`` method returns a FitResults object. The estimated net and total (i
 With Statement
 --------------
 
-The returned Fitter object is actually a context manager, thus the above flux estimation can also be done by using the with statement:
+The returned Fitter object by calling ``fitter`` method is actually a context manager, and thus the above flux estimation can also be done using the with statement:
 
 .. code-block:: python
    
