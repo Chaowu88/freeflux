@@ -65,7 +65,7 @@ The model can then be loaded by:
 Specifying the Labeling Strategy
 --------------------------------
 
-The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:`13`\C] AcCoA and 25% fully labeled acetyl-CoA, [U-\ :sup:`13`\C\ :sub:`2`\] AcCoA assuming 100% purity of the two tracers, respectively. This labeling strategy can be set with the following line:
+The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:`13`\C] AcCoA and 25% fully labeled acetyl-CoA, [U-\ :sup:`13`\C\ :sub:`2`\] AcCoA assuming 100% purity of these two tracers, respectively. The labeling strategy can be set with the following line:
 
 .. code-block:: python
   
@@ -73,7 +73,7 @@ The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:
   fit.set_labeling_strategy('AcCoA', ['01', '11'], [0.25, 0.25], [1, 1])
 
 .. Note::
-   1. If the sum of percantages of specified tracers is less than 1, the remaining 1-sum will be considered as the unlabeled form.
+   1. If the sum of percantage of the specified isotopomer tracers is less than 1, the remaining 1-sum will be considered as the unlabeled form (atoms in natural abundance).
    2. Call this method for each substrate if multiple labeled substrates are used.
    
 Adding Bounds for Fluxes
