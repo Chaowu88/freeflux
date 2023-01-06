@@ -65,7 +65,7 @@ The model can then be loaded by:
 Specifying the Labeling Strategy
 --------------------------------
 
-The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:`13`\C] AcCoA and 25% fully labeled acetyl-CoA, [U-\ :sup:`13`\C\ :sub:`2`\] AcCoA assuming 100% purity of the tracers, respectively. This labeling strategy can be set with the following line:
+The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:`13`\C] AcCoA and 25% fully labeled acetyl-CoA, [U-\ :sup:`13`\C\ :sub:`2`\] AcCoA assuming 100% purity of the two tracers, respectively. This labeling strategy can be set with the following line:
 
 .. code-block:: python
   
