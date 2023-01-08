@@ -9,7 +9,7 @@ FreeFlux is a Python package for :sup:`13`\ C metabolic flux analysis of biologi
 
 The aim is to benefit the accessibility of :sup:`13`\ C fluxomics technique for researchers in the community of metabolic phenotyping and engineering.
 
-A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/index.html>`__. The documentation illustrates the fundamental functions of FreeFlux with a `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`_. Two practical models of `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`_ and `Synechocystis <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`_ are also provided with `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`_.
+A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/index.html>`__. The documentation illustrates the fundamental functions of FreeFlux with a `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__. Two practical models of `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`__ and `Synechocystis <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`__ are also provided with `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`__.
 
 Installation
 ============
@@ -28,17 +28,17 @@ or from source:
   git clone https://github.com/Chaowu88/freeflux.git /path/to/freeflux
   pip install /path/to/freeflux
   
-Installation in an `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ is recommendated.
+Installation in an `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`__ is recommendated.
 
 .. Note::
-  FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. It works well in Python 3.7 but may has compatibility issues in Python 3.8 and above. Please see `here <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`_ for solutions.
+  FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`__ for nonlinear regression. It works well in Python 3.7 but may has compatibility issues in Python 3.8 and above. Please see `here <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`__ for solutions.
 
 Example Usage
 =============
 
 A typical use of FreeFlux starts with building a model by reading metabolic reactions with atom transitions. The model can call a handler of either fitter, simulator or optimizor to perform flux estimation, labeling pattern simulation and constraint-based flux analysis, respectively. Different methods are provided for these handlers for data input and computation.
 
-Here is an example script of flux estimation at steady state using the `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`_.
+Here is an example script of flux estimation at steady state using the `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__.
 
 .. code-block:: python
    
@@ -64,9 +64,9 @@ Here is an example script of flux estimation at steady state using the `toy mode
        fit.prepare()
        res = fit.solve()
 
-For more information, please refer to the `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`_.
+For more information, please refer to the `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`__.
 
 License
 =======
 
-FreeFlux is released under the GPL version 3 license, please see `here <https://github.com/Chaowu88/freeflux/blob/main/LICENSE>`_ for more details.
+FreeFlux is released under the GPL version 3 license, please see `here <https://github.com/Chaowu88/freeflux/blob/main/LICENSE>`__ for more details.
