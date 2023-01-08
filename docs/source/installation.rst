@@ -33,7 +33,7 @@ FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt
 
   pip install numpy~=1.20.2
   
-FreeFlux also utilizes the modeling language Pyomo to formulate linear optimization problem. By default, solvers are not installed together with Pyomo, and thus should be installed independently.
+FreeFlux also utilizes the modeling language Pyomo to formulate linear optimization problem. By default, solver is not installed together with Pyomo, and thus should be installed independently.
 
 .. code-block:: python
   
