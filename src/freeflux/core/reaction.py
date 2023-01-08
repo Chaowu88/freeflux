@@ -3,7 +3,7 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/16/2020'
+__date__ = '02/16/2022'
 
 
 
@@ -13,6 +13,7 @@ from itertools import product
 from functools import reduce, lru_cache
 import numpy as np
 import pandas as pd
+from sympy import Symbol
 from .emu import EMU
 
 
@@ -47,7 +48,6 @@ class Reaction():
         Unique substrate IDs, in order of alphabet.
     products: list
         Unique product IDs, in order of alphabet.
-    
     substrates_with_atoms: list
         Unique IDs of substrates with atoms, in order of alphabet.
     products_with_atoms: list    
@@ -60,6 +60,8 @@ class Reaction():
         For example, reactants like: A({'ab': 0.5, 'ba': 0.5}) + B({'c': 1}) will be transformed to
         [{'a': [A, 1, 0.5], 'b': [A, 2, 0.5], 'c': [C, 1, 1]},
          {'a': [A, 2, 0.5], 'b': [A, 1, 0.5], 'a': [C, 1, 1]}]    
+    flux (fflux and bflux for reversible reaction): Symbol
+        Reaction flux (forward flux and backward flux for reversible reaction).
     host_models: set of Model or None
         Model hosting the reaction.
     '''
@@ -78,6 +80,12 @@ class Reaction():
         self.reversible = reversible
         self.substrates_info = pd.DataFrame(columns = ['metab', 'stoy'])
         self.products_info = pd.DataFrame(columns = ['metab', 'stoy'])
+        if self.reversible:
+            self.fflux = Symbol(self.id+'_f')
+            self.bflux = Symbol(self.id+'_b')
+        else:
+            self.flux = Symbol(self.id)
+        self.host_models = None
     
     
     def add_substrates(self, substrates, stoichiometry):
@@ -303,13 +311,13 @@ class Reaction():
         
         preEMUsInfoRaw = []
         for scenario in atomMapping:
-            for atoms, coe in emu.metabolite.atoms_info.items():   # emu could have equivalents
+            for atoms, coe in emu.metabolite.atoms_info.items():
                 
                 preAtoms = {}
                 uniCoe = coe
                 for atom in [atoms[no-1] for no in emu.atom_nos]:
                     
-                    pre, preAtomNO, preCoe = scenario[atom]   # pre is Metabolite
+                    pre, preAtomNO, preCoe = scenario[atom]
                     
                     if pre not in preAtoms:
                         uniCoe *= preCoe
@@ -322,10 +330,8 @@ class Reaction():
                 preEMUsInfoRaw.append([preEMUs, uniCoe])
         
         preEMUsInfoRaw = [Counter({tuple(sorted(preEMUs)): coe}) 
-                          for preEMUs, coe in preEMUsInfoRaw]   # use tuple not frozenset as key because 
-                                                                # there could be identical EMUs
-                                                                # remrember to sort
-        preEMUsInfo = reduce(lambda x, y: x+y, preEMUsInfoRaw)   # combine identical precursor EMUs
+                          for preEMUs, coe in preEMUsInfoRaw]
+        preEMUsInfo = reduce(lambda x, y: x+y, preEMUsInfoRaw)
         preEMUsInfo = [[list(preEMUs), coe] for preEMUs, coe in preEMUsInfo.items()]
         
         return preEMUsInfo

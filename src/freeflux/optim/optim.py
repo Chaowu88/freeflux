@@ -35,7 +35,7 @@ class Optimizer():
         '''
         
         self.model = model
-        self.contexts = []   # stack used to store contexts
+        self.contexts = []
         
     
     def __enter__(self):
@@ -167,7 +167,7 @@ class Optimizer():
         stoy_mat = self.model.get_net_stoichiometric_matrix(exclude_metabs).copy(deep = 'all')
         
         maskZeroRows = (stoy_mat.T != 0.0).any()
-        stoy_mat = stoy_mat[maskZeroRows]   # drop zero rows
+        stoy_mat = stoy_mat[maskZeroRows]
         
         maskZeroCols = (stoy_mat != 0.0).any()
         netfluxids_todrop = stoy_mat.columns[~maskZeroCols].tolist()
@@ -182,7 +182,7 @@ class Optimizer():
                 if fluxid in net_fluxes_bounds:
                     net_fluxes_bounds.pop(fluxid)
 
-            stoy_mat = stoy_mat.T[maskZeroCols].T   # drop zero columns
+            stoy_mat = stoy_mat.T[maskZeroCols].T
 
 
         return netfluxids, net_fluxes_bounds, stoy_mat
@@ -252,7 +252,6 @@ class Optimizer():
             fvaModel.build_objective(objective, 'max')
             optObj, _ = fvaModel.solve_flux()
             fvaModel.remove_objective()
-            #optObj = self.optimize(objective, exclude_metabs, show_progress = False).opt_objective
             fvaModel.build_objective_constraint(objective, optObj, gamma)
         
         with Progress('estimating flux ranges', silent = not show_progress):

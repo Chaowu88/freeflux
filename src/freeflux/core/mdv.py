@@ -3,7 +3,7 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/18/2020'
+__date__ = '02/18/2022'
 
 
 
@@ -52,7 +52,7 @@ class MDV():
     nonnegative: bool
         Whether to keep the elements >= 0.
     normalize: bool
-        Whether to normalize MDV vector to ensure the sum == 1.
+        Whether to normalize MDV vector to ensure the sum equals one.
     base_atom: str
         Base atom for MDV.
             
@@ -60,13 +60,10 @@ class MDV():
     ----------
     value: array
         MDV vector.
-    
     n_atoms: int
         # of atom.
-    
     base_atom: str
         Base atom for MDV.
-    
     fl: float
         Fractional labeling.
     '''
@@ -157,9 +154,9 @@ class MDV():
         other: scalar, list, array or MDV
         '''
         
-        if isinstance(other, Real):   # scalar multiplication
+        if isinstance(other, Real):
             return self.__class__(other * self.value, nonnegative = False, normalize = False)                
-        elif isinstance(other, Iterable):   # convolution   
+        elif isinstance(other, Iterable):
             return self.conv(other)    
         else:
             return NotImplemented
@@ -298,7 +295,7 @@ def _isotopomer_combination(n_atoms, n_natural_isotops):
     
     allCombos = combinations_with_replacement(range(n_natural_isotops), n_atoms)   
     
-    combos1 = {}   # {0: [(0,0)], 1: [(0,1)], 2: [(1,1), (0,2)], ...}
+    combos1 = {}
     for combo in allCombos:
         combos1.setdefault(sum(combo), []).append(combo)
     
@@ -394,7 +391,6 @@ def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
 
     
     baseAtom = 'C'
-    # natAbun = natAbuns[baseAtom]
     
     nAtoms = len(atom_nos)
     

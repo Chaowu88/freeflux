@@ -14,7 +14,6 @@ from ..core.mdv import MDV
 from ..analysis.simulate import Simulator
 from ..io.inputs import read_preset_values_from_file 
 from ..io.results import InstSimResults
-from time import time#!!!
 
 
 
@@ -171,23 +170,12 @@ class InstSimulator(Simulator):
             If n_jobs > 1, decomposition job will run in parallel.
         '''
         
-        # network decomposition
         self._decompose_network(n_jobs, lump = False)
-        
-        # lambdify matrix A and B
         self._lambdify_matrix_As_and_Bs()
-        
-        # lambdify matrix M
         self._lambdify_matrix_Ms()        
-        
-        # calculate MDVs of substrate EMU
         self._calculate_substrate_MDVs()
-        
-        # calculate initial X and Y at t0
         self._calculate_initial_matrix_Xs()
         self._calculate_initial_matrix_Ys()
-        
-        # build simulated MDVs at t0
         self._build_initial_sim_MDVs()
         
 

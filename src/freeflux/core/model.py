@@ -3,7 +3,7 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/16/2020'
+__date__ = '02/16/2022'
 
 
 
@@ -26,8 +26,6 @@ from ..analysis.inst_simulate import InstSimulator
 from ..analysis.fit import Fitter
 from ..analysis.inst_fit import InstFitter
 from ..optim.optim import Optimizer
-from time import time
-from os import getpid
 
 
 
@@ -207,23 +205,8 @@ class Model():
         self.concentrations_range = OrderedDict()
         self.total_fluxes = pd.Series(dtype = float)
         self.concentrations = pd.Series(dtype = float)
-        
-        
-    """    
-    def __hash__(self):
-        
-        return hash(self.name)
-        
-        
-    def __eq__(self, other):
-        '''
-        Parameters
-        other: Model
-        '''
-        
-        return self.name == other.name
-    """    
-        
+     
+
     def add_reactions(self, reactions):
         '''
         Parameters
@@ -275,10 +258,8 @@ class Model():
             Header line starts with "#", and will be skiped.
         '''
         
-        # read reactions
         dataRaw = read_model_from_file(file)
         
-        # delete whitespaces
         data = pd.DataFrame()
         for col, ser in dataRaw.iteritems():
             if ser.dtype == object:
@@ -286,7 +267,6 @@ class Model():
             else:
                 data[col] = ser
         
-        # build model
         for rxn, (subsStr, prosStr, rev) in data.iterrows():
             v = Reaction(rxn, reversible = bool(int(rev)))
             
@@ -587,8 +567,7 @@ class Model():
             currentEMU = toSearch.pop()
             searched.append(currentEMU)
                     
-            # get precursor EMUs
-            formingRxns = list(set(chain(*[cell for cell in MAM[currentEMU.metabolite_id] if cell != []])))   # set to unique the rxns
+            formingRxns = list(set(chain(*[cell for cell in MAM[currentEMU.metabolite_id] if cell != []])))
             for formingRxn in formingRxns:
                 
                 if formingRxn.reversible:
@@ -613,10 +592,8 @@ class Model():
                     asProMetabs = [asProMetabs]
                 
                 
-                for asProMetab in asProMetabs:   # in case currentEMU is in identical products, 
-                                                 # then all identical products will be traced
-                    currentEMU = EMU(currentEMU.id, asProMetab, currentEMU.atom_nos)   # currentEMU.metabolite should
-                                                                                       # be product of its formingRxn
+                for asProMetab in asProMetabs:
+                    currentEMU = EMU(currentEMU.id, asProMetab, currentEMU.atom_nos)
                     preEMUsInfo = formingRxn._find_precursor_EMUs(currentEMU, direction = direction)
                     
                     for preEMUs, coe in preEMUsInfo:
@@ -642,10 +619,8 @@ class Model():
             Size => original EMU adjacency matrix (EAM), cells are symbolic expression of flux。
         '''
         
-        # find all precursor EMUs using breadth first search (BSF)
         EAMsInfo = self._BFS(iniEMU)
         
-        # make EAMs of different size
         EAMs = {}
         for size, EMUsInfo in EAMsInfo.items():
             
@@ -663,7 +638,7 @@ class Model():
                 else:
                     idx = tuple(preEMUs)
                 
-                EAM.loc[[idx], col] += flux   # use [idx] because idx could be tuple
+                EAM.loc[[idx], col] += flux
             
             EAMs[size] = EAM
         
@@ -745,25 +720,18 @@ class Model():
             for emu in lumpedEAM.columns:
                 
                 preEMUs = lumpedEAM.index[lumpedEAM[emu] != 0]
-                if preEMUs.size == 1:   # EMU with sole precursor is a candidate to be lumped
-                    #preEMU = preEMUs.item() # item deprecated soon
+                if preEMUs.size == 1:
                     preEMU = preEMUs[0]
                     
                     if emu != iniEMU and (preEMU not in lumpedEAM.columns or lumpedEAM.loc[emu, preEMU] == 0):
-                        # EMU can not be (1) iniEMU which shall not be lumped; 
-                        # (2) B in in A <-> B -> C, otherwise A -> A after B is lumped
-                        
                         lumpedEAM.drop(emu, axis = 1, inplace = True)
-                        
                         lumpedEAM.index = self._replace_list_item(lumpedEAM.index, emu, preEMU)
                         
-                        for j in range(i):   # replace EMU with preEMU in larger sized EAM,
-                                             # replacement happens only in source EMUs
+                        for j in range(i):
                             largerEAM = lumpedEAMs[orderedSizes[j]]
                             largerEAM.index = self._replace_list_item(largerEAM.index, emu, preEMU)
                         
-                        # combine rows with identical index
-                        lumpedEAM = self._uniquify_dataFrame_index(lumpedEAM)   #!
+                        lumpedEAM = self._uniquify_dataFrame_index(lumpedEAM)
                         upper = self._uniquify_dataFrame_index(lumpedEAM.loc[lumpedEAM.columns, :])
                         lower = self._uniquify_dataFrame_index(lumpedEAM.loc[lumpedEAM.index.difference(lumpedEAM.columns), :])
                         lumpedEAM = pd.concat((upper, lower))
@@ -796,13 +764,10 @@ class Model():
                     
                     equivEMU = emu.equivalent
                     if equivEMU in combinedEAM.columns:   
-                    # EMU < equivEMU because columns of combinedEAM is sorted
-                        
-                        # combine columns
+
                         combinedEAM.loc[:, emu] = combinedEAM.loc[:, [emu, equivEMU]].sum(axis = 1) / 2
                         combinedEAM.drop(equivEMU, axis = 1, inplace = True)
                         
-                        # combine rows
                         combinedEAM.loc[emu, :] = combinedEAM.loc[[emu, equivEMU], :].sum()
                         combinedEAM.drop(equivEMU, inplace = True)
                         
@@ -833,7 +798,6 @@ class Model():
         EMUs in sequential reactions can not be lumped in transient MFA.
         '''
         
-        # set CPU affinity in Linux
         import platform
         if platform.system() == 'Linux':
             import os
@@ -868,13 +832,9 @@ class Model():
         nonSourceEMUunion = EAM2.columns.union(EAM1.columns)
         sourceEMUunion = EAM2.index.difference(EAM2.columns).union(EAM1.index.difference(EAM1.columns))
         
-        #nonSourceEMUdiff = EAM2.columns.difference(EAM1.columns)
-        #sourceEMUdiff = EAM2.index.difference(EAM2.columns).difference(EAM1.index.difference(EAM1.columns))
-        
         mergedEAM = pd.DataFrame(Integer(0), index = nonSourceEMUunion.append(sourceEMUunion), columns = nonSourceEMUunion)
         mergedEAM.loc[EAM1.index, EAM1.columns] = EAM1
         mergedEAM.loc[EAM2.index, EAM2.columns] = EAM2
-        #mergedEAM.loc[nonSourceEMUdiff.append(sourceEMUdiff), sourceEMUdiff] = EAM2
         
         return mergedEAM
     
@@ -896,43 +856,11 @@ class Model():
         maxsize = max([max(EAMs) for EAMs in EAMsAll])
         for size in range(1, maxsize+1):
             EAMCurrentSize = list(filter(lambda x: isinstance(x, pd.DataFrame), [EAMs.get(size, 0) for EAMs in EAMsAll]))
-            if EAMCurrentSize:   # in case there is no EAM in current size
+            if EAMCurrentSize:
                 mergedEAMs[size] = reduce(self._merge_EAMs, EAMCurrentSize)
         
         return mergedEAMs            
-    
-    """
-    def decompose_network(self, metabolites, atom_nos, lump = True):
-        '''
-        Parameters
-        metabolites: list of str
-            list of metabolite IDs from which initial EMU will be generated to start the decomposition
-        atom_nos: list of int list or list of str
-            atom NOs of corresponding metabolites, len(atom_nos) should be equal to len(metabolites),
-            e.g., [[1,2,3], [1,2,3,4]] or ['123', '1234']
-            
-        Returns
-        mergedEAMs: dict of df
-            EMU adjacency matrix (EAM) of different size by merging results of all EMUs
-        '''
         
-        emus = []
-        for metabid, atomNOs in zip(metabolites, atom_nos):
-            if not isinstance(atomNOs, str):
-                atomNOs = ''.join(map(str, atomNOs))
-            emus.append(EMU(metabid+'_'+atomNOs, Metabolite(metabid), atomNOs))
-        
-        EAMsAll = []
-        for emu in emus:
-            
-            EAMs = self.get_emu_adjacency_matrices(emu)
-            
-            EAMsAll.append(EAMs)
-            
-        mergedEAMs = self._merge_all_EAMs(*EAMsAll)
-        
-        return mergedEAMs
-    """    
     
     def _decompose_network(self, metabolites, atom_nos, lump = True, n_jobs = 1):
         '''
@@ -1051,6 +979,7 @@ class Model():
     def fitter(self, kind):
         '''
         Parameters
+        ----------
         kind: {"ss", "inst"}
             * If "ss", fitting at isotopic steady state is performed.
             * If "inst", fitting at isotopically nonstationary state is performed.

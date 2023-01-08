@@ -55,15 +55,6 @@ class FBAResults():
         Optimal objective.
     opt_fluxes: OrderedDict
         Optimal fluxes.
-
-    Attributes
-    ----------
-    objective: str
-        Objective function.
-    opt_objective: float
-        Optimal objective value.
-    opt_fluxes: dict
-        Optimal net fluxes.
     '''
         
     def __init__(self, obj, opt_obj, opt_fluxes):
@@ -125,11 +116,6 @@ class FVAResults():
     ----------
     flux_ranges: dict
         Reaction ID => [lower bound, upper bound].
-
-    Attributes
-    ----------
-    flux_ranges: dict
-        Flux rangs by flux variability analysis.
     '''
     
     def __init__(self, flux_ranges):
@@ -162,11 +148,6 @@ class SimResults():
     ----------
     simulated_MDVs: dict
         EMU ID => MDV.
-
-    Attributes
-    ----------
-    simulated_EMUs: list
-        IDs of simulated EMUs.
     '''
     
     def __init__(self, simulated_MDVs):
@@ -210,13 +191,6 @@ class InstSimResults():
     ----------
     simulated_inst_MDVs: dict
         EMU IDs => {timepoints => MDV}.
-
-    Attributes
-    ----------
-    simulated_EMUs: list
-        IDs of simulated EMUs.
-    timepoints: list
-        Timepoints to sample MDVs.
     '''
     
     def __init__(self, simulated_inst_MDVs):
@@ -322,15 +296,6 @@ class FitResults():
         Inversed covariance matrix of measured fluxes.
     is_success: bool
         Whether the optimization is successful.
-
-    Attributes
-    ----------
-    opt_objective: float
-        Optimal objective value.
-    opt_total_fluxes: dict
-        Optimal total fluxes.
-    opt_net_fluxes: dict
-        Optimal net fluxes.
     '''
     
     def __init__(self, opt_total_fluxes, opt_net_fluxes, opt_obj, opt_resids, n_meas, n_params, sim_MDVs, 
@@ -440,7 +405,7 @@ class FitResults():
         return self.is_success    
     
     
-    def chi2_test(self, confidence_level = 0.95):
+    def chi2_test(self, confidence_level = 0.999):
         '''
         This method performs chi square test of the optimal objective.
         Actually, SSR < LB of chi square interval can be also considered as successful.
@@ -631,6 +596,14 @@ class FitResults():
     
     
 class FitMCResults():
+    '''
+    Parameters
+    ----------
+    total_fluxes_set: list of ser
+        Set of optimal total fluxes.
+    net_fluxes_set: list of ser
+        Set of optimal net fluxes.    
+    '''
     
     def __init__(self, total_fluxes_set, net_fluxes_set):
         '''

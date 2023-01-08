@@ -3,7 +3,7 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/26/2020'
+__date__ = '02/26/2022'
 
 
 
@@ -41,22 +41,16 @@ class EMU():
     ----------
     id: str
         EMU ID
-    
     metabolite: Metabolite
-        Which metabolite the EMU comes from.
-        
+        Which metabolite the EMU comes from.    
     metabolite_id: str
         Metabolite ID.
-    
     atom_nos: list of int
         Atom NOs, sorted by number.
-    
     size: int
         Size of EMU.
-    
     equivalent_atom_nos: None or list of int
-        Equivalent atom NOs, sorted by number.
-        
+        Equivalent atom NOs, sorted by number.   
     equivalent: EMU
         Equivalent of EMU.
     '''

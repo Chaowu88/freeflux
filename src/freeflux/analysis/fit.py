@@ -21,7 +21,6 @@ from ..io.results import FitResults, FitMCResults
 from ..utils.utils import Calculator
 from ..utils.progress import Progress
 from ..solver.nlpsolver import MFAModel 
-from time import time
 
 
 
@@ -462,40 +461,17 @@ class Fitter(Optimizer, Simulator):
             If n_jobs > 1, preparation will run in parallel.
         '''
         
-        # network decomposition
         self._decompose_network(n_jobs)
-        
-        # calculate null space
         self._calculate_null_space()
-        
-        # calculate transfer matrix converting total flux to net flux
         self._calculate_transform_matrix()
-        
-        # lambdify matrix A and B 
         self._lambdify_matrix_As_and_Bs()
-        
-        # calculate derivatives of matrix A and B
-        self._calculate_matrix_As_and_Bs_derivatives_p('ss', n_jobs)#!time-costing
-        
-        # calculate substrate MDVs
-        self._calculate_substrate_MDVs(dilution_from)#!time-costing
-        
-        # calculate derivatives of substrate MDVs
-        self._calculate_substrate_MDV_derivatives_p('ss', dilution_from)#!time-costing
-        
-        # calculate covariance matrix of MDVs
+        self._calculate_matrix_As_and_Bs_derivatives_p('ss', n_jobs)
+        self._calculate_substrate_MDVs(dilution_from)
+        self._calculate_substrate_MDV_derivatives_p('ss', dilution_from)
         self._calculate_measured_MDVs_inversed_covariance_matrix()
-        
-        # calculate covariance matrix of fluxes
         self._calculate_measured_fluxes_inversed_covariance_matrix()
-        
-        # calculate derivative of measured fluxes
         self._calculate_measured_fluxes_derivative_p('ss')
-        
-        # set default bounds for net fluxes
         self._set_default_flux_bounds()
-        
-        # estimate fluxes range by FVA
         self._estimate_fluxes_range(self.model.unbalanced_metabolites)
         
     
@@ -570,7 +546,7 @@ class Fitter(Optimizer, Simulator):
         with Progress('fitting', silent = not show_progress):
             res = optModel.solve_flux(tol, max_iters)
 
-        return FitResults(*res[:7], deepcopy(res[7]), res[8], deepcopy(res[9]), *res[10:])   #! deepcopy
+        return FitResults(*res[:7], deepcopy(res[7]), res[8], deepcopy(res[9]), *res[10:])
     
     
     def _solve_with_confidence_intervals(self, fit_measured_fluxes, ini_fluxes, solver, 
@@ -593,13 +569,11 @@ class Fitter(Optimizer, Simulator):
             # of estimations in each worker. 
         '''
         
-        # set CPU affinity in Linux
         import platform
         if platform.system() == 'Linux':
             import os
             os.sched_setaffinity(os.getpid(), range(os.cpu_count()))
 
-        # regenerate self.model.matrix_As and self.model.matrix_Bs
         self._lambdify_matrix_As_and_Bs()   
         
         if ini_fluxes is not None:
@@ -660,8 +634,6 @@ class Fitter(Optimizer, Simulator):
         self._check_dependencies(fit_measured_fluxes)
         
         self._unset_matrix_As_and_Bs()
-        # clear self.model.matrix_As and self.model.matrix_Bs 
-        # since lambdified objects can't be pickled
 
         if n_runs <= n_jobs:
             nruns_worker = 1

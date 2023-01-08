@@ -20,7 +20,6 @@ from .inst_simulate import InstSimulator
 from .fit import Fitter
 from ..solver.nlpsolver import InstMFAModel
 from ..utils.progress import Progress
-from time import time
 
 
 
@@ -316,63 +315,26 @@ class InstFitter(Fitter, InstSimulator):
             If n_jobs > 1, decomposition job will run in parallel.
         '''    
         
-        # network decomposition
         self._decompose_network(n_jobs)
-        
-        # set timepoints
         self._set_timepoints()
-        
-        # calculate null space
         self._calculate_null_space()
-        
-        # calculate transfer matrix converting total flux to net flux
         self._calculate_transform_matrix()
-        
-        # lambdify matrix A and B
         self._lambdify_matrix_As_and_Bs()
-        
-        # calculate derivatives of matrix A and B
-        self._calculate_matrix_As_and_Bs_derivatives_p('inst', n_jobs)#!time-costing
-        
-        # lambdify matrix M
+        self._calculate_matrix_As_and_Bs_derivatives_p('inst', n_jobs)
         self._lambdify_matrix_Ms()
-        
-        # calculate derivatives of matrix M
         self._calculate_matrix_Ms_derivatives_p()
-        
-        # calculate substrate MDVs
-        self._calculate_substrate_MDVs(dilution_from)#!time-costing
-        
-        # calculate derivatives of substrate MDVs
-        self._calculate_substrate_MDV_derivatives_p('inst', dilution_from)#!time-costing
-        
-        # calculate covariance matrix of MDVs
+        self._calculate_substrate_MDVs(dilution_from)
+        self._calculate_substrate_MDV_derivatives_p('inst', dilution_from)
         self._calculate_measured_inst_MDVs_inversed_covariance_matrix()
-        
-        # calculate covariance matrix of fluxes
         self._calculate_measured_fluxes_inversed_covariance_matrix()
-        
-        # calculate derivative of measured fluxes
         self._calculate_measured_fluxes_derivative_p('inst')
-        
-        # calculate initial X and Y at t0
         self._calculate_initial_matrix_Xs()
         self._calculate_initial_matrix_Ys()
-        
-        # calculate initial X_der_p and Y_der_p at t0
         self._calculate_initial_matrix_Xs_derivatives_p()
         self._calculate_initial_matrix_Ys_derivatives_p()
-        
-        # set default bounds for net fluxes
         self._set_default_flux_bounds()
-        
-        # estimate fluxes range by FVA
         self._estimate_fluxes_range(self.model.unbalanced_metabolites)
-        
-        # set default bounds for concentrations
         self._set_default_concentration_bounds()
-        
-        # estimate concentrations range
         self._estimate_concentrations_range()
     
         
@@ -463,7 +425,7 @@ class InstFitter(Fitter, InstSimulator):
         with Progress('INST fitting', silent = not show_progress):
             res = optModel.solve_flux(tol, max_iters)
 
-        return InstFitResults(*res[:8], deepcopy(res[8]), res[9], deepcopy(res[10]), *res[11:])   #! deepcopy 
+        return InstFitResults(*res[:8], deepcopy(res[8]), res[9], deepcopy(res[10]), *res[11:])
 
 
     def _solve_with_confidence_intervals(self, fit_measured_fluxes, ini_fluxes, ini_concs, 
@@ -488,13 +450,11 @@ class InstFitter(Fitter, InstSimulator):
             # of estimations in each worker.
         '''
 
-        # set CPU affinity in Linux
         import platform
         if platform.system() == 'Linux':
             import os
             os.sched_setaffinity(os.getpid(), range(os.cpu_count()))
 
-        # regenerate self.model.matrix_As, self.model.matrix_Bs and self.model.matrix_Ms
         self._lambdify_matrix_As_and_Bs()
         self._lambdify_matrix_Ms()
         
@@ -566,8 +526,6 @@ class InstFitter(Fitter, InstSimulator):
         
         self._unset_matrix_As_and_Bs()
         self._unset_matrix_Ms()
-        # clear self.model.matrix_As, self.model.matrix_Bs and self.model.matrix_Ms
-        # since lambdified objects can't be pickled
 
         if n_runs <= n_jobs:
             nruns_worker = 1

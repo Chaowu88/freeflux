@@ -194,7 +194,6 @@ def _confidence_intervals_le(res, irr, cov, dof, confidence_level):
         Confidence level, e.g., 0.95 as 95% confidence level.
     '''
     
-    #errors = t.ppf((1+confidence_level)/2, dof)*np.diag(cov)**0.5
     errors = t.ppf((1+confidence_level)/2, dof)/(dof+1)**0.5*np.diag(cov)**0.5
     lbs = res - errors
     ubs = res + errors
@@ -227,7 +226,7 @@ def _confidence_intervals_mc(res_set, irr, confidence_level):
     
     quantile = resSet.quantile([(1-confidence_level)/2, (1+confidence_level)/2])
     mask = resSet.apply(lambda col: col.between(*quantile[col.name]), axis = 0)
-    selected = resSet[mask.all(axis = 1)]   # select if all fluxes/concs in quantile range
+    selected = resSet[mask.all(axis = 1)]
 
     if selected.empty:
         raise ValueError('can not estimate CIs, need more Monte Carlo runs')

@@ -8,7 +8,6 @@ __date__ = '03/30/2020'
 
 
 
-import re
 from collections.abc import Iterable
 from functools import partial
 from ..core.mdv import MDV
@@ -16,7 +15,6 @@ from ..io.inputs import read_preset_values_from_file
 from ..io.results import SimResults
 from ..utils.utils import Calculator
 from ..utils.context import Context
-from time import time
 
 
 
@@ -39,7 +37,7 @@ class Simulator():
         
         self.model = model
         self.calculator = Calculator(self.model)
-        self.contexts = []   # stack used to store contexts
+        self.contexts = []
         
     
     def __enter__(self):
@@ -293,13 +291,8 @@ class Simulator():
             If n_jobs > 1, decomposition job will run in parallel.
         '''
         
-        # network decomposition
         self._decompose_network(n_jobs)
-        
-        # lambdify matrix A and B
         self._lambdify_matrix_As_and_Bs()
-            
-        # calculate MDVs of substrate EMU
         self._calculate_substrate_MDVs()    
     
     

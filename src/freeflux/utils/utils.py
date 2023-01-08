@@ -21,7 +21,6 @@ from scipy.linalg import null_space, pinv2, expm
 from sympy import symbols, lambdify, Matrix, derive_by_array
 from multiprocessing import Pool
 from ..core.mdv import MDV, get_natural_MDV, get_substrate_MDV, conv, diff_conv
-from time import time
 
 
 
@@ -55,8 +54,7 @@ class Calculator():
         for t in ts:
             self.model.timepoints.append(t)
             
-        
-    # N and T
+    
     def _calculate_null_space(self):
         
         S = self.model.get_total_stoichiometric_matrix(self.model.unbalanced_metabolites)
@@ -77,7 +75,6 @@ class Calculator():
         self.model.transform_matrix = transMat.values
     
     
-    # substrate MDVs
     def _calculate_substrate_MDVs(self, extra_subs):
         
         if extra_subs is None:
@@ -160,7 +157,6 @@ class Calculator():
                                                                        axis = 1)
     
     
-    # measured fluxes
     def _calculate_measured_fluxes_inversed_covariance_matrix(self):
         
         sds = np.array([sd for _, sd in self.model.measured_fluxes.values()])
@@ -222,7 +218,6 @@ class Calculator():
         self.model.measured_fluxes = deepcopy(self.ori_measured_fluxes)
         
     
-    # measured MDVs
     def _calculate_measured_MDVs_inversed_covariance_matrix(self):
         
         sds = np.concatenate([sd for _, sd in self.model.measured_MDVs.values()])
@@ -271,7 +266,6 @@ class Calculator():
         self.model.measured_inst_MDVs = deepcopy(self.ori_measured_inst_MDVs)
     
 
-    # A and B
     @staticmethod
     def _calculate_matrix_A_and_B_derivatives_v(EAM, fluxids):
         '''
@@ -288,7 +282,6 @@ class Calculator():
             Derivatives of A(B) w.r.t. total fluxes in shape of (len(total fluxes), A(B).shape[0], A(B).shape[1]).
         '''
         
-        # set CPU affinity in Linux
         import platform
         if platform.system() == 'Linux':
             import os
@@ -305,8 +298,8 @@ class Calculator():
         matA = Matrix(A)
         matB = Matrix(B)
         
-        matrix_A_der = np.array(derive_by_array(matA, symbols(fluxids)), dtype = float)#!very time-costing
-        matrix_B_der = np.array(derive_by_array(matB, symbols(fluxids)), dtype = float)#!very time-costing
+        matrix_A_der = np.array(derive_by_array(matA, symbols(fluxids)), dtype = float)
+        matrix_B_der = np.array(derive_by_array(matB, symbols(fluxids)), dtype = float)
         
         return matrix_A_der, matrix_B_der
     
@@ -337,7 +330,6 @@ class Calculator():
             for size, EAM in self.model.EAMs.items():
                 ABder = pool.apply_async(func = self._calculate_matrix_A_and_B_derivatives_v, 
                                          args = (EAM, self.model.totalfluxids))
-                # func should be static method instead of instance method
                 matrix_ABs_der[size] = ABder
             
             pool.close()    
@@ -435,7 +427,6 @@ class Calculator():
             self.model.matrix_As[size] = [lambA, fluxidsA, A.columns.tolist()]
             self.model.matrix_Bs[size] = [lambB, fluxidsB, B.columns.tolist()]
     
-    # M
     def _calculate_matrix_Ms_derivatives_u(self):
         
         nfreefluxes = self.model.null_space.shape[1]
@@ -453,7 +444,7 @@ class Calculator():
         matrix_Ms_der = {}
         for size, EAM in self.model.EAMs.items():            
             matM = Matrix(np.diag(symbols([emu.metabolite_id for emu in EAM.columns])))
-            matrix_M_der = np.array(derive_by_array(matM, symbols(self.model.concids)), dtype = float)#!very time-costing
+            matrix_M_der = np.array(derive_by_array(matM, symbols(self.model.concids)), dtype = float)
             matrix_Ms_der[size] = matrix_M_der
             
         return matrix_Ms_der
@@ -477,7 +468,6 @@ class Calculator():
             self.model.matrix_Ms[size] = [lambM, metabids]
         
     
-    # initial X(Y) and their derivatives
     def _calculate_initial_matrix_Xs(self):
         
         for size in self.model.matrix_As:
@@ -534,8 +524,7 @@ class Calculator():
                 if productEMU.id in self.model.target_EMUs:
                     self.model.initial_sim_MDVs[productEMU.id] = {0: MDV(iniMDV)}
                     
-    
-    # simulated MDV and its derivative    
+        
     def _calculate_MDVs(self):
         '''
         This method simulate MDVs at isotopically steady state.
@@ -590,7 +579,6 @@ class Calculator():
         simMDVsDer = {}
         for size in sorted(self.model.matrix_As):
             
-            # make A, inv(A), B, Ader and Bder
             lambA, fluxidsA, productEMUs = self.model.matrix_As[size]
             lambB, fluxidsB, sourceEMUs = self.model.matrix_Bs[size]
             
@@ -599,10 +587,9 @@ class Calculator():
             
             Ainv = pinv2(A, check_finite = True)
             
-            Ader = self.model.matrix_As_der_p[size]   # (len(u), n(MDVs), len(MDV))
-            Bder = self.model.matrix_Bs_der_p[size]   # (len(u), n(MDVs), len(MDV))
+            Ader = self.model.matrix_As_der_p[size]
+            Bder = self.model.matrix_Bs_der_p[size]
             
-            # calculate Y and dYdv
             Y = []
             Yder = []
             for sourceEMU in sourceEMUs:
@@ -622,14 +609,12 @@ class Calculator():
                 Y.append(sourceMDV)
                 Yder.append(sourceMDVder)
             Y = np.array(Y)
-            Yder = np.array(Yder).swapaxes(1,2).swapaxes(0,1)   # (len(u), n(MDVs), len(MDV))
+            Yder = np.array(Yder).swapaxes(1,2).swapaxes(0,1)
             
-            # calculate X and dXdv
             X = Ainv@B@Y
             Xder = Ainv@(Bder@Y + B@Yder - Ader@X)
-            Xder = Xder.swapaxes(0,1).swapaxes(1,2)   # (n(MDVs), len(MDV), len(u))
+            Xder = Xder.swapaxes(0,1).swapaxes(1,2)
             
-            # update
             simMDVs.update(zip(productEMUs, X))
             simMDVsDer.update(zip(productEMUs, Xder))
             
@@ -650,8 +635,8 @@ class Calculator():
         '''
         
         simInstMDVs = {}
-        Ys = {}   # t => {size => Y}
-        Xs = {}   # t => {size => X}
+        Ys = {}
+        Xs = {}
 
         t1 = 0.0
         for size in sorted(self.model.matrix_As):
@@ -661,7 +646,7 @@ class Calculator():
             X_t1 = self.model.initial_matrix_Xs[size]
             Xs.setdefault(t1, {})[size] = X_t1
 
-        for t in self.model.timepoints:   # already sorted
+        for t in self.model.timepoints:
             if t != 0.0:
                 t0 = t1
                 t1 = t            
@@ -732,10 +717,10 @@ class Calculator():
         
         simInstMDVs = {}
         simInstMDVsDer = {}
-        Ys = {}   # t => {size => Y}
-        Xs = {}   # t => {size => X}
-        Yders = {}   # t => {size => Yder}
-        Xders = {}   # t => {size => Xder}
+        Ys = {}
+        Xs = {}
+        Yders = {}
+        Xders = {}
         
         t1 = 0.0
         for size in sorted(self.model.matrix_As):
@@ -751,7 +736,7 @@ class Calculator():
             Xder_t1 = self.model.initial_matrix_Xs_der_p[size]
             Xders.setdefault(t1, {})[size] = Xder_t1
         
-        for t in self.model.timepoints:   # already sorted
+        for t in self.model.timepoints:
             if t != 0.0:
                 t0 = t1
                 t1 = t            
@@ -767,9 +752,9 @@ class Calculator():
                     M = lambM(*self.model.concentrations[metabids])
                     Minv = pinv2(M, check_finite = True)
                     
-                    Ader = self.model.matrix_As_der_p[size]   # (len(p), n(MDVs), len(MDV))
-                    Bder = self.model.matrix_Bs_der_p[size]   # (len(p), n(MDVs), len(MDV))
-                    Mder = self.model.matrix_Ms_der_p[size]   # (len(p), n(MDVs), len(MDV))
+                    Ader = self.model.matrix_As_der_p[size]
+                    Bder = self.model.matrix_Bs_der_p[size]
+                    Mder = self.model.matrix_Ms_der_p[size]
                     Minvder = -Minv@Mder@Minv
                     
                     F = Minv@A
@@ -779,19 +764,16 @@ class Calculator():
                     Gamma = (Phi - I)@Finv
                     Omega = (Gamma/deltat - I)@Finv
                     
-                    # calculate X, Y at t0
                     X_t0 = Xs[t0][size]
                     
                     Y_t0 = Ys[t0][size]
                     G_t0 = Minv@B@Y_t0
                     
-                    # calculate Xder, Yder at t0
                     Xder_t0 = Xders[t0][size]
                     
                     Yder_t0 = Yders[t0][size]
                     H_t0 = Minvder@A@X_t0 + Minv@Ader@X_t0 - Minv@B@Yder_t0 - Minvder@B@Y_t0 - Minv@Bder@Y_t0
                     
-                    # calculate Y, Yder at t1
                     Y_t1 = []
                     Yder_t1 = []
                     for sourceEMU in sourceEMUs:
@@ -813,16 +795,14 @@ class Calculator():
                         Y_t1.append(sourceMDV)
                         Yder_t1.append(sourceMDVder)
                     Y_t1 = np.array(Y_t1)
-                    Yder_t1 = np.array(Yder_t1).swapaxes(1,2).swapaxes(0,1)   # (len(p), n(MDVs), len(MDV))
+                    Yder_t1 = np.array(Yder_t1).swapaxes(1,2).swapaxes(0,1)
                     
-                    # calculate X and Xder at t1
                     G_t1 = Minv@B@Y_t1
                     X_t1 = Phi@X_t0 - Gamma@G_t0 - Omega@(G_t1 - G_t0)
                     
                     H_t1 = Minvder@A@X_t1 + Minv@Ader@X_t1 - Minv@B@Yder_t1 - Minvder@B@Y_t1 - Minv@Bder@Y_t1
-                    Xder_t1 = Phi@Xder_t0 + Gamma@H_t0 + Omega@(H_t1 - H_t0)   # (len(p), n(MDVs), len(MDV))
+                    Xder_t1 = Phi@Xder_t0 + Gamma@H_t0 + Omega@(H_t1 - H_t0)
                     
-                    # update
                     Ys.setdefault(t1, {})[size] = Y_t1
                     Xs.setdefault(t1, {})[size] = X_t1
                     Yders.setdefault(t1, {})[size] = Yder_t1
@@ -831,7 +811,7 @@ class Calculator():
                     for productEMU, mdv_t1 in zip(productEMUs, X_t1):
                         simInstMDVs.setdefault(productEMU, {}).update({t1: mdv_t1})
                         
-                    Xder_t1 = Xder_t1.swapaxes(0,1).swapaxes(1,2)   # (n(MDVn), len(MDV), len(p))    
+                    Xder_t1 = Xder_t1.swapaxes(0,1).swapaxes(1,2)    
                     for productEMU, mdvder_t1 in zip(productEMUs, Xder_t1):
                         simInstMDVsDer.setdefault(productEMU, {}).update({t1: mdvder_t1})
                         

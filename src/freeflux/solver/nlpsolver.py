@@ -293,7 +293,7 @@ class MFAModel():
 
     def _get_nmeasurements(self, opt_resids):
 
-        return opt_resids.size - len(self.model.target_EMUs)
+        return opt_resids.size
 
          
     def _get_nparameters(self, opt_p):
@@ -546,22 +546,17 @@ class InstMFAModel(MFAModel):
         self.calculator._build_initial_sim_MDVs()
         sim_inst_MDVs = {}
         for emuid in self.model.target_EMUs:
-            instMDVs = self.model.initial_sim_MDVs[emuid].copy()   # add simulated MDVs at t0
+            instMDVs = self.model.initial_sim_MDVs[emuid].copy()
             instMDVs.update({t: sim_inst_MDVs_all[emuid][t] for t in sim_inst_MDVs_all[emuid]})
             sim_inst_MDVs[emuid] = instMDVs
 
         return exp_inst_MDVs, sim_inst_MDVs 
 
-
-    def _get_nmeasurements(self, opt_resids):
-
-        return opt_resids.size - sum(len(self.model.measured_inst_MDVs[emuid]) for emuid in self.model.target_EMUs)
-        
-
+    
     def solve_flux(self, tol = 1e-6, max_iters = 400, disp = False):
         
         self._initialize_total_fluxes_and_concs()
-        
+
         if self.solver == 'slsqp':
             opt_obj, opt_p, is_success = self._solve_flux_slsqp(tol, max_iters, disp)
         elif self.solver == 'ralg':

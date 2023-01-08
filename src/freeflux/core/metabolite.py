@@ -3,7 +3,7 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/16/2020'
+__date__ = '02/16/2022'
 
 
 
@@ -31,13 +31,10 @@ class Metabolite():
     ----------
     id: str
         Metabolite ID.
-    
     atoms_info: dict
         equivalent => coefficient, e.g., {'abcd': 1.0} or {'abcd': 0.5, 'dcba': 0.5}.
-    
     n_carbons: int
-        # of carbons in metabolite.
-        
+        # of carbons in metabolite. 
     host_reactions: set of Reaction or None
         Reactions hosting the metabolite.
     '''
