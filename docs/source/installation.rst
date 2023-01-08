@@ -37,4 +37,4 @@ FreeFlux also utilizes the modeling language Pyomo to formulate linear optimizat
 
 .. code-block:: python
   
-  conda install -c conda-forge ipopt glpk
+  conda install -c conda-forge glpk
