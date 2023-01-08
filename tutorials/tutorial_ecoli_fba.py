@@ -2,16 +2,9 @@
 # -*- coding: UTF-8 -*-
 
 
-r'''
-python C:\Users\cwu\Desktop\Software\FreeFlux\tutorials\tutorial_ecoli_fba.py   # TODO delete
-'''
 
-
-MODEL_FILE = r'C:\Users\cwu\Desktop\Software\FreeFlux/models/ecoli/reactions.xlsx'
-OUT_DIR = r'C:\Users\cwu\Desktop\Software\FreeFlux/results/ecoli/fba'
-# TODO
-# MODEL_FILE = '../models/ecoli/reactions.xlsx'
-# OUT_DIR = '..results/ecoli/fba'
+MODEL_FILE = '../models/ecoli/reactions.xlsx'
+OUT_DIR = '..results/ecoli/fba'
 
 
 from os import makedirs
@@ -34,7 +27,7 @@ def ecoli_fba():
         opt.prepare()
         res = opt.optimize(objective = {'biom': 1})
         
-    # print(res)
+    # save the results
     pd.Series(res.opt_fluxes).to_excel(OUT_DIR+'/estimated_fluxes.xlsx')
 
 
@@ -53,7 +46,7 @@ def ecoli_fva():
         opt.prepare()
         res = opt.estimate_fluxes_range(objective = {'biom': 1}, gamma = 0)
     
-    # print(res)
+    # save the results
     pd.DataFrame(res.flux_ranges, index = ['LB', 'UB']).T.to_excel(OUT_DIR+'/estimated_flux_ranges.xlsx')
 
 
