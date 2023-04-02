@@ -21,7 +21,7 @@ FreeFlux was tested in Python 3.7 and 3.8. It can be installed using *pip* from 
   python -m pip install --upgrade pip
   pip install freeflux
 
-or from source:
+or from source (install `git <https://git-scm.com/>`__ first):
 
 .. code-block:: python
 
