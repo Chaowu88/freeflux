@@ -47,6 +47,6 @@ The OpenOpt framework works well with Python 3.7, but may have problem with 3.8 
 
 .. code-block:: python
 
-  pip install numpy~=1.20.2
+  pip install "numpy>=1.20,<1.23"
   
 
