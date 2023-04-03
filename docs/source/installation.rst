@@ -24,7 +24,7 @@ or from source (install `git <https://git-scm.com/>`__ first):
 Solver installation
 -------------------
  
-FreeFlux requires the numerical optimization framework OpenOpt for nonlinear regression. It can be installed by:
+FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. It can be installed by:
  
 .. code-block:: python
  
@@ -40,7 +40,7 @@ FreeFlux utilizes the modeling language Pyomo to formulate linear optimization p
 Dependencies and Compatibility 
 ------------------------------
 
-FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. This framework works well with Python 3.7, but will have problem with 3.8 and above. The function *clock()* in Python built-in module `time` was removed since Python 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*.
+OpenOpt framework works well with Python 3.7, but may have problem with 3.8 and above. The function *clock()* in Python built-in module `time` was removed since Python 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*.
   
 .. Note::
   If exception "ModuleNotFoundError: No module named 'numpy'" is raised during the installation of openopt or FuncDesigner, please install numpy first.
