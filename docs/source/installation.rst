@@ -4,7 +4,7 @@ Installation
 Using PIP
 ---------
 
-FreeFlux was tested in Python 3.7 and 3.8, it can be installed with *pip* from PyPI:
+FreeFlux was tested in Python 3.7, 3.8, 3.9 and 3.10, it can be installed with *pip* from PyPI:
 
 .. code-block:: python
 
