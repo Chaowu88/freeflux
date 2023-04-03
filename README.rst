@@ -14,7 +14,7 @@ A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/in
 Installation
 ============
 
-FreeFlux was tested in Python 3.7 and 3.8. It can be installed using *pip* from PyPI:
+FreeFlux was tested in Python 3.7, 3.8, 3.9 and 3.10. It can be installed using *pip* from PyPI:
 
 .. code-block:: python
 
