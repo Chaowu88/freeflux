@@ -30,8 +30,17 @@ or from source (install `git <https://git-scm.com/>`__ first):
   
 Installation in an `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`__ is recommendated.
 
-.. Note::
-  FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`__ for nonlinear regression. It works well in Python 3.7 but may has compatibility issues in Python 3.8 and above. Please see `here <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`__ for solutions.
+Solver installation
+===================
+
+FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`__ for nonlinear regression. It can be installed by:
+
+.. code-block:: python
+
+  pip install openopt
+  pip install FuncDesigner
+
+The framework works well in Python 3.7 but may has compatibility issues in Python 3.8 and above. Please see `here <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`__ for solutions.
 
 Example Usage
 =============
