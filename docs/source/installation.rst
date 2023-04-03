@@ -21,17 +21,17 @@ or from source (install `git <https://git-scm.com/>`__ first):
 .. Note::
   Installation within a `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ is recommended.
   
- Solver installation
- -------------------
+Solver installation
+-------------------
  
- FreeFlux requires the numerical optimization framework OpenOpt for nonlinear regression. It can be installed by:
+FreeFlux requires the numerical optimization framework OpenOpt for nonlinear regression. It can be installed by:
  
- .. code-block:: python
+.. code-block:: python
  
   pip install openopt
   pip install FuncDesigner
   
-FreeFlux also utilizes the modeling language Pyomo to formulate linear optimization problem. By default, solver is not installed together with Pyomo, and thus should be installed independently.
+FreeFlux utilizes the modeling language Pyomo to formulate linear optimization problem. By default, solver is not installed together with Pyomo, and thus should be installed independently.
 
 .. code-block:: python
   
