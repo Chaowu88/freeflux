@@ -67,14 +67,18 @@ Here is an example script of flux estimation at steady state using the `toy mode
    model.read_from_file(MODEL_FILE)
    
    with model.fitter('ss') as fit:
-       fit.set_labeling_strategy('AcCoA', 
-                                 labeling_pattern = ['01', '11'], 
-                                 percentage = [0.25, 0.25], 
-                                 purity = [1, 1])
+       fit.set_labeling_strategy(
+           'AcCoA', 
+           labeling_pattern = ['01', '11'], 
+           percentage = [0.25, 0.25], 
+           purity = [1, 1]
+       )
        fit.set_flux_bounds('all', bounds = [-100, 100])
-       fit.set_measured_MDV('Glu_12345', 
-                            mean = [0.328,0.276,0.274,0.088,0.03,0.004], 
-                            sd = [0.01,0.01,0.01,0.01,0.01,0.01])
+       fit.set_measured_MDV(
+           'Glu_12345', 
+           mean = [0.328,0.276,0.274,0.088,0.03,0.004], 
+           sd = [0.01,0.01,0.01,0.01,0.01,0.01]
+       )
        fit.set_measured_flux('v1', mean = 10, sd = 1)
        fit.prepare()
        res = fit.solve()
