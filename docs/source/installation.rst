@@ -40,7 +40,7 @@ FreeFlux utilizes the modeling language Pyomo to formulate linear optimization p
 Dependencies and Compatibility 
 ------------------------------
 
-The OpenOpt framework works well with Python 3.7, but may have problem with 3.8 and above. The function *clock()* in Python built-in module `time` was removed since Python 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*. Alternatively, one can use the `corrected files <https://github.com/Chaowu88/freeflux/tree/main/openopt_patch>`__ to overwrite those with the same names in installation path.
+The OpenOpt framework works well with Python 3.7, but may have problem with 3.8 and above. The function *clock()* in Python built-in module `time` was removed since Python 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*. Alternatively, one can use the `corrected ones <https://github.com/Chaowu88/freeflux/tree/main/openopt_patch>`__ to overwrite those with the same name in the installation path.
   
 .. Note::
   If exception "ModuleNotFoundError: No module named 'numpy'" is raised during the installation of openopt or FuncDesigner, please install numpy first.
