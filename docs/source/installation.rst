@@ -28,6 +28,7 @@ FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt
  
 .. code-block:: python
  
+  conda activate your_env
   pip install openopt
   pip install FuncDesigner
   
