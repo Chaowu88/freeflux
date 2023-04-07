@@ -40,7 +40,7 @@ FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt
   pip install openopt
   pip install FuncDesigner
 
-Note that the framework is known to work well in Python 3.7, but may have compatibility issues in Python 3.8 and above.  In such cases, please refer to this `link <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`__ for solutions.
+Note that the framework is known to work well in Python 3.7, but may have compatibility issues in Python 3.8 and above.  In such cases, please refer to this `link <https://freeflux.readthedocs.io/en/latest/installation.html#dependencies-and-compatibility>`__ for solutions.
 
 FreeFlux uses the modeling language Pyomo to formulate linear optimization problem. By default, solvers are not installed together with Pyomo and should be installed independently. For example, to install the glpk solver, run the following command:
 
