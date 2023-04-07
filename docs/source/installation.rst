@@ -27,8 +27,7 @@ Solver installation
 FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. It can be installed by:
  
 .. code-block:: python
- 
-  conda activate your_env
+  
   pip install openopt
   pip install FuncDesigner
   
