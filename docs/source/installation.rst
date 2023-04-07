@@ -4,22 +4,32 @@ Installation
 Using PIP
 ---------
 
-FreeFlux was tested in Python 3.7, 3.8, 3.9 and 3.10, it can be installed with *pip* from PyPI:
+FreeFlux is compatible with Python versions 3.7 through 3.10 and can be easily installed using *pip* from PyPI. To get started, first upgrade pip using the following command:
 
 .. code-block:: python
 
   python -m pip install --upgrade pip
-  pip install freeflux
 
-or from source (install `git <https://git-scm.com/>`__ first):
+Next, install FreeFlux with the following command:
+
+.. code-block:: python
+
+  pip install freeflux  
+
+Alternatively, you can install FreeFlux from the source code by cloning the GitHub repository using the following command (assuming you have `git <https://git-scm.com/>`__ installed):
 
 .. code-block:: python
 
   git clone https://github.com/Chaowu88/freeflux.git /path/to/freeflux
-  pip install /path/to/freeflux
 
+Then, install FreeFlux using *pip*:
+
+.. code-block:: python
+
+  pip install /path/to/freeflux
+  
 .. Note::
-  Installation within a `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ is recommended.
+  Note that it's recommended to install FreeFlux within a `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ to avoid conflicts with other Python packages.
   
 Solver installation
 -------------------
