@@ -31,7 +31,7 @@ Then, install FreeFlux using *pip*:
 .. Note::
   Note that it's recommended to install FreeFlux within a `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ to avoid conflicts with other Python packages.
   
-Solver installation
+Solver Installation
 -------------------
  
 FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression, which can be installed with:
