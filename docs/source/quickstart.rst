@@ -1,12 +1,12 @@
 Quick Start
 ===========
 
-To begin with, we show here how to solve the metabolic fluxes at steady state with a toy model which includes the typical reactions in the TCA cycle with acetyl-CoA and aspartate as the initial substrates.
+To start, we will demonstrate how to calculate the metabolic fluxes at steady state using a toy model. This model includes typical reactions in the TCA cycle, with acetyl-CoA and aspartate as the initial substrates.
 
 Loading a Toy Model
 -------------------
 
-A model can be defined in a tab-separated values (.tsv) or Excel spreadsheet (.xlsx) file with the format as below.
+A model can be defined in either a tab-separated values (.tsv) or Excel spreadsheet (.xlsx) file with the following required format:
 
 .. list-table:: reactions.tsv
    :widths: 25 50 50 15
@@ -46,10 +46,10 @@ A model can be defined in a tab-separated values (.tsv) or Excel spreadsheet (.x
      - 0
      
 .. Note::
-  1. Letters in parenthesis indicates the C atom mapping in reactions.
-  2. ``#`` is required in the header.
+  1. The header must start with a '#' symbol.
+  2. The letters in parenthesis indicates the C atom mapping in reactions.
   
-The model can then be loaded by:
+Once the model is defined, it can be loaded using the following code:
 
 .. code-block:: python
    
@@ -62,10 +62,10 @@ The model can then be loaded by:
    model = Model('demo')
    model.read_from_file(MODEL_FILE)
    
-Specifying the Labeling Strategy
---------------------------------
+Setting the Labeling Strategy
+-----------------------------
 
-The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:`13`\C] AcCoA and 25% fully labeled acetyl-CoA, [U-\ :sup:`13`\C\ :sub:`2`\] AcCoA assuming 100% purity of these two tracers, respectively. The labeling strategy can be set with the following line:
+To solve the metabolic fluxes of a small metabolic network with acetyl-CoA and aspartate as initial substrates, we assume that 25% (mol%) of [2-\ :sup:`13`\C] AcCoA and 25% fully labeled [U-\ :sup:`13`\C\ :sub:`2`\] AcCoA are uptaken. These two tracers have 100% purity. We can specify the labeling strategy with the following code:
 
 .. code-block:: python
   
@@ -78,13 +78,13 @@ The small metabolic network uptakes 25% (mol%) C2 labeled acetyl-CoA, [2-\ :sup:
   )
 
 .. Note::
-   1. If the sum of percantage of the specified isotopomer tracers is less than 1, the remaining 1-sum will be considered as the unlabeled form (atoms in natural abundance).
-   2. Call this method for each substrate if multiple labeled substrates are used.
+   1. If the sum of the percentages of the specified isotopomer tracers is less than 1, the remaining 1-sum will be considered as the unlabeled form (atoms in natural abundance).
+   2. If you have multiple labeled substrates, you should call this method for each substrate.
    
-Adding Bounds for Fluxes
-------------------------
+Adding Flux Bounds
+------------------
 
-The search range for all fluxes or a specific flux can be set using ``set_flux_bounds``. Here we constrain the fluxes to the range from -100 to 100.
+We can set the search range for all fluxes or a specific flux using the ``set_flux_bounds`` method. Here, we set the fluxes to the range from -100 to 100:
 
 .. code-block:: python
 
@@ -93,7 +93,7 @@ The search range for all fluxes or a specific flux can be set using ``set_flux_b
 Reading the Measuremnets
 ------------------------
 
-The labeling pattern or mass isotopomer distribution vector (MDV) of measurable metabolites or metabolite fragments should be provided for the fitting as well as measured exchange reactions, e.g., substrate uptake, product secretion and specific growth rate. They can be provided using the lines:
+We need to provide the labeling pattern or mass isotopomer distribution vector (MDV) of measurable metabolites or metabolite fragments for the fitting, as well as the measured exchange reactions, such as substrate uptake, product secretion, and specific growth rate. We can provide them using the following code:
 
 .. code-block:: python
    
@@ -105,24 +105,24 @@ The labeling pattern or mass isotopomer distribution vector (MDV) of measurable 
    fit.set_measured_flux('v1', mean = 10, sd = 1)
 
 .. Note::
-   For input of a set of measured MDVs and fluxes, it is more convenient to read from a .tsv or xlsx. file by methods ``set_measured_MDVs_from_file`` and ``set_measured_fluxes_from_file``.
+   If you have a set of measured MDVs and fluxes, it is more convenient to read them from a .tsv or .xlsx file using the ``set_measured_MDVs_from_file`` and ``set_measured_fluxes_from_file`` methods.
    
 Solve the Fluxes
 ----------------
 
-Now we can solve the flux distribution in the toy model by:
+Now we can solve the flux distribution in the toy model using the following code:
 
 .. code-block:: python
    
    fit.prepare()
    res = fit.solve()
    
-The ``solve`` method returns a FitResults object. The estimated net and total (including both forward and backward fluxes in reversible reactions) fluxes can be accessed by the attributes ``opt_net_fluxes`` and ``opt_total_fluxes``.
+The ``solve`` method returns a FitResults object. You can access the estimated net and total (including both forward and backward fluxes in reversible reactions) fluxes using the ``opt_net_fluxes`` and ``opt_total_fluxes`` attributes.
 
-With Statement
---------------
+Using the with Statement
+------------------------
 
-The returned Fitter object by calling ``fitter`` method is actually a context manager, and thus the above flux estimation can also be done using the with statement:
+The ``fitter`` method returns a context manager, so you can also estimate the fluxes using the with statement, as shown in the following code:
 
 .. code-block:: python
    
