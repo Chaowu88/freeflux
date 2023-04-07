@@ -34,14 +34,14 @@ Then, install FreeFlux using *pip*:
 Solver installation
 -------------------
  
-FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression. It can be installed by:
+FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`_ for nonlinear regression, which can be installed with:
  
 .. code-block:: python
   
   pip install openopt
   pip install FuncDesigner
   
-FreeFlux utilizes the modeling language Pyomo to formulate linear optimization problem. By default, solver is not installed together with Pyomo, and thus should be installed independently. For example, to install glpk
+In addition, FreeFlux uses the modeling language Pyomo to formulate linear optimization problems. By default, solvers are not installed together with Pyomo, so you will need to install them independently. For example, to install the glpk solver:
 
 .. code-block:: python
   
@@ -50,10 +50,10 @@ FreeFlux utilizes the modeling language Pyomo to formulate linear optimization p
 Dependencies and Compatibility 
 ------------------------------
 
-The OpenOpt framework works well with Python 3.7, but may have problem with 3.8 and above. The function *clock()* in Python built-in module `time` was removed since Python 3.8, so manual correction of the installed openopt package is needed for compatible use. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts *ooIter.py*, *runProbSolver.py* and *result.py*. Alternatively, one can use the `corrected ones <https://github.com/Chaowu88/freeflux/tree/main/openopt_patch>`__ to overwrite those with the same name in the installation path.
+The OpenOpt framework works well with Python 3.7, but may have compatibility issues with 3.8 and above due to the removal of the *clock()* function in Python's built-in module `time`. To use FreeFlux with Python 3.8 and above, manual correction of the installed OpenOpt package is needed. Specifically, ``clock`` in either import statement or function calls should be replaced with ``perf_counter`` in scripts ooIter.py, runProbSolver.py and result.py. Alternatively, one can use the `corrected ones <https://github.com/Chaowu88/freeflux/tree/main/openopt_patch>`__ to overwrite those with the same name in the installation path.
   
 .. Note::
-  If exception "ModuleNotFoundError: No module named 'numpy'" is raised during the installation of openopt or FuncDesigner, please install numpy first.
+  Note: If you encounter the "ModuleNotFoundError: No module named 'numpy'" exception during the installation of OpenOpt or FuncDesigner, please install numpy first using the following command:
 
 .. code-block:: python
 
