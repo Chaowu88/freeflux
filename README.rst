@@ -1,15 +1,15 @@
 FreeFlux
 ========
 
-FreeFlux is a Python package for :sup:`13`\ C metabolic flux analysis of biological systems at isotopic steady state or transient state which thus can be used for both heterotrophic and autotrophic organisms. Functionally, FreeFlux is capable of:
+FreeFlux is a Python package designed for :sup:`13`\ C metabolic flux analysis of biological systems at isotopic steady state or transient state, making it suitable for both heterotrophic and autotrophic organisms. With FreeFlux, you can:
 
-- metabolic flux estimation
-- simulation of labeling patterns of metabolite (fragments)
-- constraint-based optimizations, such as flux balance analysis and flux variability analysis
+- Estimate metabolic fluxes 
+- Simulate labeling patterns of metabolite (fragments)
+- Conduct constraint-based optimizations such as flux balance analysis and flux variability analysis
 
-The aim is to benefit the accessibility of :sup:`13`\ C fluxomics technique for researchers in the community of metabolic phenotyping and engineering.
+Our goal is to increase the accessibility of :sup:`13`\ C fluxomics techniques to researchers in the metabolic phenotyping and engineering community.
 
-A documentation can be found `here <https://freeflux.readthedocs.io/en/latest/index.html>`__. The documentation illustrates the fundamental functions of FreeFlux with a `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__. Two practical models of `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`__ and `Synechocystis <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`__ are also provided with `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`__.
+To get started, check out our `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`__, which provides an overview of FreeFlux's fundamental functions using a `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__. We've also included `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`__ for practical models of `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`__ and `Synechocystis <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`__.
 
 Installation
 ============
@@ -21,28 +21,28 @@ FreeFlux was tested in Python 3.7, 3.8, 3.9 and 3.10. It can be installed using 
   python -m pip install --upgrade pip
   pip install freeflux
 
-or from source (install `git <https://git-scm.com/>`__ first):
+or from source (assuming you have `git <https://git-scm.com/>`__ installed):
 
 .. code-block:: python
 
   git clone https://github.com/Chaowu88/freeflux.git /path/to/freeflux
   pip install /path/to/freeflux
   
-Installation in an `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`__ is recommendated.
+Installation within an `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`__ is recommendated.
 
 Solver installation
 ===================
 
-FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`__ for nonlinear regression. It can be installed by:
+FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt.org/>`__ for nonlinear regression. It can be installed by the following commands:
 
 .. code-block:: python
 
   pip install openopt
   pip install FuncDesigner
 
-The framework works well in Python 3.7 but may has compatibility issues in Python 3.8 and above. Please see `here <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`__ for solutions.
+Note that the framework is known to work well in Python 3.7, but may have compatibility issues in Python 3.8 and above.  In such cases, please refer to this `link <https://freeflux.readthedocs.io/en/latest/installation.html#dependency-compatibility>`__ for solutions.
 
-FreeFlux utilizes the modeling language Pyomo to formulate linear optimization problem. By default, solvers are not installed together with Pyomo, and thus should be installed independently. For example, to install glpk
+FreeFlux uses the modeling language Pyomo to formulate linear optimization problem. By default, solvers are not installed together with Pyomo and should be installed independently. For example, to install the glpk solver, run the following command:
 
 .. code-block:: python
   
@@ -51,9 +51,9 @@ FreeFlux utilizes the modeling language Pyomo to formulate linear optimization p
 Example Usage
 =============
 
-A typical use of FreeFlux starts with building a model by reading metabolic reactions with atom transitions. The model can call a handler of either fitter, simulator or optimizor to perform flux estimation, labeling pattern simulation and constraint-based flux analysis, respectively. Different methods are provided for these handlers for data input and computation.
+A typical workflow with FreeFlux starts by building a model through reading metabolic reactions with atom transitions. Users can then call a handler, such as the fitter, simulator, or optimizer, to perform flux estimation, labeling pattern simulation, or constraint-based flux analysis, respectively. Various methods are provided for these handlers for data input and computation.
 
-Here is an example script of flux estimation at steady state using the `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__.
+Below is an example script that performs flux estimation at steady state using the `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__:
 
 .. code-block:: python
    
