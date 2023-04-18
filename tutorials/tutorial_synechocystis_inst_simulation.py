@@ -1,6 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+'''Example of MDV simulation at isotopically nonstationary (INST) state with a E. coli model.
+'''
 
+
+from os import makedirs
+from freeflux import Model
 
 
 MODEL_FILE = '../models/synechocystis/reactions.xlsx' 
@@ -9,33 +12,33 @@ CONCS = '../models/synechocystis/concentrations.xlsx'
 OUT_DIR = '..results/synechocystis/inst_simulation'
 
 
-from os import makedirs
-from freeflux import Model
-
-
 def syn_inst_simulation():
     
     model = Model('syn')
     model.read_from_file(MODEL_FILE)
     
     with model.simulator('inst') as isim:
-        isim.set_target_EMUs({'G3P': ['23', '123'], 
-                              'DHAP': '123', 
-                              'PEP': '123', 
-                              'Fum': '1234', 
-                              'R5P': '12345', 
-                              'RuBP': '12345',
-                              'Cit': ['12345', '123456'],
-                              'S7P': '1234567'})
+        isim.set_target_EMUs({
+            'G3P': ['23', '123'], 
+            'DHAP': '123', 
+            'PEP': '123', 
+            'Fum': '1234', 
+            'R5P': '12345', 
+            'RuBP': '12345',
+            'Cit': ['12345', '123456'],
+            'S7P': '1234567'
+        })
         
         # enter the timepoints when MDVs will be simulated
         isim.set_timepoints([0, 10, 30, 60, 120, 240])
         
         # specify the lableing strategy
-        isim.set_labeling_strategy('CO2.ex', 
-                                   labeling_pattern = ['1'], 
-                                   percentage = [0.5], 
-                                   purity = [0.997])   # call this method for each labeled substrate
+        isim.set_labeling_strategy(
+            'CO2.ex', 
+            labeling_pattern = ['1'], 
+            percentage = [0.5], 
+            purity = [0.997]
+        )   # call this method for each labeled substrate
         
         # read the flux distribution and concentrations
         isim.set_fluxes_from_file(FLUXES)

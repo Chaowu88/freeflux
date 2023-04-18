@@ -1,18 +1,16 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+'''Example of Flux estimation at steady state with a toy model.
+'''
 
+
+from os import makedirs
+import pandas as pd
+from freeflux import Model
 
 
 MODEL_FILE = '../models/toy/reactions.tsv' 
 MEASURED_MDVS = '../models/toy/measured_MDVs.tsv'
 MEASURED_FLUXES = '../models/toy/measured_fluxes.tsv'
 OUT_DIR = '..results/toy/steady_state_estimation'
-
-
-from os import makedirs
-import pandas as pd
-from freeflux import Model
-from time import time
 
 
 # estimate fluxes at steady state
@@ -23,7 +21,12 @@ def toy_model_steady_state_fitting():
     
     with model.fitter('ss') as fit:
         # specify the lableing strategy, use this method for every labeled substrate
-        fit.set_labeling_strategy('AcCoA', ['01', '11'], [0.25, 0.25], [1, 1])
+        fit.set_labeling_strategy(
+            'AcCoA', 
+            labeling_pattern = ['01', '11'], 
+            percentage = [0.25, 0.25], 
+            purity = [1, 1]
+        )
         
         # set bounds for fluxes
         fit.set_flux_bounds('all', bounds = [-100, 100]) 
@@ -39,8 +42,12 @@ def toy_model_steady_state_fitting():
     # print(res.optimization_successful)
     
     # save the results
-    pd.Series(res.opt_net_fluxes).to_excel(OUT_DIR+'/estimated_net_fluxes.xlsx')
-    pd.Series(res.opt_total_fluxes).to_excel(OUT_DIR+'/estimated_total_fluxes.xlsx')
+    pd.Series(res.opt_net_fluxes).to_excel(
+        OUT_DIR+'/estimated_net_fluxes.xlsx'
+    )
+    pd.Series(res.opt_total_fluxes).to_excel(
+        OUT_DIR+'/estimated_total_fluxes.xlsx'
+    )
     
     # normal probability plot of residuals
     res.plot_normal_probability(show_fig = False, output_dir = OUT_DIR)
@@ -50,12 +57,20 @@ def toy_model_steady_state_fitting():
     res.plot_simulated_vs_measured_fluxes(show_fig = False, output_dir = OUT_DIR)
     
     # export the contribution matrix of measurements to the uncertainties of estimated fluxes
-    res.estimate_contribution_matrix(which = 'net').to_excel(OUT_DIR+'/netflux_contribMat.xlsx')
-    res.estimate_contribution_matrix(which = 'total').to_excel(OUT_DIR+'/totalflux_contribMat.xlsx')
+    res.estimate_contribution_matrix(which = 'net').to_excel(
+        OUT_DIR+'/netflux_contribMat.xlsx'
+    )
+    res.estimate_contribution_matrix(which = 'total').to_excel(
+        OUT_DIR+'/totalflux_contribMat.xlsx'
+    )
     
     # export the sensitivity matrix of estimated fluxes w.r.t. measurement
-    res.estimate_sensitivity(which = 'net').to_excel(OUT_DIR+'/netflux_senMat.xlsx')
-    res.estimate_sensitivity(which = 'total').to_excel(OUT_DIR+'/totalflux_senMat.xlsx')
+    res.estimate_sensitivity(which = 'net').to_excel(
+        OUT_DIR+'/netflux_senMat.xlsx'
+    )
+    res.estimate_sensitivity(which = 'total').to_excel(
+        OUT_DIR+'/totalflux_senMat.xlsx'
+    )
 
 
 # estimate the confidence intervals of fluxes
@@ -66,7 +81,12 @@ def toy_model_steady_state_fitting_CIs():
     
     with model.fitter('ss') as fit:
         # specify the lableing strategy, use this method for every labeled substrate
-        fit.set_labeling_strategy('AcCoA', ['01', '11'], [0.25, 0.25], [1, 1])
+        fit.set_labeling_strategy(
+            'AcCoA', 
+            labeling_pattern = ['01', '11'], 
+            percentage = [0.25, 0.25], 
+            purity = [1, 1]
+        )
         
         # set upper and lower bounds for fluxes
         fit.set_flux_bounds('all', bounds = [-100, 100]) 
@@ -77,14 +97,28 @@ def toy_model_steady_state_fitting_CIs():
         
         # estimate the confidence intervals
         fit.prepare(n_jobs = 3)
-        res = fit.solve_with_confidence_intervals(solver = 'slsqp', n_runs = 100, n_jobs = 3)
+        res = fit.solve_with_confidence_intervals(
+            solver = 'slsqp', 
+            n_runs = 100, 
+            n_jobs = 3
+        )
     
     # save the CIs
-    net_cis = res.estimate_confidence_intervals(which = 'net', confidence_level = 0.95)
-    pd.DataFrame(net_cis, index = ['LB', 'UB']).T.to_excel(OUT_DIR+'/netflux_CIs.xlsx')
+    net_cis = res.estimate_confidence_intervals(
+        which = 'net', 
+        confidence_level = 0.95
+    )
+    pd.DataFrame(net_cis, index = ['LB', 'UB']).T.to_excel(
+        OUT_DIR+'/netflux_CIs.xlsx'
+    )
 
-    total_cis = res.estimate_confidence_intervals(which = 'total', confidence_level = 0.95)
-    pd.DataFrame(total_cis, index = ['LB', 'UB']).T.to_excel(OUT_DIR+'/totalflux_CIs.xlsx')
+    total_cis = res.estimate_confidence_intervals(
+        which = 'total', 
+        confidence_level = 0.95
+    )
+    pd.DataFrame(total_cis, index = ['LB', 'UB']).T.to_excel(
+        OUT_DIR+'/totalflux_CIs.xlsx'
+    )
 
 
 

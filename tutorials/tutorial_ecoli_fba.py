@@ -1,15 +1,14 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-
-
-
-MODEL_FILE = '../models/ecoli/reactions.xlsx'
-OUT_DIR = '..results/ecoli/fba'
+'''Example of flux balabce analysis with a E. coli model.
+'''
 
 
 from os import makedirs
 import pandas as pd
 from freeflux import Model
+
+
+MODEL_FILE = '../models/ecoli/reactions.xlsx'
+OUT_DIR = '..results/ecoli/fba'
 
 
 # Flux estimation by Flux Balance Analysis
@@ -44,10 +43,15 @@ def ecoli_fva():
         
         # FVA
         opt.prepare()
-        res = opt.estimate_fluxes_range(objective = {'biom': 1}, gamma = 0)
+        res = opt.estimate_fluxes_range(
+            objective = {'biom': 1}, 
+            gamma = 0
+        )
     
     # save the results
-    pd.DataFrame(res.flux_ranges, index = ['LB', 'UB']).T.to_excel(OUT_DIR+'/estimated_flux_ranges.xlsx')
+    pd.DataFrame(res.flux_ranges, index = ['LB', 'UB']).T.to_excel(
+        OUT_DIR+'/estimated_flux_ranges.xlsx'
+    )
 
 
 
