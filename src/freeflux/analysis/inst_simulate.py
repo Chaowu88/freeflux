@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the InstSimulator class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '06/02/2022'
-
-
 
 
 from collections.abc import Iterable
@@ -14,8 +11,6 @@ from ..core.mdv import MDV
 from ..analysis.simulate import Simulator
 from ..io.inputs import read_preset_values_from_file 
 from ..io.results import InstSimResults
-
-
 
 
 class InstSimulator(Simulator):
@@ -55,12 +50,14 @@ class InstSimulator(Simulator):
         
         concs = read_preset_values_from_file(file)
                 
-        for metabid, value in concs.iteritems():
+        for metabid, value in concs.items():
             self.model.concentrations[metabid] = value
         
         if self.contexts:
             context = self.contexts[-1]
-            context.add_undo(partial(self._unset_concentrations, concs.index.tolist()))    
+            context.add_undo(
+                partial(self._unset_concentrations, concs.index.tolist())
+            )    
 
     
     def _unset_concentrations(self, metabids):
@@ -192,13 +189,16 @@ class InstSimulator(Simulator):
         if not self.model.labeling_strategy:
             raise ValueError('call labeling_strategy first')
         
-        if any([not self.model.EAMs, 
-                not self.model.substrate_MDVs, 
-                not self.model.initial_matrix_Xs, 
-                not self.model.matrix_As, 
-                not self.model.matrix_Bs, 
-                not self.model.matrix_Ms,
-                not self.model.timepoints]):
+        checklist = [
+            not self.model.EAMs, 
+            not self.model.substrate_MDVs, 
+            not self.model.initial_matrix_Xs, 
+            not self.model.matrix_As, 
+            not self.model.matrix_Bs, 
+            not self.model.matrix_Ms,
+            not self.model.timepoints
+        ]
+        if any(checklist):
             raise ValueError('call prepare first')
 
 

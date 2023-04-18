@@ -1,18 +1,13 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Progress class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '04/15/2022'
 
 
-
-
 from time import time, sleep
 from datetime import timedelta
 from threading import Thread
-
-
 
 
 class Progress():
@@ -65,15 +60,15 @@ class Progress():
         while self.is_running:
             sleep(1)
             t2 = time()
-            print('%s [elapsed: %s]' % (descp, timedelta(seconds = round(t2 - t1))), end = '\r')
-        else:
-            print('\n')
+            elapsed = timedelta(seconds = round(t2 - t1))
+            print(f'{descp} [elapsed: {elapsed}]', end = '\r')
+        print('')
         
         
     def start(self):
         
         if not self.silent:
-            print()
+            print('')
             self.is_running = True
             self.thread = Thread(target = self._show_progress, args = (self.descp,))
             self.thread.start()

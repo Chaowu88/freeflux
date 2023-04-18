@@ -1,18 +1,13 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the FBAModel class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '04/15/2022'
 
 
-
-
 from pyomo.environ import (ConcreteModel, Var, Objective, Constraint, 
                            SolverFactory, maximize, minimize, value)
-                           
-                           
-                           
+                                                   
                            
 class FBAModel():
     
@@ -58,7 +53,8 @@ class FBAModel():
             sense = minimize
         
         def obj_rule(model):
-            return sum(coe*model.fluxes[rxnid] for rxnid, coe in objective.items())
+            objExpr = [coe*model.fluxes[rxnid] for rxnid, coe in objective.items()]
+            return sum(objExpr)
         
         self.model.obj = Objective(rule = obj_rule, sense = sense)
         
@@ -72,7 +68,9 @@ class FBAModel():
         '''
         
         def mb_rule(model, metabid):
-            return sum(stoy_mat.loc[metabid, rxnid]*model.fluxes[rxnid] for rxnid in self.fluxids) == 0
+            fluxesExpr = [stoy_mat.loc[metabid, rxnid]*model.fluxes[rxnid] 
+                          for rxnid in self.fluxids]
+            return sum(fluxesExpr) == 0
             
         self.model.MBcstrs = Constraint(stoy_mat.index.tolist(), rule = mb_rule)
         
@@ -90,7 +88,8 @@ class FBAModel():
         '''
         
         def objcstr_rule(model):
-            return sum(coe*model.fluxes[rxnid] for rxnid, coe in objective.items()) >= gamma*max_obj
+            objcstrExpr = [coe*model.fluxes[rxnid] for rxnid, coe in objective.items()]
+            return sum(objcstrExpr) >= gamma*max_obj
             
         self.model.OBJcstr = Constraint(rule = objcstr_rule)
         
@@ -112,7 +111,7 @@ class FBAModel():
             try:
                 flux = value(self.model.fluxes[fluxid])
             except ValueError:
-                print('flux value of %s not available' % fluxid)
+                print(f'flux value of {fluxid} not available')
                 continue
             optFluxes[fluxid] = flux
         

@@ -1,16 +1,14 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the MDV class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '02/18/2022'
 
 
-
-
 import re
 from functools import lru_cache
-from collections import Iterable, OrderedDict, Counter
+from collections import OrderedDict, Counter
+from collections.abc import Iterable
 from itertools import combinations_with_replacement
 from numbers import Real
 import numpy as np
@@ -24,9 +22,7 @@ natAbuns = {'H': [0.999885, 0.000115],
             'O': [0.99757, 0.00038, 0.00205],
             'Si': [0.922297, 0.046832, 0.030872],
             'S': [0.9493, 0.0076, 0.0429, 0.0002]}
-# ref. https://www.chem.ualberta.ca/~massspec/atomic_mass_abund.pdf            
-
-
+# ref. https://www.chem.ualberta.ca/~massspec/atomic_mass_abund.pdf
 
 
 class MDV():
@@ -64,11 +60,17 @@ class MDV():
         # of atom.
     base_atom: str
         Base atom for MDV.
-    fl: float
+    fl (or fractional_labeling): float
         Fractional labeling.
     '''
     
-    def __init__(self, fractions, nonnegative = True, normalize = True, base_atom = 'C'):
+    def __init__(
+            self, 
+            fractions, 
+            nonnegative = True, 
+            normalize = True, 
+            base_atom = 'C'
+    ):
         '''
         Parameters
         ----------
@@ -125,25 +127,7 @@ class MDV():
             mdv = self.__class__(mdv)
         
         mdvConv = gen_conv(self.value, mdv.value)
-        
-        '''
-        if mdv.n_atoms > self.n_atoms:
-            mdv1, mdv2 = mdv, self
-        else:
-            mdv1, mdv2 = self, mdv
-        
-        mdvConv = []
-        for i in range(mdv1.n_atoms+mdv2.n_atoms+1):
             
-            if i <= mdv2.n_atoms:
-                mdvConv.append(sum([mdv1[i-j] * mdv2[j] for j in range(i+1)]))
-            
-            elif mdv2.n_atoms < i <= mdv1.n_atoms:
-                mdvConv.append(sum([mdv1[i-j] * mdv2[j] for j in range(mdv2.n_atoms+1)]))
-            
-            else:
-                mdvConv.append(sum([mdv1[i-j] * mdv2[j] for j in range(i-mdv1.n_atoms, mdv2.n_atoms+1)]))
-        '''    
         return self.__class__(mdvConv)    
     
         
@@ -154,9 +138,9 @@ class MDV():
         other: scalar, list, array or MDV
         '''
         
-        if isinstance(other, Real):
-            return self.__class__(other * self.value, nonnegative = False, normalize = False)                
-        elif isinstance(other, Iterable):
+        if isinstance(other, Real):   
+            return self.__class__(other*self.value, nonnegative = False, normalize = False)                
+        elif isinstance(other, Iterable):      
             return self.conv(other)    
         else:
             return NotImplemented
@@ -180,7 +164,7 @@ class MDV():
         '''
         
         if isinstance(other, type(self)):
-            return self.__class__(self.value + other.value, nonnegative = False, normalize = False)
+            return self.__class__(self.value+other.value, nonnegative = False, normalize = False)
         else:
             return NotImplemented
         
@@ -246,7 +230,7 @@ class MDV():
         '''
         
         natMDV = get_natural_MDV(self.n_atoms, base_atom = self.base_atom)
-        corrMDV =  (self.value - fraction * natMDV.value) / (1 - fraction)
+        corrMDV =  (self.value - fraction*natMDV.value)/(1 - fraction)
 
         return self.__class__(corrMDV)
     
@@ -265,12 +249,15 @@ class MDV():
         if self.n_atoms == 0:
             raise ValueError('no atom in MDV')
         else:
-            return round((self.value * np.arange(self.n_atoms+1)).sum() / self.n_atoms, 4)
+            return round((self.value*np.arange(self.n_atoms+1)).sum()/self.n_atoms, 4)
+
+
+    fractional_labeling = fl
         
         
     def __repr__(self):
     
-        return '%s([%s])' % (self.__class__.__name__, ', '.join(map(str, self.value.round(3))))
+        return f'{self.__class__.__name__}([{", ".join(map(str, self.value.round(3)))}])'
 
     
 def _isotopomer_combination(n_atoms, n_natural_isotops):
@@ -295,7 +282,7 @@ def _isotopomer_combination(n_atoms, n_natural_isotops):
     
     allCombos = combinations_with_replacement(range(n_natural_isotops), n_atoms)   
     
-    combos1 = {}
+    combos1 = {}   
     for combo in allCombos:
         combos1.setdefault(sum(combo), []).append(combo)
     
@@ -391,12 +378,16 @@ def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
 
     
     baseAtom = 'C'
+    # natAbun = natAbuns[baseAtom]
     
     nAtoms = len(atom_nos)
     
     singleAtomMdv = {}
     for pat, pur, in zip(labeling_pattern, purity):
-        singleAtomMdv[pat] = {'1': MDV([1-pur, pur]), '0': get_natural_MDV(1, base_atom = baseAtom)}
+        singleAtomMdv[pat] = {
+            '1': MDV([1-pur, pur]), 
+            '0': get_natural_MDV(1, base_atom = baseAtom)
+        }
     
     
     mdvAllTracer = MDV(np.zeros(nAtoms+1))
@@ -406,9 +397,9 @@ def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
         for atomNO in atom_nos:
             mdvPerTracer *= singleAtomMdv[pat][pat[atomNO-1]]
         
-        mdvAllTracer += per * mdvPerTracer     
+        mdvAllTracer += per*mdvPerTracer     
     
-    return mdvAllTracer + (1 - sum(percentage)) * get_natural_MDV(nAtoms, base_atom = baseAtom)
+    return mdvAllTracer + (1 - sum(percentage))*get_natural_MDV(nAtoms, base_atom = baseAtom)
     
     
 def gen_conv(arr1, arr2):
@@ -416,7 +407,8 @@ def gen_conv(arr1, arr2):
     Parameters
     ----------
     arr1, arr2: list or array
-        If one of the arrs is 2-D, the function performs 2-D convolution of MDV (array) and MDV derivative.
+        If one of the arrs is 2-D, the function performs 2-D convolution of 
+        MDV (array) and MDV derivative.
     '''
     
     nAtoms1 = len(arr1) - 1

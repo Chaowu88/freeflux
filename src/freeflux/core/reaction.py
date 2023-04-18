@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Reaction class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '02/16/2022'
-
-
 
 
 from collections import ChainMap, Counter
@@ -15,8 +12,6 @@ import numpy as np
 import pandas as pd
 from sympy import Symbol
 from .emu import EMU
-
-
 
 
 class Reaction():
@@ -101,8 +96,10 @@ class Reaction():
             substrates = [substrates]
             stoichiometry = [stoichiometry]
             
-        newSubs = pd.DataFrame({'metab': substrates, 'stoy': np.array(stoichiometry).astype(np.float)}, 
-                               index = [sub.id for sub in substrates])    
+        newSubs = pd.DataFrame(
+            {'metab': substrates, 'stoy': np.array(stoichiometry).astype(np.float)}, 
+            index = [sub.id for sub in substrates]
+        )    
             
         self.substrates_info = pd.concat((self.substrates_info, newSubs))
         
@@ -127,7 +124,10 @@ class Reaction():
             products = [products]
             stoichiometry = [stoichiometry]
             
-        newPros = pd.DataFrame({'metab': products, 'stoy': np.array(stoichiometry).astype(np.float)}, index = [pro.id for pro in products])    
+        newPros = pd.DataFrame(
+            {'metab': products, 'stoy': np.array(stoichiometry).astype(np.float)}, 
+            index = [pro.id for pro in products]
+        )    
             
         self.products_info = pd.concat((self.products_info, newPros))    
         
@@ -231,7 +231,7 @@ class Reaction():
             raise ValueError('must be "substrate" or "product"')
         
         reacsAtomInfo = []
-        for _, Metab in reacsInfo.iteritems():
+        for _, Metab in reacsInfo.items():
             
             reacAtomInfo = []
             for atoms, coe in Metab.atoms_info.items():
@@ -311,13 +311,13 @@ class Reaction():
         
         preEMUsInfoRaw = []
         for scenario in atomMapping:
-            for atoms, coe in emu.metabolite.atoms_info.items():
+            for atoms, coe in emu.metabolite.atoms_info.items():   
                 
                 preAtoms = {}
                 uniCoe = coe
                 for atom in [atoms[no-1] for no in emu.atom_nos]:
                     
-                    pre, preAtomNO, preCoe = scenario[atom]
+                    pre, preAtomNO, preCoe = scenario[atom]   
                     
                     if pre not in preAtoms:
                         uniCoe *= preCoe
@@ -330,8 +330,8 @@ class Reaction():
                 preEMUsInfoRaw.append([preEMUs, uniCoe])
         
         preEMUsInfoRaw = [Counter({tuple(sorted(preEMUs)): coe}) 
-                          for preEMUs, coe in preEMUsInfoRaw]
-        preEMUsInfo = reduce(lambda x, y: x+y, preEMUsInfoRaw)
+                          for preEMUs, coe in preEMUsInfoRaw]   
+        preEMUsInfo = reduce(lambda x, y: x+y, preEMUsInfoRaw) 
         preEMUsInfo = [[list(preEMUs), coe] for preEMUs, coe in preEMUsInfo.items()]
         
         return preEMUsInfo
@@ -343,4 +343,4 @@ class Reaction():
         subsStr = '+'.join(self.substrates)
         prosStr = '+'.join(self.products)
         
-        return '%s %s: %s%s%s' % (self.__class__.__name__, self.id, subsStr, arrow, prosStr)        
+        return f'{self.__class__.__name__} {self.id}: {subsStr}{arrow}{prosStr}'        

@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define classes of simulation and fitting results.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '04/14/2022'
-
-
 
 
 import numpy as np
@@ -16,8 +13,6 @@ from ..analysis.stats import (_chi2_test, _normal_probability, _simulated_vs_mea
                               _simulated_vs_measured_fluxes, _simulated_vs_measured_inst_MDVs,
                               _confidence_intervals_le, _confidence_intervals_mc, _MDV_kinetics,
                               _contribution_matrix, _sensitivity)
-
-
 
 
 class pDict(dict):
@@ -103,9 +98,11 @@ class FBAResults():
     
     def __repr__(self):
     
-        return 'objective: %s\noptimal objective: %s\noptimal fluxes\n%s' % (self.objective, 
-                                                                             self.opt_objective, 
-                                                                             self.opt_fluxes)
+        return (
+            f'objective: {self.objective}\n'
+            f'optimal objective: {self.opt_objective}\n'
+            f'optimal fluxes\n{self.opt_fluxes}'
+        )
         
 
 
@@ -298,9 +295,27 @@ class FitResults():
         Whether the optimization is successful.
     '''
     
-    def __init__(self, opt_total_fluxes, opt_net_fluxes, opt_obj, opt_resids, n_meas, n_params, sim_MDVs, 
-                 exp_MDVs, sim_fluxes, exp_fluxes, hessian, null_space, transform_matrix, sim_MDVs_der_u, 
-                 sim_fluxes_der_u, exp_MDVs_inv_cov, exp_fluxes_inv_cov, is_success):
+    def __init__(
+            self, 
+            opt_total_fluxes, 
+            opt_net_fluxes, 
+            opt_obj, 
+            opt_resids, 
+            n_meas, 
+            n_params, 
+            sim_MDVs, 
+            exp_MDVs, 
+            sim_fluxes, 
+            exp_fluxes, 
+            hessian, 
+            null_space, 
+            transform_matrix, 
+            sim_MDVs_der_u, 
+            sim_fluxes_der_u, 
+            exp_MDVs_inv_cov, 
+            exp_fluxes_inv_cov, 
+            is_success
+    ):
         '''
         Parameters
         ----------
@@ -407,8 +422,8 @@ class FitResults():
     
     def chi2_test(self, confidence_level = 0.999):
         '''
-        This method performs chi square test of the optimal objective.
-        Actually, SSR < LB of chi square interval can be also considered as successful.
+        Perform chi square test of the optimal objective.
+        SSR < LB of chi square interval sometimes can be also considered as successful estimation.
         
         Parameters
         ----------
@@ -421,7 +436,7 @@ class FitResults():
         
     def plot_normal_probability(self, show_fig = True, output_dir = None):
         '''
-        This method performs normal probability plot for residuals.
+        Perform normal probability plot for residuals.
         
         Parameters
         ----------
@@ -436,7 +451,7 @@ class FitResults():
     
     def plot_simulated_vs_measured_MDVs(self, show_fig = True, output_dir = None):
         '''
-        This method plots simulated and measured MDVs.
+        Plot simulated and measured MDVs.
         
         Parameters
         ----------
@@ -446,12 +461,17 @@ class FitResults():
             Output directory.
         '''
         
-        _simulated_vs_measured_MDVs(self.simulated_MDVs, self.measured_MDVs, show_fig, output_dir)
+        _simulated_vs_measured_MDVs(
+            self.simulated_MDVs, 
+            self.measured_MDVs, 
+            show_fig, 
+            output_dir
+        )
         
         
     def plot_simulated_vs_measured_fluxes(self, show_fig = True, output_dir = None):
         '''
-        This method plots simulated and measured fluxes.
+        Plot simulated and measured fluxes.
         
         Parameters
         ----------
@@ -461,12 +481,17 @@ class FitResults():
             Output directory.
         '''
         
-        _simulated_vs_measured_fluxes(self.simulated_fluxes, self.measured_fluxes, show_fig, output_dir)
+        _simulated_vs_measured_fluxes(
+            self.simulated_fluxes, 
+            self.measured_fluxes, 
+            show_fig, 
+            output_dir
+        )
         
     
     def estimate_confidence_intervals(self, which = 'net', confidence_level = 0.95):
         '''
-        This method calculates CI of net (total) fluxes using local estimation.
+        Calculate CI of net (total) fluxes using local estimation.
         
         Parameters
         ----------
@@ -480,17 +505,29 @@ class FitResults():
         if which == 'net':
             totalFluxesCov = self.null_space@pinv2(self.hessian)@self.null_space.T
             netFluxesCov = self.transform_matrix@totalFluxesCov@self.transform_matrix.T
-            irrRxns = (self._opt_net_fluxes.index&self._opt_total_fluxes.index).tolist()
-            netFluxesRange = _confidence_intervals_le(self._opt_net_fluxes, irrRxns, 
-                                                      netFluxesCov, self.dof, confidence_level)
+            irrRxns = self._opt_net_fluxes.index.intersection(
+                self._opt_total_fluxes.index
+            ).tolist()
+            netFluxesRange = _confidence_intervals_le(
+                self._opt_net_fluxes, 
+                irrRxns, 
+                netFluxesCov, 
+                self.dof, 
+                confidence_level
+            )
             
             return pDict(netFluxesRange)       
         
         elif which == 'total':
             totalFluxesCov = self.null_space@pinv2(self.hessian)@self.null_space.T
             irrRxns = self._opt_total_fluxes.index.tolist()
-            totalFluxesRange = _confidence_intervals_le(self._opt_total_fluxes, irrRxns, 
-                                                        totalFluxesCov, self.dof, confidence_level)
+            totalFluxesRange = _confidence_intervals_le(
+                self._opt_total_fluxes, 
+                irrRxns, 
+                totalFluxesCov, 
+                self.dof, 
+                confidence_level
+            )
             
             return pDict(totalFluxesRange)
         
@@ -500,7 +537,7 @@ class FitResults():
 
     def estimate_contribution_matrix(self, which = 'net'):
         '''
-        This method calculates contribution matrix of measurement variance to net (total) flux variance.
+        Calculate contribution matrix of measurement variance to net (total) flux variance.
 
         Parameters
         ----------
@@ -522,13 +559,29 @@ class FitResults():
         else:
             raise ValueError('only "net" and "total" are acceptable for which argument')    
 
-        contribMat_MDV = _contribution_matrix(freeFluxesCov, transMat, self.sim_MDVs_der_u, expMDVsCov)
-        contribMat_MDV = pd.DataFrame(contribMat_MDV, index = fluxIdx, 
-                                      columns = self._get_name_of_measurements(self.measured_MDVs))
+        contribMat_MDV = _contribution_matrix(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_MDVs_der_u, 
+            expMDVsCov
+        )
+        contribMat_MDV = pd.DataFrame(
+            contribMat_MDV, 
+            index = fluxIdx, 
+            columns = self._get_name_of_measurements(self.measured_MDVs)
+        )
 
-        contribMat_flux = _contribution_matrix(freeFluxesCov, transMat, self.sim_fluxes_der_u, expFluxesCov)
-        contribMat_flux = pd.DataFrame(contribMat_flux, index = fluxIdx,
-                                       columns = self.measured_fluxes.keys())
+        contribMat_flux = _contribution_matrix(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_fluxes_der_u, 
+            expFluxesCov
+        )
+        contribMat_flux = pd.DataFrame(
+            contribMat_flux, 
+            index = fluxIdx,
+            columns = self.measured_fluxes.keys()
+        )
         
         contribMat = pd.concat((contribMat_MDV, contribMat_flux), axis = 1)
 
@@ -537,7 +590,7 @@ class FitResults():
 
     def estimate_sensitivity(self, which = 'net'):
         '''
-        This method calculates sensitivity matrix of estimated net (total) flux w.r.t. measurement changes
+        Calculate sensitivity matrix of estimated net (total) flux w.r.t. measurement changes.
         
         Parameters
         ----------
@@ -557,13 +610,29 @@ class FitResults():
         else:
             raise ValueError('only "net" and "total" are acceptable for which argument')    
 
-        senMat_MDV = _sensitivity(freeFluxesCov, transMat, self.sim_MDVs_der_u, self.exp_MDVs_inv_cov)
-        senMat_MDV = pd.DataFrame(senMat_MDV, index = fluxIdx, 
-                                  columns = self._get_name_of_measurements(self.measured_MDVs))
+        senMat_MDV = _sensitivity(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_MDVs_der_u, 
+            self.exp_MDVs_inv_cov
+        )
+        senMat_MDV = pd.DataFrame(
+            senMat_MDV, 
+            index = fluxIdx, 
+            columns = self._get_name_of_measurements(self.measured_MDVs)
+        )
         
-        senMat_flux = _sensitivity(freeFluxesCov, transMat, self.sim_fluxes_der_u, self.exp_fluxes_inv_cov)
-        senMat_flux = pd.DataFrame(senMat_flux, index = fluxIdx,
-                                   columns = self.measured_fluxes.keys())
+        senMat_flux = _sensitivity(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_fluxes_der_u, 
+            self.exp_fluxes_inv_cov
+        )
+        senMat_flux = pd.DataFrame(
+            senMat_flux, 
+            index = fluxIdx,
+            columns = self.measured_fluxes.keys()
+        )
         
         senMat = pd.concat((senMat_MDV, senMat_flux), axis = 1)
 
@@ -583,14 +652,14 @@ class FitResults():
         for emuid in measured_MDVs:
             _, atoms = emuid.split('_')
             for atom in '0'+atoms:
-                names.append('%s_m%s' %(emuid, atom))
+                names.append(f'{emuid}_m{atom}')
 
         return names        
 
     
     def __repr__(self):
     
-        return 'optimal objective: %s at\n%s' % (self.opt_objective, self.opt_net_fluxes)
+        return f'optimal objective: {self.opt_objective} at\n{self.opt_net_fluxes}'
     
         
     
@@ -621,7 +690,7 @@ class FitMCResults():
         
     def estimate_confidence_intervals(self, which = 'net', confidence_level = 0.95):
         '''
-        This method estimates CI from a set of fluxes.
+        Estimate CI from a set of fluxes.
         
         Parameters
         ----------
@@ -633,13 +702,23 @@ class FitMCResults():
         '''
         
         if which == 'net':
-            irrRxns = (self.net_fluxes_set[0].index&self.total_fluxes_set[0].index).tolist()
-            netFluxesRange = _confidence_intervals_mc(self.net_fluxes_set, irrRxns, confidence_level)
+            irrRxns = self.net_fluxes_set[0].index.intersection(
+                self.total_fluxes_set[0].index
+            ).tolist()
+            netFluxesRange = _confidence_intervals_mc(
+                self.net_fluxes_set, 
+                irrRxns, 
+                confidence_level
+            )
             return pDict(netFluxesRange)
         
         elif which == 'total':
             irrRxns = self.total_fluxes_set[0].index.tolist()
-            totalFluxesRange = _confidence_intervals_mc(self.total_fluxes_set, irrRxns, confidence_level)
+            totalFluxesRange = _confidence_intervals_mc(
+                self.total_fluxes_set, 
+                irrRxns, 
+                confidence_level
+            )
             return pDict(totalFluxesRange)
         
         else:
@@ -697,9 +776,28 @@ class InstFitResults(FitResults):
         Whether the optimization is successful.
     '''
     
-    def __init__(self, opt_total_fluxes, opt_net_fluxes, opt_concs, opt_obj, opt_resids, n_meas, n_params, 
-                 sim_inst_MDVs, exp_inst_MDVs, sim_fluxes, exp_fluxes, hessian, null_space, transform_matrix,
-                 sim_inst_MDVs_der_u, sim_fluxes_der_u, exp_inst_MDVs_inv_cov, exp_fluxes_inv_cov, is_success):
+    def __init__(
+            self, 
+            opt_total_fluxes, 
+            opt_net_fluxes, 
+            opt_concs, 
+            opt_obj, 
+            opt_resids, 
+            n_meas, 
+            n_params, 
+            sim_inst_MDVs, 
+            exp_inst_MDVs, 
+            sim_fluxes, 
+            exp_fluxes, 
+            hessian, 
+            null_space, 
+            transform_matrix,
+            sim_inst_MDVs_der_u, 
+            sim_fluxes_der_u, 
+            exp_inst_MDVs_inv_cov, 
+            exp_fluxes_inv_cov, 
+            is_success
+    ):
         '''
         Parameters
         ----------
@@ -779,7 +877,7 @@ class InstFitResults(FitResults):
         
     def plot_simulated_vs_measured_MDVs(self, show_fig = True, output_dir = None):
         '''
-        This method plots simulated and measured MDVs.
+        Plot simulated and measured MDVs.
         
         Parameters
         ----------
@@ -789,13 +887,17 @@ class InstFitResults(FitResults):
             Output directory.
         '''
         
-        _simulated_vs_measured_inst_MDVs(self.simulated_inst_MDVs, self.measured_inst_MDVs, 
-                                         show_fig, output_dir)    
+        _simulated_vs_measured_inst_MDVs(
+            self.simulated_inst_MDVs, 
+            self.measured_inst_MDVs, 
+            show_fig, 
+            output_dir
+        )    
     
     
     def estimate_confidence_intervals(self, which = 'net', confidence_level = 0.95):
         '''
-        This method calculates CI of fluxes and concentrations using local estimation.
+        Calculate CI of fluxes and concentrations using local estimation.
         
         Parameters
         ----------
@@ -811,9 +913,16 @@ class InstFitResults(FitResults):
             fluxHessian = self.hessian[:self.n_free_fluxes,:self.n_free_fluxes]
             totalFluxesCov = self.null_space@pinv2(fluxHessian)@self.null_space.T
             netFluxesCov = self.transform_matrix@totalFluxesCov@self.transform_matrix.T
-            irrItems = (self._opt_net_fluxes.index&self._opt_total_fluxes.index).tolist()
-            netFluxesRange = _confidence_intervals_le(self._opt_net_fluxes, irrItems, 
-                                                      netFluxesCov, self.dof, confidence_level)
+            irrItems = self._opt_net_fluxes.index.intersection(
+                self._opt_total_fluxes.index
+            ).tolist()
+            netFluxesRange = _confidence_intervals_le(
+                self._opt_net_fluxes, 
+                irrItems, 
+                netFluxesCov, 
+                self.dof, 
+                confidence_level
+            )
             
             return pDict(netFluxesRange)                                                   
         
@@ -821,17 +930,27 @@ class InstFitResults(FitResults):
             fluxHessian = self.hessian[:self.n_free_fluxes,:self.n_free_fluxes]
             totalFluxesCov = self.null_space@pinv2(fluxHessian)@self.null_space.T
             irrItems = self._opt_total_fluxes.index.tolist()
-            totalFluxesRange = _confidence_intervals_le(self._opt_total_fluxes, irrItems, 
-                                                        totalFluxesCov, self.dof, confidence_level)
+            totalFluxesRange = _confidence_intervals_le(
+                self._opt_total_fluxes, 
+                irrItems, 
+                totalFluxesCov, 
+                self.dof, 
+                confidence_level
+            )
             
             return pDict(totalFluxesRange)
         
         elif which == 'conc':
-            concHessian = self.hessian[self.n_free_fluxes:,self.n_free_fluxes:]
+            concHessian = self.hessian[self.n_free_fluxes:, self.n_free_fluxes:]
             concsCov = pinv2(concHessian)
             irrItems = self._opt_concs.index.tolist()
-            concsRange = _confidence_intervals_le(self._opt_concs, irrItems, concsCov, 
-                                                  self.dof, confidence_level)
+            concsRange = _confidence_intervals_le(
+                self._opt_concs, 
+                irrItems, 
+                concsCov, 
+                self.dof, 
+                confidence_level
+            )
             
             return pDict(concsRange)
             
@@ -841,7 +960,7 @@ class InstFitResults(FitResults):
 
     def estimate_contribution_matrix(self, which = 'net'):
         '''
-        This method calculates contribution matrix of measurement variance to net (total) flux variance.
+        Calculate contribution matrix of measurement variance to net (total) flux variance.
 
         Parameters
         ----------
@@ -864,13 +983,29 @@ class InstFitResults(FitResults):
         else:
             raise ValueError('only "net" and "total" are acceptable for which argument')    
 
-        contribMat_MDV = _contribution_matrix(freeFluxesCov, transMat, self.sim_inst_MDVs_der_u, expMDVsCov)
-        contribMat_MDV = pd.DataFrame(contribMat_MDV, index = fluxIdx, 
-                                      columns = self._get_name_of_measurements(self.measured_inst_MDVs))
+        contribMat_MDV = _contribution_matrix(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_inst_MDVs_der_u, 
+            expMDVsCov
+        )
+        contribMat_MDV = pd.DataFrame(
+            contribMat_MDV, 
+            index = fluxIdx, 
+            columns = self._get_name_of_measurements(self.measured_inst_MDVs)
+        )
 
-        contribMat_flux = _contribution_matrix(freeFluxesCov, transMat, self.sim_fluxes_der_u, expFluxesCov)
-        contribMat_flux = pd.DataFrame(contribMat_flux, index = fluxIdx,
-                                       columns = self.measured_fluxes.keys())
+        contribMat_flux = _contribution_matrix(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_fluxes_der_u, 
+            expFluxesCov
+        )
+        contribMat_flux = pd.DataFrame(
+            contribMat_flux, 
+            index = fluxIdx,
+            columns = self.measured_fluxes.keys()
+        )
         
         contribMat = pd.concat((contribMat_MDV, contribMat_flux), axis = 1)
 
@@ -879,7 +1014,7 @@ class InstFitResults(FitResults):
 
     def estimate_sensitivity(self, which = 'net'):
         '''
-        This method calculates sensitivity matrix of estimated net (total) flux w.r.t. measurement changes.
+        Calculate sensitivity matrix of estimated net (total) flux w.r.t. measurement changes.
         
         Parameters
         ----------
@@ -888,7 +1023,7 @@ class InstFitResults(FitResults):
             * "total" if total fluxes.
         '''
 
-        fluxHessian = self.hessian[:self.n_free_fluxes,:self.n_free_fluxes]
+        fluxHessian = self.hessian[:self.n_free_fluxes, :self.n_free_fluxes]
         freeFluxesCov = pinv2(fluxHessian)
 
         if which == 'net':
@@ -900,13 +1035,29 @@ class InstFitResults(FitResults):
         else:
             raise ValueError('only "net" and "total" are acceptable for which argument')    
 
-        senMat_MDV = _sensitivity(freeFluxesCov, transMat, self.sim_inst_MDVs_der_u, self.exp_inst_MDVs_inv_cov)
-        senMat_MDV = pd.DataFrame(senMat_MDV, index = fluxIdx, 
-                                  columns = self._get_name_of_measurements(self.measured_inst_MDVs))
+        senMat_MDV = _sensitivity(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_inst_MDVs_der_u, 
+            self.exp_inst_MDVs_inv_cov
+        )
+        senMat_MDV = pd.DataFrame(
+            senMat_MDV, 
+            index = fluxIdx, 
+            columns = self._get_name_of_measurements(self.measured_inst_MDVs)
+        )
         
-        senMat_flux = _sensitivity(freeFluxesCov, transMat, self.sim_fluxes_der_u, self.exp_fluxes_inv_cov)
-        senMat_flux = pd.DataFrame(senMat_flux, index = fluxIdx,
-                                   columns = self.measured_fluxes.keys())
+        senMat_flux = _sensitivity(
+            freeFluxesCov, 
+            transMat, 
+            self.sim_fluxes_der_u, 
+            self.exp_fluxes_inv_cov
+        )
+        senMat_flux = pd.DataFrame(
+            senMat_flux, 
+            index = fluxIdx,
+            columns = self.measured_fluxes.keys()
+        )
         
         senMat = pd.concat((senMat_MDV, senMat_flux), axis = 1)
 
@@ -928,7 +1079,7 @@ class InstFitResults(FitResults):
                 if t != 0:
                     _, atoms = emuid.split('_')
                     for atom in '0'+atoms:
-                        names.append('%s_m%s_%s' %(emuid, atom, t))
+                        names.append(f'{emuid}_m{atom}_{t}')
 
         return names
 
@@ -979,18 +1130,32 @@ class InstFitMCResults(FitMCResults):
         '''
 
         if which == 'net':
-            irrItems = (self.net_fluxes_set[0].index&self.total_fluxes_set[0].index).tolist()
-            netFluxesRange = _confidence_intervals_mc(self.net_fluxes_set, irrItems, confidence_level)
+            irrItems = self.net_fluxes_set[0].index.intersection(
+                self.total_fluxes_set[0].index
+            ).tolist()
+            netFluxesRange = _confidence_intervals_mc(
+                self.net_fluxes_set, 
+                irrItems, 
+                confidence_level
+            )
             return pDict(netFluxesRange)
         
         elif which == 'total':
             irrItems = self.total_fluxes_set[0].index.tolist()
-            totalFluxesRange = _confidence_intervals_mc(self.total_fluxes_set, irrItems, confidence_level)
+            totalFluxesRange = _confidence_intervals_mc(
+                self.total_fluxes_set, 
+                irrItems, 
+                confidence_level
+            )
             return pDict(totalFluxesRange)
 
         elif which == 'conc':
             irrItems = self.concs_set[0].index.tolist()
-            concsRange = _confidence_intervals_mc(self.concs_set, irrItems, confidence_level)
+            concsRange = _confidence_intervals_mc(
+                self.concs_set, 
+                irrItems, 
+                confidence_level
+            )
             return pDict(concsRange)
         
         else:

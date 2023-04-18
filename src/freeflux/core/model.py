@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Model class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '02/16/2022'
-
-
 
 
 import re
@@ -28,13 +25,11 @@ from ..analysis.inst_fit import InstFitter
 from ..optim.optim import Optimizer
 
 
-
-
 class Model():
     '''
     Model class is the fundamental class of FreeFlux hosting operations for 13C MFA.
-
-    Model can be built by adding reactions one by one or reading set of reactions from .tsv or .xlsx file.
+    A model can be built by adding reactions one by one or reading set of reactions from 
+    .tsv or .xlsx file.
     
     Parameters
     ----------
@@ -138,7 +133,7 @@ class Model():
         Inversed covariance matrix of measured MDVs with variances on the diagnol, 
         other elements are zero.    
     measured_fluxes: dict
-        Flux ID (e.g., 'v1_f' or 'v2') => [mean, SD].    
+        Irreversible reaction ID => [mean, SD].    
     measured_fluxes_inv_cov: array
         Inversed covariance matrix of measured fluxes with variances on the diagnol, 
         other elements are zero.    
@@ -205,8 +200,8 @@ class Model():
         self.concentrations_range = OrderedDict()
         self.total_fluxes = pd.Series(dtype = float)
         self.concentrations = pd.Series(dtype = float)
-     
-
+            
+        
     def add_reactions(self, reactions):
         '''
         Parameters
@@ -261,21 +256,23 @@ class Model():
         dataRaw = read_model_from_file(file)
         
         data = pd.DataFrame()
-        for col, ser in dataRaw.iteritems():
+        for col, ser in dataRaw.items():
             if ser.dtype == object:
-                data[col] = ser.str.replace(r'\s+', '')
+                data[col] = ser.str.replace(r'\s+', '', regex = True)
             else:
                 data[col] = ser
         
+        pattern_re = re.compile(r'([0-9\.]+|)([.\w]+)\(?([a-z0-9\.,]+|)\)?')
         for rxn, (subsStr, prosStr, rev) in data.iterrows():
+            
             v = Reaction(rxn, reversible = bool(int(rev)))
             
-            for stoy, metab, atoms in re.findall(r'([0-9\.]+|)([.\w]+)\(?([a-z0-9\.,]+|)\)?', subsStr):
+            for stoy, metab, atoms in pattern_re.findall(subsStr):
                 stoy = float(stoy) if stoy else 1.0
                 atoms = atoms.split(',') if atoms else None
                 v.add_substrates(Metabolite(metab, atoms), stoy)
     
-            for stoy, metab, atoms in re.findall(r'([0-9\.]+|)([.\w]+)\(?([a-z0-9\.,]+|)\)?', prosStr):
+            for stoy, metab, atoms in pattern_re.findall(prosStr):
                 stoy = float(stoy) if stoy else 1.0
                 atoms = atoms.split(',') if atoms else None
                 v.add_products(Metabolite(metab, atoms), stoy)
@@ -294,9 +291,9 @@ class Model():
         
         metabsInfo = {}
         for _, rxn in self.reactions_info.items():
-            for subid, sub in rxn.substrates_info['metab'].iteritems():
+            for subid, sub in rxn.substrates_info['metab'].items():
                 metabsInfo.setdefault(subid, []).append(sub)
-            for proid, pro in rxn.products_info['metab'].iteritems():
+            for proid, pro in rxn.products_info['metab'].items():
                 metabsInfo.setdefault(proid, []).append(pro)
         
         metabsInfo = {metabid: list(set(metabs)) for metabid, metabs in metabsInfo.items()}
@@ -341,10 +338,19 @@ class Model():
     
         return len(self.reactions)
         
-        
-    @property
-    def _full_net_stoichiometric_matrix(self):
+    
+    @lru_cache()
+    def _full_net_stoichiometric_matrix(self, metabolites, reactions):
         '''
+        Re-estimate stoichiometric matrix if metabolites or reactions changes.
+
+        Parameters
+        ----------
+        metabolites: tuple
+            metabolite IDs
+        reactions: tuple
+            reaction IDs
+
         Returns
         -------
         netS: df
@@ -352,7 +358,7 @@ class Model():
             net reactions in columns.
         '''
         
-        netS = pd.DataFrame(0, index = self.metabolites, columns = self.reactions)
+        netS = pd.DataFrame(0.0, index = metabolites, columns = reactions)
         for rxnid, rxn in self.reactions_info.items():
             
             for sub in rxn.substrates:
@@ -372,9 +378,18 @@ class Model():
         return netS
     
     
-    @property
-    def _full_total_stoichiometric_matrix(self):
+    @lru_cache()
+    def _full_total_stoichiometric_matrix(self, metabolites, reactions):
         '''
+        Re-estimate stoichiometric matrix if metabolites or reactions changes.
+
+        Parameters
+        ----------
+        metabolites: tuple
+            metabolite IDs
+        reactions: tuple
+            reaction IDs
+
         Returns
         -------
         totalS: df
@@ -382,15 +397,21 @@ class Model():
             total reactions in columns.
         '''
         
-        netS = self._full_net_stoichiometric_matrix
+        netS = self._full_net_stoichiometric_matrix(metabolites, reactions)
         
-        totalS = pd.DataFrame(index = netS.index)
-        for rxn, col in netS.iteritems():
+        totalS = []
+        totalScols = []
+        for rxn, col in netS.items():
             if self.reactions_info[rxn].reversible:
-                totalS[rxn+'_f'] = col
-                totalS[rxn+'_b'] = -col
+                totalS.append(col)
+                totalS.append(-col)
+                totalScols.append(rxn+'_f')
+                totalScols.append(rxn+'_b')
             else:
-                totalS[rxn] = col
+                totalS.append(col)
+                totalScols.append(rxn)
+
+        totalS = pd.DataFrame(totalS, index = totalScols).T
         
         return totalS
 
@@ -398,7 +419,10 @@ class Model():
     @property
     def end_substrates(self):
     
-        totalS = self._full_total_stoichiometric_matrix
+        totalS = self._full_total_stoichiometric_matrix(
+            tuple(self.metabolites), 
+            tuple(self.reactions)
+        )
         
         nLessthan0 = totalS[totalS < 0].count(axis = 1)
         nGreaterthan0 = totalS[totalS > 0].count(axis = 1)
@@ -409,7 +433,10 @@ class Model():
     @property
     def end_products(self):
     
-        totalS = self._full_total_stoichiometric_matrix
+        totalS = self._full_total_stoichiometric_matrix(
+            tuple(self.metabolites), 
+            tuple(self.reactions)
+        )
         
         nLessthan0 = totalS[totalS < 0].count(axis = 1)
         nGreaterthan0 = totalS[totalS > 0].count(axis = 1)
@@ -436,12 +463,19 @@ class Model():
         else:
             exclude_metabs = list(exclude_metabs)
             
-        netS = self._full_net_stoichiometric_matrix
+        netS = self._full_net_stoichiometric_matrix(
+            tuple(self.metabolites), 
+            tuple(self.reactions)
+        )
         
         if include_ends:
-            return netS.loc[netS.index.difference(exclude_metabs), :]
+            selected_indices = netS.index.difference(exclude_metabs)
+            return netS.loc[selected_indices,:]
         else:
-            return netS.loc[netS.index.difference(exclude_metabs + self.end_substrates + self.end_products), :]
+            selected_indices = netS.index.difference(
+                exclude_metabs+self.end_substrates+self.end_products
+            )
+            return netS.loc[selected_indices,:]
         
         
     def get_total_stoichiometric_matrix(self, exclude_metabs = None, include_ends = False):
@@ -455,7 +489,8 @@ class Model():
         
         Returns
         totalS: df
-            Total stoichiometric matrix with balanced metabolites in rows and total reactions in columns
+            Total stoichiometric matrix with balanced metabolites in rows and total reactions 
+            in columns
         '''
         
         if exclude_metabs is None:
@@ -463,12 +498,19 @@ class Model():
         else:
             exclude_metabs = list(exclude_metabs)    
         
-        totalS = self._full_total_stoichiometric_matrix
+        totalS = self._full_total_stoichiometric_matrix(
+            tuple(self.metabolites), 
+            tuple(self.reactions)
+        )
         
         if include_ends:
-            return totalS.loc[totalS.index.difference(exclude_metabs), :]
+            select_indices = totalS.index.difference(exclude_metabs)
+            return totalS.loc[select_indices,:]
         else:
-            return totalS.loc[totalS.index.difference(exclude_metabs + self.end_substrates + self.end_products), :]
+            select_indices = totalS.index.difference(
+                exclude_metabs+self.end_substrates+self.end_products
+            )
+            return totalS.loc[select_indices,:]
     
     
     @property
@@ -512,11 +554,15 @@ class Model():
         Returns
         -------
         MAM: df
-            Metabolite adjacency matrix (MAM). Metabolites with atoms are in index and columns (no duplicates). 
-            List of Reactions are in cells if reactions exists between sub (index) and pro (columns), [] otherwise
+            Metabolite adjacency matrix (MAM). Metabolites with atoms are in index and columns 
+            (no duplicates). List of Reactions are in cells if reactions exists between sub (index) 
+            and pro (columns), [] otherwise
         '''
         
-        MAM = pd.DataFrame(index = self.metabolites_with_atoms, columns = self.metabolites_with_atoms)
+        MAM = pd.DataFrame(
+            index = self.metabolites_with_atoms, 
+            columns = self.metabolites_with_atoms
+        )
         MAM = MAM.applymap(lambda x: [])
         for _, rxn in self.reactions_info.items():
             for sub in rxn.substrates_with_atoms:
@@ -532,13 +578,13 @@ class Model():
     
     def __repr__(self):
     
-        headStr =  '%s %s (%s metabolites, %s reactions)' % (self.__class__.__name__, 
-                                                             self.name if self.name else 'unknown', 
-                                                             self.n_metabolites, 
-                                                             self.n_reactions)
+        headStr = (
+            f'{self.__class__.__name__} {self.name if self.name else "unknown"} '
+            f'({self.n_metabolites} metabolites, {self.n_reactions})'
+        )
         bodyStr = '\n'.join([str(rxn) for rxn in self.reactions_info.values()])
 
-        return headStr + '\n' + bodyStr 
+        return f'{headStr}\n{bodyStr}' 
 
 
     def _BFS(self, iniEMU):
@@ -567,7 +613,9 @@ class Model():
             currentEMU = toSearch.pop()
             searched.append(currentEMU)
                     
-            formingRxns = list(set(chain(*[cell for cell in MAM[currentEMU.metabolite_id] if cell != []])))
+            formingRxns = list(
+                set(chain(*[cell for cell in MAM[currentEMU.metabolite_id] if cell]))
+            )   
             for formingRxn in formingRxns:
                 
                 if formingRxn.reversible:
@@ -585,15 +633,15 @@ class Model():
                     flux = formingRxn.flux
                 
                 if isinstance(asProMetabs, pd.Series):
-                    offset = 1 / asProMetabs.size
+                    offset = 1/asProMetabs.size
                     asProMetabs = list(asProMetabs)
                 else:
                     offset = 1.0
                     asProMetabs = [asProMetabs]
                 
                 
-                for asProMetab in asProMetabs:
-                    currentEMU = EMU(currentEMU.id, asProMetab, currentEMU.atom_nos)
+                for asProMetab in asProMetabs:    
+                    currentEMU = EMU(currentEMU.id, asProMetab, currentEMU.atom_nos)   
                     preEMUsInfo = formingRxn._find_precursor_EMUs(currentEMU, direction = direction)
                     
                     for preEMUs, coe in preEMUsInfo:
@@ -601,7 +649,9 @@ class Model():
                             if preEMU not in searched and preEMU not in toSearch:
                                 toSearch.appendleft(preEMU)
                             
-                        EAMsInfo.setdefault(currentEMU.size, []).append([currentEMU, preEMUs, offset * coe * flux])
+                        EAMsInfo.setdefault(currentEMU.size, []).append(
+                            [currentEMU, preEMUs, offset * coe * flux]
+                        )
                             
         return EAMsInfo
     
@@ -625,10 +675,18 @@ class Model():
         for size, EMUsInfo in EAMsInfo.items():
             
             nonSourceEMUs = set([EMUInfo[0] for EMUInfo in EMUsInfo])
-            SourceEMUs = sorted(set([tuple(EMUInfo[1]) if len(EMUInfo[1]) > 1 else EMUInfo[1][0] for EMUInfo in EMUsInfo]) 
-                                - nonSourceEMUs)
+            SourceEMUs = sorted(
+                set(
+                    [tuple(EMUInfo[1]) if len(EMUInfo[1]) > 1 else EMUInfo[1][0] 
+                     for EMUInfo in EMUsInfo]
+                ) - nonSourceEMUs
+            )
             
-            EAM = pd.DataFrame(Integer(0), index = sorted(nonSourceEMUs) + sorted(SourceEMUs), columns = sorted(nonSourceEMUs))
+            EAM = pd.DataFrame(
+                Integer(0), 
+                index = sorted(nonSourceEMUs) + sorted(SourceEMUs), 
+                columns = sorted(nonSourceEMUs)
+            )
             for emu, preEMUs, flux in EMUsInfo:
                 
                 col = emu
@@ -638,7 +696,7 @@ class Model():
                 else:
                     idx = tuple(preEMUs)
                 
-                EAM.loc[[idx], col] += flux
+                EAM.loc[[idx], col] += flux   
             
             EAMs[size] = EAM
         
@@ -692,7 +750,11 @@ class Model():
     
         sortDfIndex, idx = np.unique(sortedDf.index, return_index = True)
     
-        uniqueDf = pd.DataFrame(np.add.reduceat(sortedDf.values, idx), index = sortDfIndex, columns = sortedDf.columns)
+        uniqueDf = pd.DataFrame(
+            np.add.reduceat(sortedDf.values, idx), 
+            index = sortDfIndex, 
+            columns = sortedDf.columns
+        )
         
         return uniqueDf
         
@@ -720,20 +782,27 @@ class Model():
             for emu in lumpedEAM.columns:
                 
                 preEMUs = lumpedEAM.index[lumpedEAM[emu] != 0]
-                if preEMUs.size == 1:
+                if preEMUs.size == 1:   
                     preEMU = preEMUs[0]
                     
-                    if emu != iniEMU and (preEMU not in lumpedEAM.columns or lumpedEAM.loc[emu, preEMU] == 0):
+                    if (emu != iniEMU and 
+                        (preEMU not in lumpedEAM.columns or lumpedEAM.loc[emu, preEMU] == 0)):
+                        
                         lumpedEAM.drop(emu, axis = 1, inplace = True)
+                        
                         lumpedEAM.index = self._replace_list_item(lumpedEAM.index, emu, preEMU)
                         
-                        for j in range(i):
+                        for j in range(i):   
                             largerEAM = lumpedEAMs[orderedSizes[j]]
                             largerEAM.index = self._replace_list_item(largerEAM.index, emu, preEMU)
                         
-                        lumpedEAM = self._uniquify_dataFrame_index(lumpedEAM)
-                        upper = self._uniquify_dataFrame_index(lumpedEAM.loc[lumpedEAM.columns, :])
-                        lower = self._uniquify_dataFrame_index(lumpedEAM.loc[lumpedEAM.index.difference(lumpedEAM.columns), :])
+                        lumpedEAM = self._uniquify_dataFrame_index(lumpedEAM)   
+                        upper = self._uniquify_dataFrame_index(
+                            lumpedEAM.loc[lumpedEAM.columns, :]
+                        )
+                        lower = self._uniquify_dataFrame_index(
+                            lumpedEAM.loc[lumpedEAM.index.difference(lumpedEAM.columns),:]
+                        )
                         lumpedEAM = pd.concat((upper, lower))
             
             lumpedEAMs[size] = lumpedEAM
@@ -764,8 +833,8 @@ class Model():
                     
                     equivEMU = emu.equivalent
                     if equivEMU in combinedEAM.columns:   
-
-                        combinedEAM.loc[:, emu] = combinedEAM.loc[:, [emu, equivEMU]].sum(axis = 1) / 2
+                        
+                        combinedEAM.loc[:, emu] = combinedEAM.loc[:, [emu, equivEMU]].sum(axis = 1)/2
                         combinedEAM.drop(equivEMU, axis = 1, inplace = True)
                         
                         combinedEAM.loc[emu, :] = combinedEAM.loc[[emu, equivEMU], :].sum()
@@ -798,6 +867,7 @@ class Model():
         EMUs in sequential reactions can not be lumped in transient MFA.
         '''
         
+        # set CPU affinity in Linux
         import platform
         if platform.system() == 'Linux':
             import os
@@ -830,9 +900,15 @@ class Model():
         '''
         
         nonSourceEMUunion = EAM2.columns.union(EAM1.columns)
-        sourceEMUunion = EAM2.index.difference(EAM2.columns).union(EAM1.index.difference(EAM1.columns))
+        sourceEMUunion = EAM2.index.difference(EAM2.columns).union(
+            EAM1.index.difference(EAM1.columns)
+        )
         
-        mergedEAM = pd.DataFrame(Integer(0), index = nonSourceEMUunion.append(sourceEMUunion), columns = nonSourceEMUunion)
+        mergedEAM = pd.DataFrame(
+            Integer(0), 
+            index = nonSourceEMUunion.append(sourceEMUunion), 
+            columns = nonSourceEMUunion
+        )
         mergedEAM.loc[EAM1.index, EAM1.columns] = EAM1
         mergedEAM.loc[EAM2.index, EAM2.columns] = EAM2
         
@@ -855,8 +931,13 @@ class Model():
         mergedEAMs = {}
         maxsize = max([max(EAMs) for EAMs in EAMsAll])
         for size in range(1, maxsize+1):
-            EAMCurrentSize = list(filter(lambda x: isinstance(x, pd.DataFrame), [EAMs.get(size, 0) for EAMs in EAMsAll]))
-            if EAMCurrentSize:
+            EAMCurrentSize = list(
+                filter(
+                    lambda x: isinstance(x, pd.DataFrame), 
+                    [EAMs.get(size, 0) for EAMs in EAMsAll]
+                )
+            )
+            if EAMCurrentSize:   
                 mergedEAMs[size] = reduce(self._merge_EAMs, EAMCurrentSize)
         
         return mergedEAMs            
@@ -867,9 +948,11 @@ class Model():
         Parameters
         ----------
         metabolites: list of str
-            List of metabolite IDs from which initial EMU will be generated to start the decomposition.
+            List of metabolite IDs from which initial EMU will be generated to start the 
+            decomposition.
         atom_nos: list of str
-            Atom NOs of corresponding metabolites, len(atom_nos) should be equal to len(metabolites).
+            Atom NOs of corresponding metabolites, len(atom_nos) should be equal to 
+            len(metabolites).
         lump: bool
             Whether to lump linear EMUs.    
         n_jobs: int
@@ -898,7 +981,10 @@ class Model():
             pool = Pool(processes = n_jobs)
             
             for emu in emus:
-                EAMs = pool.apply_async(func = self.get_emu_adjacency_matrices, args = (emu, lump))
+                EAMs = pool.apply_async(
+                    func = self.get_emu_adjacency_matrices, 
+                    args = (emu, lump)
+                )
                 EAMsAll.append(EAMs)
             
             pool.close()    

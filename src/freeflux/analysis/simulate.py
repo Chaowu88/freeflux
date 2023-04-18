@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Simulator class.'''
 
 
 __author__ = 'Chao Wu'
-__date__ = '03/30/2020'
-
-
+__date__ = '03/30/2022'
 
 
 from collections.abc import Iterable
@@ -15,8 +12,6 @@ from ..io.inputs import read_preset_values_from_file
 from ..io.results import SimResults
 from ..utils.utils import Calculator
 from ..utils.context import Context
-
-
 
 
 class Simulator():
@@ -94,7 +89,13 @@ class Simulator():
                 self.model.target_EMUs.remove(emuid)
     
         
-    def set_labeling_strategy(self, labeled_substrate, labeling_pattern, percentage, purity):
+    def set_labeling_strategy(
+            self, 
+            labeled_substrate, 
+            labeling_pattern, 
+            percentage, 
+            purity
+    ):
         '''
         Use this method for every substrate tracer.
         
@@ -113,7 +114,8 @@ class Simulator():
             If str, labeling_pattern should not be natural substrate.
         percentage: float or list of float
             Molar percentage (in range of [0,1]) of corresponding tracer. 
-            Sum of percentage should be <= 1, and the rest will be considered as natural substrate.
+            Sum of percentage should be <= 1, and the rest will be considered as 
+            natural substrate.
             
             List if tracer with multiple labeling patterns are used. 
             
@@ -181,7 +183,7 @@ class Simulator():
         
         fluxes = read_preset_values_from_file(file)
         
-        for fluxid, value in fluxes.iteritems():
+        for fluxid, value in fluxes.items():
             self.model.total_fluxes[fluxid] = value
             
         if self.contexts:
@@ -229,7 +231,12 @@ class Simulator():
                     metabids.append(metabid)
                     atom_nos.append(atomNOs)
                 
-                EAMs = self.model._decompose_network(metabids, atom_nos, lump = lump, n_jobs = n_jobs)
+                EAMs = self.model._decompose_network(
+                    metabids, 
+                    atom_nos, 
+                    lump = lump, 
+                    n_jobs = n_jobs
+                )
                 for size, EAM in EAMs.items():
                     self.model.EAMs[size] = EAM
         
@@ -305,10 +312,13 @@ class Simulator():
         if not self.model.labeling_strategy:
             raise ValueError('call labeling_strategy first')
         
-        if any([not self.model.EAMs, 
-                not self.model.substrate_MDVs, 
-                not self.model.matrix_As, 
-                not self.model.matrix_Bs]):
+        checklist = [
+            not self.model.EAMs, 
+            not self.model.substrate_MDVs, 
+            not self.model.matrix_As, 
+            not self.model.matrix_Bs
+        ]
+        if any(checklist):
             raise ValueError('call prepare first')
 
 

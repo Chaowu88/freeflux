@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Optimizer class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '04/14/2022'
-
-
 
 
 from functools import partial
@@ -14,8 +11,6 @@ from ..solver.lpsolver import FBAModel
 from ..io.results import FBAResults, FVAResults
 from ..utils.progress import Progress
 from ..utils.context import Context
-
-
 
 
 class Optimizer():
@@ -35,7 +30,7 @@ class Optimizer():
         '''
         
         self.model = model
-        self.contexts = []
+        self.contexts = []   
         
     
     def __enter__(self):
@@ -70,7 +65,7 @@ class Optimizer():
             if bounds[1] >= 0.0:
                 self.model.net_fluxes_bounds[fluxid] = [max(0.0, bounds[0]), bounds[1]]
             else:
-                raise ValueError('flux bounds of %s conflict with its reversibility' % fluxid)
+                raise ValueError(f'flux bounds of {fluxid} conflict with its reversibility')
         
     
     def set_flux_bounds(self, fluxid, bounds):
@@ -99,7 +94,7 @@ class Optimizer():
                 self._set_flux_bounds(fluxid, bounds)
                 fluxids = [fluxid]
             else:
-                raise ValueError('flux range set to nonexistent reaction %s' % fluxid)
+                raise ValueError(f'flux range set to nonexistent reaction {fluxid}')
         else:
             raise ValueError('lower bound of flux should not be greater than upper bound')
     
@@ -148,7 +143,6 @@ class Optimizer():
         This method do some preparation work.
         '''
         
-        # set default bounds for net fluxes
         self._set_default_flux_bounds()
         
         
@@ -163,32 +157,41 @@ class Optimizer():
         '''
         
         netfluxids = self.model.netfluxids.copy()
+        
         net_fluxes_bounds = self.model.net_fluxes_bounds.copy()
+        
         stoy_mat = self.model.get_net_stoichiometric_matrix(exclude_metabs).copy(deep = 'all')
         
         maskZeroRows = (stoy_mat.T != 0.0).any()
-        stoy_mat = stoy_mat[maskZeroRows]
+        stoy_mat = stoy_mat[maskZeroRows]   
         
         maskZeroCols = (stoy_mat != 0.0).any()
         netfluxids_todrop = stoy_mat.columns[~maskZeroCols].tolist()
 
         if netfluxids_todrop:
-            print('%s not connected with other reactions, removed from flux balance' % \
-                  ', '.join(netfluxids_todrop))
-
             for fluxid in netfluxids_todrop:
+                print(
+                    f'{fluxid} not connected with other reactions, '
+                    f'removed from flux balance'
+                )
+
                 if fluxid in netfluxids:
                     netfluxids.remove(fluxid)
                 if fluxid in net_fluxes_bounds:
                     net_fluxes_bounds.pop(fluxid)
 
-            stoy_mat = stoy_mat.T[maskZeroCols].T
-
+            stoy_mat = stoy_mat.T[maskZeroCols].T   
 
         return netfluxids, net_fluxes_bounds, stoy_mat
 
     
-    def optimize(self, objective, direction = 'max', exclude_metabs = None, show_progress = True):
+    def optimize(
+            self, 
+            objective, 
+            direction = 'max', 
+            exclude_metabs = None, 
+            show_progress = True
+    ):
         '''
         This method performs flux balance analysis by maximizing the objective.
         
@@ -208,7 +211,10 @@ class Optimizer():
         FBAResults: FBAResults
         '''
         
-        netfluxids, net_fluxes_bounds, stoy_mat = self._check_stoichiometric_matrix(exclude_metabs)
+        (netfluxids, 
+         net_fluxes_bounds, 
+         stoy_mat
+        ) = self._check_stoichiometric_matrix(exclude_metabs)
 
         fbaModel = FBAModel()
         fbaModel.build_flux_variables(netfluxids, net_fluxes_bounds)
@@ -221,7 +227,13 @@ class Optimizer():
         return FBAResults(objective, optObj, optFluxes)
         
         
-    def estimate_fluxes_range(self, objective = None, gamma = 0, exclude_metabs = None, show_progress = True):
+    def estimate_fluxes_range(
+            self, 
+            objective = None, 
+            gamma = 0, 
+            exclude_metabs = None, 
+            show_progress = True
+    ):
         '''
         This method performs flux variability analysis and estimates the ranges of metabolic fluxes.
         If an objective is provided, it will be optimized in maximizing direction.
@@ -231,8 +243,8 @@ class Optimizer():
         objective: dict
             Reaction ID => coefficient, i.e., objective function.
         gamma: float
-            During evaluation of each flux, objective value is required to be >= gamma*max(objective) with 
-            gamma in [0, 1]
+            During evaluation of each flux, objective value is required to be 
+            >= gamma*max(objective) with gamma in [0, 1]
         exclude_metabs: list
             Metabolite IDs, i.e., metabolites excluded from mass balance.
         show_progress: bool
@@ -243,7 +255,10 @@ class Optimizer():
         FVAResults: FVAResults
         '''
         
-        netfluxids, net_fluxes_bounds, stoy_mat = self._check_stoichiometric_matrix(exclude_metabs)
+        (netfluxids, 
+         net_fluxes_bounds, 
+         stoy_mat
+        ) = self._check_stoichiometric_matrix(exclude_metabs)
 
         fvaModel = FBAModel()
         fvaModel.build_flux_variables(netfluxids, net_fluxes_bounds)

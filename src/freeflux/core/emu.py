@@ -1,18 +1,13 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the EMU class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '02/26/2022'
 
 
-
-
 from functools import lru_cache
 from collections.abc import Iterable
 from .metabolite import Metabolite
-
-
 
 
 class EMU():
@@ -145,7 +140,7 @@ class EMU():
             return None
 
         else:
-            refAtoms, equivAtoms = self.metabolite.atoms_info   # only binary equivalents considered
+            refAtoms, equivAtoms = self.metabolite.atoms_info   
             
             mapping = dict(zip(refAtoms, range(1, len(refAtoms)+1)))
             
@@ -179,5 +174,6 @@ class EMU():
         
     def __repr__(self):
         
-        return '%s %s_%s' % (self.__class__.__name__, self.metabolite_id, ''.join(map(str, self.atom_nos)))
+        return f'{self.__class__.__name__} {self.metabolite_id}_{"".join(map(str, self.atom_nos))}'
+    
         

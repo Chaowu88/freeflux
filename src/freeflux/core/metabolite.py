@@ -1,16 +1,11 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Metabolite class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '02/16/2022'
 
 
-
-
 import re
-
-
 
 
 class Metabolite():
@@ -105,4 +100,6 @@ class Metabolite():
             
     def __repr__(self):
         
-        return '%s %s%s' % (self.__class__.__name__, self.id, '(' + ','.join(self.atoms) + ')' if self.atoms else '')
+        atomStr = '(' + ','.join(self.atoms) + ')' if self.atoms else ''
+
+        return f'{self.__class__.__name__} {self.id}{atomStr}'

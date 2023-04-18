@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the InstFitter class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '06/14/2022'
-
-
 
 
 from functools import partial
@@ -20,8 +17,6 @@ from .inst_simulate import InstSimulator
 from .fit import Fitter
 from ..solver.nlpsolver import InstMFAModel
 from ..utils.progress import Progress
-
-
 
 
 class InstFitter(Fitter, InstSimulator):
@@ -52,7 +47,10 @@ class InstFitter(Fitter, InstSimulator):
             sds = [sds]
             
         for timepoint, mean, sd in zip(timepoints, means, sds):
-            self.model.measured_inst_MDVs.setdefault(fragmentid, {})[timepoint] = [np.array(mean), np.array(sd)]
+            self.model.measured_inst_MDVs.setdefault(fragmentid, {})[timepoint] = [
+                np.array(mean), 
+                np.array(sd)
+            ]
         
         if self.contexts:
             context = self.contexts[-1]
@@ -79,8 +77,10 @@ class InstFitter(Fitter, InstSimulator):
         fragmentid_tpoints = {}
         for [emuid, timepoint], [mean, sd] in measMDVs.iterrows():
             timepoint = float(timepoint)
-            self.model.measured_inst_MDVs.setdefault(emuid, {})[timepoint] = [np.array(list(map(float, mean.split(',')))), 
-                                                                              np.array(list(map(float, sd.split(','))))]
+            self.model.measured_inst_MDVs.setdefault(emuid, {})[timepoint] = [
+                np.array(list(map(float, mean.split(',')))), 
+                np.array(list(map(float, sd.split(','))))
+            ]
             fragmentid_tpoints.setdefault(emuid, []).append(timepoint)
             
         if self.contexts:
@@ -121,7 +121,7 @@ class InstFitter(Fitter, InstSimulator):
         bounds = list(map(float, bounds))
 
         metabids = []
-        if bounds[0] < bounds[1]:   # lower bound not allow to equal upper bound
+        if bounds[0] < bounds[1]:   
             if metabid == 'all':
                 for metabid in self.model.metabolites:
                     self.model.concentrations_bounds[metabid] = [max(0.0, bounds[0]), bounds[1]]
@@ -130,7 +130,7 @@ class InstFitter(Fitter, InstSimulator):
                 self.model.concentrations_bounds[metabid] = [max(0.0, bounds[0]), bounds[1]]
                 metabids = [metabid]
             else:
-                raise ValueError('concentration range set to nonexistent metabolite %s' % metabid)
+                raise ValueError(f'concentration range set to nonexistent metabolite {metabid}')
         else:
             raise ValueError('concentration lower bound should be less than upper bound')    
         
@@ -198,7 +198,11 @@ class InstFitter(Fitter, InstSimulator):
                     metabids.append(metabid)
                     atom_nos.append(atomNOs)
                 
-                EAMs = self.model._decompose_network(metabids, atom_nos, lump = False, n_jobs = n_jobs)
+                EAMs = self.model._decompose_network(
+                    metabids, atom_nos, 
+                    lump = False, 
+                    n_jobs = n_jobs
+                )
                 for size, EAM in EAMs.items():
                     self.model.EAMs[size] = EAM
                 
@@ -357,24 +361,26 @@ class InstFitter(Fitter, InstSimulator):
         if not self.model.labeling_strategy:
             raise ValueError('call labeling_strategy first')
             
-        checklist = [not self.model.target_EMUs, 
-                     self.model.transform_matrix is None, 
-                     self.model.null_space is None,
-                     self.model.measured_inst_MDVs_inv_cov is None, 
-                     not self.model.matrix_As, 
-                     not self.model.matrix_Bs,
-                     not self.model.matrix_Ms, 
-                     not self.model.matrix_As_der_p, 
-                     not self.model.matrix_Bs_der_p, 
-                     not self.model.matrix_Ms_der_p, 
-                     not self.model.substrate_MDVs, 
-                     not self.model.substrate_MDVs_der_p,
-                     self.model.measured_fluxes_der_p is None, 
-                     not self.model.initial_matrix_Xs, 
-                     not self.model.initial_matrix_Ys,
-                     not self.model.initial_matrix_Xs_der_p, 
-                     not self.model.initial_matrix_Ys_der_p, 
-                     not self.model.timepoints]
+        checklist = [
+            not self.model.target_EMUs, 
+            self.model.transform_matrix is None, 
+            self.model.null_space is None,
+            self.model.measured_inst_MDVs_inv_cov is None, 
+            not self.model.matrix_As, 
+            not self.model.matrix_Bs,
+            not self.model.matrix_Ms, 
+            not self.model.matrix_As_der_p, 
+            not self.model.matrix_Bs_der_p, 
+            not self.model.matrix_Ms_der_p, 
+            not self.model.substrate_MDVs, 
+            not self.model.substrate_MDVs_der_p,
+            self.model.measured_fluxes_der_p is None, 
+            not self.model.initial_matrix_Xs, 
+            not self.model.initial_matrix_Ys,
+            not self.model.initial_matrix_Xs_der_p, 
+            not self.model.initial_matrix_Ys_der_p, 
+            not self.model.timepoints
+        ]
         if fit_measured_fluxes:
             checklist.append(self.model.measured_fluxes_inv_cov is None)
         
@@ -382,8 +388,16 @@ class InstFitter(Fitter, InstSimulator):
             raise ValueError('call prepare first')
 
 
-    def solve(self, fit_measured_fluxes = True, ini_fluxes = None, ini_concs = None, 
-              solver = 'slsqp', tol = 1e-6, max_iters = 400, show_progress = True):
+    def solve(
+            self, 
+            fit_measured_fluxes = True, 
+            ini_fluxes = None, 
+            ini_concs = None, 
+            solver = 'slsqp', 
+            tol = 1e-6, 
+            max_iters = 400, 
+            show_progress = True
+    ):
         '''
         Parameters
         ----------
@@ -420,16 +434,33 @@ class InstFitter(Fitter, InstSimulator):
         optModel.build_objective()
         optModel.build_gradient()
         optModel.build_flux_and_conc_bound_constraints()
-        optModel.build_initial_flux_and_conc_values(ini_netfluxes = iniFluxes, ini_concs = iniConcs)
+        optModel.build_initial_flux_and_conc_values(
+            ini_netfluxes = iniFluxes, 
+            ini_concs = iniConcs
+        )
         
         with Progress('INST fitting', silent = not show_progress):
             res = optModel.solve_flux(tol, max_iters)
 
-        return InstFitResults(*res[:8], deepcopy(res[8]), res[9], deepcopy(res[10]), *res[11:])
+        return InstFitResults(
+            *res[:8], 
+            deepcopy(res[8]), 
+            res[9], 
+            deepcopy(res[10]), 
+            *res[11:]
+        )    
 
 
-    def _solve_with_confidence_intervals(self, fit_measured_fluxes, ini_fluxes, ini_concs, 
-                                         solver, tol, max_iters, nruns):
+    def _solve_with_confidence_intervals(
+            self, 
+            fit_measured_fluxes, 
+            ini_fluxes, 
+            ini_concs, 
+            solver, 
+            tol, 
+            max_iters, 
+            nruns
+    ):
         '''
         Parameters
         ----------
@@ -482,7 +513,12 @@ class InstFitter(Fitter, InstSimulator):
             optModel.build_initial_flux_and_conc_values(ini_netfluxes = iniFluxes)
             
             while True:
-                optTotalfluxes, optNetfluxes, optConcs, *_, isSuccess = optModel.solve_flux(tol, max_iters)
+                (optTotalfluxes, 
+                 optNetfluxes, 
+                 optConcs, 
+                 *_, 
+                 isSuccess
+                ) = optModel.solve_flux(tol, max_iters)
                 if isSuccess:
                     break
             optTotalfluxesSet.append(optTotalfluxes)
@@ -495,9 +531,18 @@ class InstFitter(Fitter, InstSimulator):
         return optTotalfluxesSet, optNetfluxesSet, optConcsSet
 
 
-    def solve_with_confidence_intervals(self, fit_measured_fluxes = True, ini_fluxes = None, 
-                                        ini_concs = None, solver = 'slsqp', tol = 1e-6, max_iters = 400, 
-                                        n_runs = 100, n_jobs = 1, show_progress = True):
+    def solve_with_confidence_intervals(
+            self, 
+            fit_measured_fluxes = True, 
+            ini_fluxes = None, 
+            ini_concs = None, 
+            solver = 'slsqp', 
+            tol = 1e-6, 
+            max_iters = 400, 
+            n_runs = 100, 
+            n_jobs = 1, 
+            show_progress = True
+    ):
         '''
         Parameters
         ----------
@@ -536,14 +581,18 @@ class InstFitter(Fitter, InstSimulator):
         with Progress('INST fitting with CIs', silent = not show_progress):
             resSet = []
             for _ in range(n_jobs):
-                res = pool.apply_async(func = self._solve_with_confidence_intervals, 
-                                       args = (fit_measured_fluxes,
-                                               ini_fluxes,
-                                               ini_concs,
-                                               solver,
-                                               tol,
-                                               max_iters,
-                                               nruns_worker))
+                res = pool.apply_async(
+                    func = self._solve_with_confidence_intervals, 
+                    args = (
+                        fit_measured_fluxes,
+                        ini_fluxes,
+                        ini_concs,
+                        solver,
+                        tol,
+                        max_iters,
+                        nruns_worker
+                    )
+                )
                 resSet.append(res)
             
             pool.close()    
@@ -559,5 +608,8 @@ class InstFitter(Fitter, InstSimulator):
             netFluxesSet.extend(netFluxesSubset)
             concsSet.extend(concsSubset)
         
+        self._lambdify_matrix_As_and_Bs()
+        self._lambdify_matrix_Ms()
+
         return InstFitMCResults(totalFluxesSet, netFluxesSet, concsSet)     
         

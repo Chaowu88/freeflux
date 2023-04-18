@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Context class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '03/30/2022'
-
-
 
 
 class Context():

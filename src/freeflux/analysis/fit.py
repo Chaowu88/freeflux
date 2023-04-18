@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the Fitter class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '05/24/2022'
-
-
 
 
 from collections.abc import Iterable
@@ -21,8 +18,6 @@ from ..io.results import FitResults, FitMCResults
 from ..utils.utils import Calculator
 from ..utils.progress import Progress
 from ..solver.nlpsolver import MFAModel 
-
-
 
 
 class Fitter(Optimizer, Simulator):
@@ -85,12 +80,16 @@ class Fitter(Optimizer, Simulator):
         measMDVs = read_measurements_from_file(file)
 
         for emuid, [mean, sd] in measMDVs.iterrows():
-            self.model.measured_MDVs[emuid] = [np.array(list(map(float, mean.split(',')))),
-                                               np.array(list(map(float, sd.split(','))))]
+            self.model.measured_MDVs[emuid] = [
+                np.array(list(map(float, mean.split(',')))),
+                np.array(list(map(float, sd.split(','))))
+            ]
             
         if self.contexts:
             context = self.contexts[-1]
-            context.add_undo(partial(self._unset_measured_MDVs, measMDVs.index.tolist()))
+            context.add_undo(
+                partial(self._unset_measured_MDVs, measMDVs.index.tolist())
+            )
         
         
     def _unset_measured_MDVs(self, fragmentids):
@@ -153,7 +152,9 @@ class Fitter(Optimizer, Simulator):
         
         if self.contexts:
             context = self.contexts[-1]
-            context.add_undo(partial(self._unset_measured_fluxes, measFluxes.index.tolist()))
+            context.add_undo(
+                partial(self._unset_measured_fluxes, measFluxes.index.tolist())
+            )
     
     
     def _unset_measured_fluxes(self, fluxids):
@@ -187,7 +188,9 @@ class Fitter(Optimizer, Simulator):
         
         if self.contexts:
             context = self.contexts[-1]
-            context.add_undo(partial(self._unset_unbalanced_metabolites, metabids))
+            context.add_undo(
+                partial(self._unset_unbalanced_metabolites, metabids)
+            )
         
         
     def _unset_unbalanced_metabolites(self, metabids):
@@ -234,9 +237,13 @@ class Fitter(Optimizer, Simulator):
                 self._set_flux_bounds(fluxid, bounds)
                 fluxids = [fluxid]
             else:
-                raise ValueError('flux range set to nonexistent reaction %s' % fluxid)
+                raise ValueError(f'flux range set to nonexistent reaction {fluxid}')
         else:
-            raise ValueError('lower bound of flux should be less than upper bound, \nuse set_measured_flux or set_measured_fluxes_from_file to set fixed flux value')
+            raise ValueError(
+                'lower bound of flux should be less than upper bound, '
+                'use set_measured_flux or set_measured_fluxes_from_file '
+                'to set fixed flux value'
+            )
         
         if self.contexts:
             context = self.contexts[-1]
@@ -423,8 +430,10 @@ class Fitter(Optimizer, Simulator):
         
         fluxids = []
         if not self.model.net_fluxes_range:
-            FVAres = self.estimate_fluxes_range(exclude_metabs = exclude_metabs, 
-                                                show_progress = False)
+            FVAres = self.estimate_fluxes_range(
+                exclude_metabs = exclude_metabs, 
+                show_progress = False
+            )
             for fluxid, fluxRange in FVAres.flux_ranges.items():
                 self.model.net_fluxes_range[fluxid] = fluxRange
                 fluxids.append(fluxid)
@@ -492,17 +501,19 @@ class Fitter(Optimizer, Simulator):
         if not self.model.labeling_strategy:
             raise ValueError('call labeling_strategy first')
         
-        checklist = [not self.model.target_EMUs, 
-                     self.model.transform_matrix is None, 
-                     self.model.null_space is None,
-                     self.model.measured_MDVs_inv_cov is None, 
-                     not self.model.matrix_As, 
-                     not self.model.matrix_Bs,
-                     not self.model.matrix_As_der_p, 
-                     not self.model.matrix_Bs_der_p, 
-                     not self.model.substrate_MDVs,
-                     not self.model.substrate_MDVs_der_p, 
-                     self.model.measured_fluxes_der_p is None]
+        checklist = [
+            not self.model.target_EMUs, 
+            self.model.transform_matrix is None, 
+            self.model.null_space is None,
+            self.model.measured_MDVs_inv_cov is None, 
+            not self.model.matrix_As, 
+            not self.model.matrix_Bs,
+            not self.model.matrix_As_der_p, 
+            not self.model.matrix_Bs_der_p, 
+            not self.model.substrate_MDVs,
+            not self.model.substrate_MDVs_der_p, 
+            self.model.measured_fluxes_der_p is None
+        ]
         if fit_measured_fluxes:
             checklist.append(self.model.measured_fluxes_inv_cov is None)
         
@@ -510,8 +521,15 @@ class Fitter(Optimizer, Simulator):
             raise ValueError('call prepare first')
 
 
-    def solve(self, fit_measured_fluxes = True, ini_fluxes = None, solver = 'slsqp', 
-              tol = 1e-6, max_iters = 400, show_progress = True):
+    def solve(
+            self, 
+            fit_measured_fluxes = True, 
+            ini_fluxes = None, 
+            solver = 'slsqp', 
+            tol = 1e-6, 
+            max_iters = 400, 
+            show_progress = True
+    ):
         '''
         Parameters
         ----------
@@ -546,11 +564,23 @@ class Fitter(Optimizer, Simulator):
         with Progress('fitting', silent = not show_progress):
             res = optModel.solve_flux(tol, max_iters)
 
-        return FitResults(*res[:7], deepcopy(res[7]), res[8], deepcopy(res[9]), *res[10:])
+        return FitResults(
+            *res[:7], 
+            deepcopy(res[7]), 
+            res[8], 
+            deepcopy(res[9]), 
+            *res[10:])   
     
     
-    def _solve_with_confidence_intervals(self, fit_measured_fluxes, ini_fluxes, solver, 
-                                         tol, max_iters, nruns):
+    def _solve_with_confidence_intervals(
+            self, 
+            fit_measured_fluxes, 
+            ini_fluxes, 
+            solver, 
+            tol, 
+            max_iters, 
+            nruns
+    ):
         '''
         Parameters
         ----------
@@ -606,9 +636,17 @@ class Fitter(Optimizer, Simulator):
         return optTotalfluxesSet, optNetfluxesSet
         
     
-    def solve_with_confidence_intervals(self, fit_measured_fluxes = True, ini_fluxes = None, 
-                                        solver = 'slsqp', tol = 1e-6, max_iters = 400, 
-                                        n_runs = 100, n_jobs = 1, show_progress = True):
+    def solve_with_confidence_intervals(
+            self, 
+            fit_measured_fluxes = True, 
+            ini_fluxes = None, 
+            solver = 'slsqp', 
+            tol = 1e-6, 
+            max_iters = 400, 
+            n_runs = 100, 
+            n_jobs = 1, 
+            show_progress = True
+    ):
         '''
         Parameters
         ----------
@@ -644,13 +682,17 @@ class Fitter(Optimizer, Simulator):
         with Progress('fitting with CIs', silent = not show_progress):
             fluxesSet = []
             for _ in range(n_jobs):
-                fluxes = pool.apply_async(func = self._solve_with_confidence_intervals, 
-                                          args = (fit_measured_fluxes,
-                                                  ini_fluxes,
-                                                  solver,
-                                                  tol,
-                                                  max_iters,
-                                                  nruns_worker))
+                fluxes = pool.apply_async(
+                    func = self._solve_with_confidence_intervals, 
+                    args = (
+                        fit_measured_fluxes,
+                        ini_fluxes,
+                        solver,
+                        tol,
+                        max_iters,
+                        nruns_worker
+                    )
+                )
                 fluxesSet.append(fluxes)
             
             pool.close()    
@@ -663,5 +705,7 @@ class Fitter(Optimizer, Simulator):
         for totalFluxesSubset, netFluxesSubset in fluxesSet:
             totalFluxesSet.extend(totalFluxesSubset)
             netFluxesSet.extend(netFluxesSubset)
+
+        self._lambdify_matrix_As_and_Bs()    
         
         return FitMCResults(totalFluxesSet, netFluxesSet)

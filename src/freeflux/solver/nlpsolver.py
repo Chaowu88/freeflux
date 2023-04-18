@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define the MFAModel and InstMFAModel class.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '05/19/2022'
-
-
 
 
 import numpy as np
@@ -19,8 +16,6 @@ except ModuleNotFoundError:
 else:
     OPENOPT_INSTALLED = True
 from ..utils.utils import Calculator
-
-
 
 
 class MFAModel():
@@ -64,7 +59,8 @@ class MFAModel():
         
         simMDVs = self.calculator._calculate_MDVs()
         expMDVs = self.model.measured_MDVs
-        diff = np.concatenate([simMDVs[emuid] - expMDVs[emuid][0] for emuid in self.model.target_EMUs])
+        diff = np.concatenate([simMDVs[emuid] - expMDVs[emuid][0] 
+                               for emuid in self.model.target_EMUs])
         
         return diff
             
@@ -82,7 +78,8 @@ class MFAModel():
         
         simMDVs, simMDVsDer = self.calculator._calculate_MDVs_and_derivatives_p()
         expMDVs = self.model.measured_MDVs
-        diff = np.concatenate([simMDVs[emuid] - expMDVs[emuid][0] for emuid in self.model.target_EMUs])
+        diff = np.concatenate([simMDVs[emuid] - expMDVs[emuid][0] 
+                               for emuid in self.model.target_EMUs])
         
         dxsim_dp = np.vstack([simMDVsDer[emuid] for emuid in self.model.target_EMUs])
         
@@ -223,14 +220,18 @@ class MFAModel():
 
     def _solve_flux_slsqp(self, tol, max_iters, disp):
         
-        res = minimize(fun = self.f,
-                       x0 = self.x0,
-                       method = 'SLSQP',
-                       jac = self.df,
-                       constraints = self.constrs,
-                       options = {'ftol': tol,
-                                  'maxiter': max_iters, 
-                                  'disp': disp})
+        res = minimize(
+            fun = self.f,
+            x0 = self.x0,
+            method = 'SLSQP',
+            jac = self.df,
+            constraints = self.constrs,
+            options = {
+                'ftol': tol,
+                'maxiter': max_iters, 
+                'disp': disp
+            }
+        )
        
         return res.fun, res.x, res.status in [0, 2]
 
@@ -238,15 +239,17 @@ class MFAModel():
     def _solve_flux_ralg(self, tol, max_iters, disp):
 
         if OPENOPT_INSTALLED:
-            res = res = NLP(f = self.f, 
-                            x0 = self.x0, 
-                            df = self.df, 
-                            A = self.A, 
-                            b = self.b, 
-                            xtol = tol, 
-                            ftol = tol, 
-                            maxIter = max_iters, 
-                            iprint = 1 if disp else -1).solve('ralg')
+            res = res = NLP(
+                f = self.f, 
+                x0 = self.x0, 
+                df = self.df, 
+                A = self.A, 
+                b = self.b, 
+                xtol = tol, 
+                ftol = tol, 
+                maxIter = max_iters, 
+                iprint = 1 if disp else -1
+            ).solve('ralg')
 
             return res.ff, res.xf, res.istop > 0 or res.istop == -7
         
@@ -292,7 +295,7 @@ class MFAModel():
 
 
     def _get_nmeasurements(self, opt_resids):
-
+        
         return opt_resids.size
 
          
@@ -336,9 +339,26 @@ class MFAModel():
         _, dxsim_du = self._calculate_sim_MDVs_derivative()
         dvsim_du = self._calculate_sim_fluxes_derivative()
         
-        return (opt_totalfluxes, opt_netfluxes, opt_obj, opt_resids, nmeas, nparams, sim_MDVs, exp_MDVs, 
-                sim_fluxes, exp_fluxes, hess, self.N, self.T, dxsim_du, dvsim_du, 
-                self.model.measured_MDVs_inv_cov, self.model.measured_fluxes_inv_cov, is_success)
+        return (
+            opt_totalfluxes, 
+            opt_netfluxes, 
+            opt_obj, 
+            opt_resids, 
+            nmeas, 
+            nparams, 
+            sim_MDVs, 
+            exp_MDVs, 
+            sim_fluxes, 
+            exp_fluxes, 
+            hess, 
+            self.N, 
+            self.T, 
+            dxsim_du, 
+            dvsim_du, 
+            self.model.measured_MDVs_inv_cov, 
+            self.model.measured_fluxes_inv_cov, 
+            is_success
+        )
         
         
     
@@ -358,8 +378,9 @@ class InstMFAModel(MFAModel):
         
         simMDVs = self.calculator._calculate_inst_MDVs()
         expMDVs = self.model.measured_inst_MDVs
-        diff = np.concatenate([simMDVs[emuid][t] - expMDVs[emuid][t][0] for emuid in self.model.target_EMUs
-                                                                        for t in expMDVs[emuid] if t != 0])
+        diff = np.concatenate([simMDVs[emuid][t] - expMDVs[emuid][t][0] 
+                               for emuid in self.model.target_EMUs
+                               for t in expMDVs[emuid] if t != 0])
         
         return diff
         
@@ -368,11 +389,13 @@ class InstMFAModel(MFAModel):
         
         simMDVs, simMDVsDer = self.calculator._calculate_inst_MDVs_and_derivatives_p()
         expMDVs = self.model.measured_inst_MDVs
-        diff = np.concatenate([simMDVs[emuid][t] - expMDVs[emuid][t][0] for emuid in self.model.target_EMUs
-                                                                        for t in expMDVs[emuid] if t != 0])
+        diff = np.concatenate([simMDVs[emuid][t] - expMDVs[emuid][t][0] 
+                               for emuid in self.model.target_EMUs
+                               for t in expMDVs[emuid] if t != 0])
         
-        dxsim_dp = np.vstack([simMDVsDer[emuid][t] for emuid in self.model.target_EMUs
-                                                   for t in expMDVs[emuid] if t != 0])
+        dxsim_dp = np.vstack([simMDVsDer[emuid][t] 
+                              for emuid in self.model.target_EMUs
+                              for t in expMDVs[emuid] if t != 0])
         
         return diff, dxsim_dp
         
@@ -476,7 +499,10 @@ class InstMFAModel(MFAModel):
         b3 = -vnet_ub
         b4 = np.zeros(self.nconcs)
         
-        A = np.zeros((self.ntotalfluxes+2*self.nnetfluxes+self.nconcs, self.nfreefluxes+self.nconcs))
+        A = np.zeros(
+            (self.ntotalfluxes+2*self.nnetfluxes+self.nconcs, 
+             self.nfreefluxes+self.nconcs)
+        )
         A[:(self.ntotalfluxes+2*self.nnetfluxes), :self.nfreefluxes] = np.vstack((A1, A2, A3))
         A[(self.ntotalfluxes+2*self.nnetfluxes):, self.nfreefluxes:] = A4
         b = np.concatenate((b1, b2, b3, b4))
@@ -546,13 +572,14 @@ class InstMFAModel(MFAModel):
         self.calculator._build_initial_sim_MDVs()
         sim_inst_MDVs = {}
         for emuid in self.model.target_EMUs:
-            instMDVs = self.model.initial_sim_MDVs[emuid].copy()
-            instMDVs.update({t: sim_inst_MDVs_all[emuid][t] for t in sim_inst_MDVs_all[emuid]})
+            instMDVs = self.model.initial_sim_MDVs[emuid].copy()   
+            instMDVs.update({t: sim_inst_MDVs_all[emuid][t] 
+                             for t in sim_inst_MDVs_all[emuid]})
             sim_inst_MDVs[emuid] = instMDVs
 
         return exp_inst_MDVs, sim_inst_MDVs 
+        
 
-    
     def solve_flux(self, tol = 1e-6, max_iters = 400, disp = False):
         
         self._initialize_total_fluxes_and_concs()
@@ -587,7 +614,25 @@ class InstMFAModel(MFAModel):
         dvsim_dp = self._calculate_sim_fluxes_derivative()
         dvsim_du = dvsim_dp[:, :self.nfreefluxes]
         
-        return (opt_totalfluxes, opt_netfluxes, opt_concs, opt_obj, opt_resids, nmeas, nparams, sim_inst_MDVs, 
-                exp_inst_MDVs, sim_fluxes, exp_fluxes, hess, self.N, self.T, dxsim_du, dvsim_du, 
-                self.model.measured_inst_MDVs_inv_cov, self.model.measured_fluxes_inv_cov, is_success)
+        return (
+            opt_totalfluxes, 
+            opt_netfluxes, 
+            opt_concs, 
+            opt_obj, 
+            opt_resids, 
+            nmeas, 
+            nparams, 
+            sim_inst_MDVs, 
+            exp_inst_MDVs, 
+            sim_fluxes, 
+            exp_fluxes, 
+            hess, 
+            self.N, 
+            self.T, 
+            dxsim_du, 
+            dvsim_du, 
+            self.model.measured_inst_MDVs_inv_cov, 
+            self.model.measured_fluxes_inv_cov, 
+            is_success
+        )
         

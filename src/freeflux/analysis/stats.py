@@ -1,11 +1,8 @@
-#!/usr/bin/env pyhton
-# -*- coding: UTF-8 -*-
+'''Define statistic functions.'''
 
 
 __author__ = 'Chao Wu'
 __date__ = '05/08/2022'
-
-
 
 
 from os import makedirs
@@ -14,8 +11,6 @@ import pandas as pd
 from scipy.stats import t, chi2, probplot, zscore
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
-
-
 
 
 def _chi2_test(obj_value, dof, confidence_level):
@@ -35,12 +30,8 @@ def _chi2_test(obj_value, dof, confidence_level):
     
     flag = '' if chi2Lb <= obj_value <= chi2Ub else 'not '
     
-    print('SSR %.2f %sacceptable, which is %sin [%.2f, %.2f] of %s%% confidence level by chi2 test' % (obj_value, 
-                                                                                                       flag,
-                                                                                                       flag,
-                                                                                                       chi2Lb, 
-                                                                                                       chi2Ub, 
-                                                                                                       confidence_level*100))
+    print(f'SSR {obj_value:.2f} {flag}acceptable, which is {flag}in [{chi2Lb}, {chi2Ub}]'
+          f'of {confidence_level*100}%% confidence level by chi2 test')
 
 
 def _normal_probability(resids, show_fig, output_dir):
@@ -64,7 +55,7 @@ def _normal_probability(resids, show_fig, output_dir):
     
     if output_dir:
         makedirs(output_dir, exist_ok = True)
-        plt.savefig('%s/normal_probability_plot.jpg' % output_dir, dpi = 300, bbox_inches = 'tight')
+        plt.savefig(f'{output_dir}/normal_probability_plot.jpg', dpi = 300, bbox_inches = 'tight')
     
     if show_fig:
         plt.show()
@@ -72,8 +63,17 @@ def _normal_probability(resids, show_fig, output_dir):
     plt.close()
 
 
-def _simulated_vs_measured_measurements(sim_meas, exp_meas, exp_meas_err, xlabel, ylabel, 
-                                        xticklabels, filename, show_fig, output_dir):
+def _simulated_vs_measured_measurements(
+        sim_meas, 
+        exp_meas, 
+        exp_meas_err, 
+        xlabel, 
+        ylabel, 
+        xticklabels, 
+        filename, 
+        show_fig, 
+        output_dir
+):
     '''
     Parameters
     ----------
@@ -104,20 +104,36 @@ def _simulated_vs_measured_measurements(sim_meas, exp_meas, exp_meas_err, xlabel
     barWidth = 0.4
     xPos = np.arange(1, sim_meas.size+1)
     
-    plt.bar(x = xPos - 0.5 * barWidth, height = sim_meas, width = barWidth, label = 'simulated')
-    plt.bar(x = xPos + 0.5 * barWidth, height = exp_meas, yerr = exp_meas_err, width = barWidth, 
-            label = 'measured', capsize = 3)
+    plt.bar(
+        x = xPos - 0.5*barWidth, 
+        height = sim_meas, 
+        width = barWidth, 
+        label = 'simulated'
+    )
+    plt.bar(
+        x = xPos + 0.5*barWidth, 
+        height = exp_meas, 
+        yerr = exp_meas_err, 
+        width = barWidth, 
+        label = 'measured', 
+        capsize = 3
+    )
     plt.xticks(ticks = xPos, labels = xticklabels, fontsize = 15)
     plt.tick_params(axis = 'y', labelsize = 15)
     plt.xlabel(xlabel, fontsize = 15)
     plt.ylabel(ylabel, fontsize = 15)
     
-    plt.legend(loc = 'center', bbox_to_anchor = (1.2, 0.5), fontsize = 15, frameon = False)
+    plt.legend(
+        loc = 'center', 
+        bbox_to_anchor = (1.2, 0.5), 
+        fontsize = 15, 
+        frameon = False
+    )
     
     if output_dir:
         makedirs(output_dir, exist_ok = True)
         #filename = xlabel if xlabel else ylabel
-        plt.savefig('%s/%s.jpg' % (output_dir, filename), dpi = 300, bbox_inches = 'tight')
+        plt.savefig(f'{output_dir}/{filename}.jpg', dpi = 300, bbox_inches = 'tight')
     
     if show_fig:
         plt.show()
@@ -142,9 +158,18 @@ def _simulated_vs_measured_MDVs(simulated_MDVs, measured_MDVs, show_fig, output_
     for emuid in measured_MDVs:
         simMDV = simulated_MDVs[emuid]
         expMDV, expMDVerr = measured_MDVs[emuid]
-        xticklabels = ['M%s' % str(i) for i in range(simMDV.size)]
-        _simulated_vs_measured_measurements(simMDV, expMDV, expMDVerr, emuid, 'Isotopomer fraction', 
-                                            xticklabels, 'sim_vs_exp_MDVs-'+emuid, show_fig, output_dir)
+        xticklabels = [f'M{str(i)}' for i in range(simMDV.size)]
+        _simulated_vs_measured_measurements(
+            simMDV, 
+            expMDV, 
+            expMDVerr, 
+            emuid, 
+            'Isotopomer fraction', 
+            xticklabels, 
+            'sim_vs_exp_MDVs-'+emuid, 
+            show_fig, 
+            output_dir
+        )
         
     
 def _simulated_vs_measured_fluxes(simulated_fluxes, measured_fluxes, show_fig, output_dir):
@@ -172,9 +197,17 @@ def _simulated_vs_measured_fluxes(simulated_fluxes, measured_fluxes, show_fig, o
         expFluxesErr.append(expFluxErr)
         xticklabels.append(fluxid)
     
-    _simulated_vs_measured_measurements(simFluxes, expFluxes, expFluxesErr, '', 'Flux', 
-                                        xticklabels, 'sim_vs_exp_fluxes', show_fig, output_dir)
-    
+    _simulated_vs_measured_measurements(
+        simFluxes, 
+        expFluxes, 
+        expFluxesErr, 
+        '', 
+        'Flux', 
+        xticklabels, 
+        'sim_vs_exp_fluxes', 
+        show_fig, 
+        output_dir
+    )
 
 
 def _confidence_intervals_le(res, irr, cov, dof, confidence_level):
@@ -232,7 +265,7 @@ def _confidence_intervals_mc(res_set, irr, confidence_level):
         raise ValueError('can not estimate CIs, need more Monte Carlo runs')
     else:
         ranges = {}
-        for varid, col in selected.iteritems():
+        for varid, col in selected.items():
             if varid in irr:
                 ranges[varid] = [max(0, col.min()), col.max()]
             else:
@@ -266,11 +299,16 @@ def _MDV_kinetics(emuid, simulated_inst_MDVs, show_fig, output_dir):
     plt.xlabel('Time (s)', fontsize = 15)
     plt.ylabel('EMU %s' % emuid, fontsize = 15)
     plt.tick_params(labelsize = 15)
-    plt.legend(loc = 'center', bbox_to_anchor = (1.15, 0.5), fontsize = 15, frameon = False)
+    plt.legend(
+        loc = 'center', 
+        bbox_to_anchor = (1.15, 0.5), 
+        fontsize = 15, 
+        frameon = False
+    )
     
     if output_dir:
         makedirs(output_dir, exist_ok = True)
-        plt.savefig('%s/%s_kinetics.jpg' % (output_dir, emuid), dpi = 300, bbox_inches = 'tight')
+        plt.savefig(f'{output_dir}/{emuid}_kinetics.jpg', dpi = 300, bbox_inches = 'tight')
     
     if show_fig:
         plt.show()
@@ -278,7 +316,12 @@ def _MDV_kinetics(emuid, simulated_inst_MDVs, show_fig, output_dir):
     plt.close()
     
     
-def _simulated_vs_measured_inst_MDVs(simulated_inst_MDVs, measured_inst_MDVs, show_fig, output_dir):
+def _simulated_vs_measured_inst_MDVs(
+        simulated_inst_MDVs, 
+        measured_inst_MDVs, 
+        show_fig, 
+        output_dir
+):
     '''
     Parameters
     ----------
@@ -309,27 +352,50 @@ def _simulated_vs_measured_inst_MDVs(simulated_inst_MDVs, measured_inst_MDVs, sh
         for i, simMDV in enumerate(interpMDVs.T):
             p = plt.plot(ts, simMDV, label = 'M%s' % i, linewidth = 2)
             colors.append(p[0].get_color())
-        legend = plt.legend(loc = 'center', bbox_to_anchor = (1.15, 0.5), title = 'simulated', 
-                            title_fontsize = 15, fontsize = 15, frameon = False)
+        legend = plt.legend(
+            loc = 'center', 
+            bbox_to_anchor = (1.15, 0.5), 
+            title = 'simulated', 
+            title_fontsize = 15, 
+            fontsize = 15, 
+            frameon = False
+        )
         plt.gca().add_artist(legend)    
         
         handles = []
         labels = []
         for i, (expMDV, expMDVerr) in enumerate(zip(expMDVs.T, expMDVerrs.T)):
-            e = plt.errorbar(tpoint_exp, expMDV, expMDVerr, color = colors[i], linestyle = '',
-                             marker = '.', markersize = 7, elinewidth = 2, capsize = 3)
+            e = plt.errorbar(
+                tpoint_exp, 
+                expMDV, 
+                expMDVerr, 
+                color = colors[i], 
+                linestyle = '',
+                marker = '.', 
+                markersize = 7, 
+                elinewidth = 2, 
+                capsize = 3
+            )
             handles.append(e[0])
             labels.append('M%s' % i)
-        plt.legend(handles = handles, labels = labels, loc = 'center', bbox_to_anchor = (1.4, 0.5), 
-                   title = 'measured', title_fontsize = 15, fontsize = 15, frameon = False)
+        plt.legend(
+            handles = handles, 
+            labels = labels, 
+            loc = 'center', 
+            bbox_to_anchor = (1.4, 0.5), 
+            title = 'measured', 
+            title_fontsize = 15, 
+            fontsize = 15, 
+            frameon = False
+        )
             
         plt.xlabel('Time (s)', fontsize = 15)
-        plt.ylabel('EMU %s' % emuid, fontsize = 15)
+        plt.ylabel(f'EMU {emuid}', fontsize = 15)
         plt.tick_params(labelsize = 15)
         
         if output_dir:
             makedirs(output_dir, exist_ok = True)
-            plt.savefig('%s/%s_inst.jpg' % (output_dir, emuid), dpi = 300, bbox_inches = 'tight')
+            plt.savefig(f'{output_dir}/{emuid}_inst.jpg', dpi = 300, bbox_inches = 'tight')
         
         if show_fig:
             plt.show()
