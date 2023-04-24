@@ -30,7 +30,13 @@ Then, install FreeFlux using *pip*:
   
 .. Note::
   Note that it's recommended to install FreeFlux within a `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`_ to avoid conflicts with other Python packages.
-  
+
+If FreeFlux is installed on a Linux platform with Python>=3.8, using `JAX <https://github.com/google/jax>`__ can significantly speed up the ``prepare`` step before flux estimation. JAX can be installed using the following command:
+
+.. code-block:: python
+
+  pip install jax[cpu]~=0.4
+
 Solver Installation
 -------------------
  
