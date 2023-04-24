@@ -30,7 +30,7 @@ or from source (assuming you have `git <https://git-scm.com/>`__ installed):
   
 Installation within an `virtual environment <https://docs.python.org/3.8/tutorial/venv.html>`__ is recommendated.
 
-If FreeFlux is installed in Linux platform with Python>=3.8, `JAX <https://github.com/google/jax>`__ can help accelerate significantly the prepare before flux estimation. JAX can be installed by:
+If FreeFlux is installed on a Linux platform with Python>=3.8, using `JAX <https://github.com/google/jax>`__ can significantly speed up the preparation step before flux estimation. JAX can be installed using the following command:
 
 .. code-block:: python
 
