@@ -128,10 +128,10 @@ def read_measurements_from_file(file, inst_data = False):
         data = pd.read_excel(
             file, 
             comment = '#', 
-            header = None, 
-            names = ['mean', 'sd'], 
-            index_col = indexCols
+            header = None
         )
+        data.set_index(indexCols, inplace = True)
+        data.columns = ['mean', 'sd']
     else:
         raise TypeError('can only read from .tsv or excel file')
     
