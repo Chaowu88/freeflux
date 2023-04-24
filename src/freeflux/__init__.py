@@ -1,5 +1,5 @@
 __author__ = 'Chao Wu'
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 
 from .core.metabolite import Metabolite
