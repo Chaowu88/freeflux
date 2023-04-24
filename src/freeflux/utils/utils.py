@@ -16,8 +16,19 @@ from numpy.random import normal
 import pandas as pd
 from scipy.linalg import null_space, pinv2, expm
 from sympy import symbols, lambdify, Matrix, derive_by_array
+try:
+    import jax.numpy as jnp
+    from jax import config, jacfwd
+    config.update('jax_platform_name', 'cpu')
+except ModuleNotFoundError:
+    JAX_INSTALLED = False
+else:
+    JAX_INSTALLED = True
 from multiprocessing import Pool
 from ..core.mdv import MDV, get_natural_MDV, get_substrate_MDV, conv, diff_conv
+import warnings
+warnings.filterwarnings('ignore', category = RuntimeWarning)
+warnings.filterwarnings('ignore', category = DeprecationWarning)
 
     
 class Calculator():
@@ -317,8 +328,25 @@ class Calculator():
         matA = Matrix(A)
         matB = Matrix(B)
         
-        matrix_A_der = np.array(derive_by_array(matA, symbols(fluxids)), dtype = float)
-        matrix_B_der = np.array(derive_by_array(matB, symbols(fluxids)), dtype = float)
+        if JAX_INSTALLED:
+            lambA = lambdify(symbols(fluxids), matA, modules = 'jax')
+            lambB = lambdify(symbols(fluxids), matB, modules = 'jax')
+            
+            matrix_A_der = np.array(
+                jacfwd(lambA, range(len(fluxids)))(*jnp.ones(len(fluxids)))
+            )
+            matrix_B_der = np.array(
+                jacfwd(lambB, range(len(fluxids)))(*jnp.ones(len(fluxids)))
+            )
+        else:
+            matrix_A_der = np.array(
+                derive_by_array(matA, symbols(fluxids)), 
+                dtype = float
+            )
+            matrix_B_der = np.array(
+                derive_by_array(matB, symbols(fluxids)), 
+                dtype = float
+            )
         
         return matrix_A_der, matrix_B_der
     
@@ -480,11 +508,20 @@ class Calculator():
         
         matrix_Ms_der = {}
         for size, EAM in self.model.EAMs.items():            
+            
             matM = Matrix(np.diag(symbols([emu.metabolite_id for emu in EAM.columns])))
-            matrix_M_der = np.array(
-                derive_by_array(matM, symbols(self.model.concids)), 
-                dtype = float
-            )
+            if JAX_INSTALLED:
+                lambM = lambdify(symbols(self.model.concids), matM, modules = 'jax')
+                matrix_M_der = np.array(
+                    jacfwd(lambM, 
+                           range(len(self.model.concids))
+                    )(*jnp.ones(len(self.model.concids)))
+                )
+            else:
+                matrix_M_der = np.array(
+                    derive_by_array(matM, symbols(self.model.concids)), 
+                    dtype = float
+                )
             matrix_Ms_der[size] = matrix_M_der
             
         return matrix_Ms_der
