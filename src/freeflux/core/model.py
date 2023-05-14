@@ -580,7 +580,7 @@ class Model():
     
         headStr = (
             f'{self.__class__.__name__} {self.name if self.name else "unknown"} '
-            f'({self.n_metabolites} metabolites, {self.n_reactions})'
+            f'({self.n_metabolites} metabolites, {self.n_reactions} reactions)'
         )
         bodyStr = '\n'.join([str(rxn) for rxn in self.reactions_info.values()])
 
