@@ -623,10 +623,17 @@ class Fitter(Optimizer, Simulator):
             optModel.build_flux_bound_constraints()
             optModel.build_initial_flux_values(ini_netfluxes = iniFluxes)
 
-            while True:
-                optTotalfluxes, optNetfluxes, *_, isSuccess = optModel.solve_flux(tol, max_iters)
-                if isSuccess:
-                    break
+            try:
+                while True:
+                    (optTotalfluxes, 
+                     optNetfluxes, 
+                     *_, 
+                     isSuccess
+                    ) = optModel.solve_flux(tol, max_iters)
+                    if isSuccess:
+                        break
+            except:
+                continue
             optTotalfluxesSet.append(optTotalfluxes)
             optNetfluxesSet.append(optNetfluxes)
             

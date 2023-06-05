@@ -11,6 +11,8 @@ import pandas as pd
 from scipy.stats import t, chi2, probplot, zscore
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings('ignore', category = RuntimeWarning)
 
 
 def _chi2_test(obj_value, dof, confidence_level):
@@ -30,8 +32,11 @@ def _chi2_test(obj_value, dof, confidence_level):
     
     flag = '' if chi2Lb <= obj_value <= chi2Ub else 'not '
     
-    print(f'SSR {obj_value:.2f} {flag}acceptable, which is {flag}in [{chi2Lb}, {chi2Ub}]'
-          f'of {confidence_level*100}%% confidence level by chi2 test')
+    print(
+        f'SSR {obj_value:.2f} {flag}acceptable,'
+        f' which is {flag}in [{round(chi2Lb, 2)}, {round(chi2Ub, 2)}]'
+        f' of the {confidence_level*100}%% confidence level by chi2 test'
+    )
 
 
 def _normal_probability(resids, show_fig, output_dir):
