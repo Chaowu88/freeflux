@@ -1,4 +1,4 @@
-'''Example of Flux estimation at steady state with a E. coli model using synthetic data.
+'''Example of Flux estimation at steady state with a E. coli model using experimental data.
 '''
 
 
@@ -7,14 +7,28 @@ import pandas as pd
 from freeflux import Model
 
 
-MODEL_FILE = '../models/ecoli/synthetic_data/reactions.xlsx' 
-MEASURED_MDVS = '../models/ecoli/synthetic_data/measured_MDVs.xlsx'
-MEASURED_FLUXES = '../models/ecoli/synthetic_data/measured_fluxes.xlsx'
-OUT_DIR = '../results/ecoli/synthetic_data/steady_state_estimation'
+MODEL_FILE = '../models/ecoli/experimental_data/reactions.xlsx' 
+MEASURED_MDVS = '../models/ecoli/experimental_data/measured_MDVs.xlsx'
+MEASURED_FLUXES = '../models/ecoli/experimental_data/measured_fluxes.xlsx'
+OUT_DIR = '../results/ecoli/experimental_data/steady_state_estimation'
+
+DILUTION_FROM = [
+    'CO2u', 
+    'Alau', 
+    'Glyu', 
+    'Valu', 
+    'Leuu', 
+    'Ileu', 
+    'Seru', 
+    'Pheu', 
+    'Aspu', 
+    'Gluu', 
+    'Tyru'
+]
 
 
 # estimate fluxes at steady state
-def ecoli_steady_state_fitting():
+def steady_state_fitting():
 
     ecoli = Model('ecoli')
     ecoli.read_from_file(MODEL_FILE)
@@ -25,8 +39,8 @@ def ecoli_steady_state_fitting():
         fit.set_labeling_strategy(
             'Glc.ex', 
             labeling_pattern = ['100000', '111111'], 
-            percentage = [0.754, 0.246], 
-            purity = [0.997, 0.994]
+            percentage = [0.77, 0.205], 
+            purity = [0.99, 0.985]
         )
         
         # read measurements
@@ -35,11 +49,14 @@ def ecoli_steady_state_fitting():
         
         # set upper and lower bounds for fluxes
         fit.set_flux_bounds('all', bounds = [-100, 100]) 
-
+        
         # solve the fluxes
-        fit.prepare(n_jobs = 3)
+        fit.prepare(
+            dilution_from = DILUTION_FROM, 
+            n_jobs = 30
+        )
         while True:
-            res = fit.solve(solver = 'ralg')
+            res = fit.solve(solver = 'ralg', max_iters = 1000)
             if res.optimization_successful:
                 break
     
@@ -55,13 +72,12 @@ def ecoli_steady_state_fitting():
         which = 'net', 
         confidence_level = 0.95
     )
-    pd.DataFrame(net_cis, index = ['LB', 'UB']).T.to_excel(
-        OUT_DIR+'/netflux_le_CIs.xlsx'
-    )
-    
     total_cis = res.estimate_confidence_intervals(
         which = 'total', 
         confidence_level = 0.95
+    )
+    pd.DataFrame(net_cis, index = ['LB', 'UB']).T.to_excel(
+        OUT_DIR+'/netflux_le_CIs.xlsx'
     )
     pd.DataFrame(total_cis, index = ['LB', 'UB']).T.to_excel(
         OUT_DIR+'/totalflux_le_CIs.xlsx'
@@ -92,7 +108,7 @@ def ecoli_steady_state_fitting():
 
 
 # estimate with confidence intervals
-def ecoli_steady_state_fitting_CIs():
+def steady_state_fitting_CIs():
 
     ecoli = Model('ecoli')
     ecoli.read_from_file(MODEL_FILE)
@@ -103,9 +119,9 @@ def ecoli_steady_state_fitting_CIs():
         fit.set_labeling_strategy(
             'Glc.ex', 
             labeling_pattern = ['100000', '111111'], 
-            percentage = [0.754, 0.246], 
-            purity = [0.997, 0.994]
-        )   
+            percentage = [0.77, 0.205], 
+            purity = [0.99, 0.985]
+        )
         
         # read measurements
         fit.set_measured_MDVs_from_file(MEASURED_MDVS)
@@ -116,13 +132,17 @@ def ecoli_steady_state_fitting_CIs():
         
         # estimate confidence intervals, 
         # highly recommended to run with parallel jobs
-        fit.prepare(n_jobs = 3)
+        fit.prepare(
+            dilution_from = DILUTION_FROM, 
+            n_jobs = 30
+        )
         res = fit.solve_with_confidence_intervals(
             solver = 'ralg', 
+            max_iters = 1000,
             n_runs = 500, 
             n_jobs = 30
         )
-    
+
     # save the CIs
     net_cis = res.estimate_confidence_intervals(
         which = 'net', 
@@ -146,5 +166,5 @@ def ecoli_steady_state_fitting_CIs():
 if __name__ == '__main__':
 
     makedirs(OUT_DIR, exist_ok = True)
-    ecoli_steady_state_fitting()
-    ecoli_steady_state_fitting_CIs()
+    steady_state_fitting()
+    steady_state_fitting_CIs()

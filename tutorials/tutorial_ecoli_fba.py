@@ -7,8 +7,8 @@ import pandas as pd
 from freeflux import Model
 
 
-MODEL_FILE = '../models/ecoli/reactions.xlsx'
-OUT_DIR = '..results/ecoli/fba'
+MODEL_FILE = '../models/ecoli/synthetic_data/reactions.xlsx'
+OUT_DIR = '../results/ecoli/fba'
 
 
 # Flux estimation by Flux Balance Analysis

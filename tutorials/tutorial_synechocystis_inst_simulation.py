@@ -1,4 +1,5 @@
-'''Example of MDV simulation at isotopically nonstationary (INST) state with a E. coli model.
+'''Example of MDV simulation at isotopically nonstationary (INST) state with a Synechocystis 
+model.
 '''
 
 
@@ -6,10 +7,10 @@ from os import makedirs
 from freeflux import Model
 
 
-MODEL_FILE = '../models/synechocystis/reactions.xlsx' 
-FLUXES = '../models/synechocystis/fluxes.xlsx'
-CONCS = '../models/synechocystis/concentrations.xlsx'
-OUT_DIR = '..results/synechocystis/inst_simulation'
+MODEL_FILE = '../models/synechocystis/synthetic_data/reactions.xlsx' 
+FLUXES = '../models/synechocystis/synthetic_data/fluxes.xlsx'
+CONCS = '../models/synechocystis/synthetic_data/concentrations.xlsx'
+OUT_DIR = '../results/synechocystis/synthetic_data/inst_simulation'
 
 
 def syn_inst_simulation():

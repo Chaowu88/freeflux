@@ -5,8 +5,8 @@
 from freeflux import Model
 
 
-MODEL_FILE = '../models/ecoli/reactions.xlsx' 
-FLUXES = '../models/ecoli/fluxes.xlsx'
+MODEL_FILE = '../models/ecoli/synthetic_data/reactions.xlsx' 
+FLUXES = '../models/ecoli/synthetic_data/fluxes.xlsx'
 
 
 def ecoli_steady_state_simulation():

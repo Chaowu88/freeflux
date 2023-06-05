@@ -10,7 +10,7 @@ from freeflux import Model
 MODEL_FILE = '../models/toy/reactions.tsv' 
 MEASURED_MDVS = '../models/toy/measured_MDVs.tsv'
 MEASURED_FLUXES = '../models/toy/measured_fluxes.tsv'
-OUT_DIR = '..results/toy/steady_state_estimation'
+OUT_DIR = '../results/toy/steady_state_estimation'
 
 
 # estimate fluxes at steady state
@@ -20,7 +20,8 @@ def toy_model_steady_state_fitting():
     model.read_from_file(MODEL_FILE)
     
     with model.fitter('ss') as fit:
-        # specify the lableing strategy, use this method for every labeled substrate
+        # specify the lableing strategy, 
+        # use this method for every labeled substrate
         fit.set_labeling_strategy(
             'AcCoA', 
             labeling_pattern = ['01', '11'], 
@@ -56,7 +57,7 @@ def toy_model_steady_state_fitting():
     res.plot_simulated_vs_measured_MDVs(show_fig = False, output_dir = OUT_DIR)
     res.plot_simulated_vs_measured_fluxes(show_fig = False, output_dir = OUT_DIR)
     
-    # export the contribution matrix of measurements to the uncertainties of estimated fluxes
+    # export the contribution matrix
     res.estimate_contribution_matrix(which = 'net').to_excel(
         OUT_DIR+'/netflux_contribMat.xlsx'
     )
@@ -64,7 +65,7 @@ def toy_model_steady_state_fitting():
         OUT_DIR+'/totalflux_contribMat.xlsx'
     )
     
-    # export the sensitivity matrix of estimated fluxes w.r.t. measurement
+    # export the sensitivity matrix
     res.estimate_sensitivity(which = 'net').to_excel(
         OUT_DIR+'/netflux_senMat.xlsx'
     )
@@ -73,14 +74,15 @@ def toy_model_steady_state_fitting():
     )
 
 
-# estimate the confidence intervals of fluxes
+# estimate with confidence intervals
 def toy_model_steady_state_fitting_CIs():
 
     model = Model('demo')
     model.read_from_file(MODEL_FILE)
     
     with model.fitter('ss') as fit:
-        # specify the lableing strategy, use this method for every labeled substrate
+        # specify the lableing strategy, 
+        # use this method for every labeled substrate
         fit.set_labeling_strategy(
             'AcCoA', 
             labeling_pattern = ['01', '11'], 

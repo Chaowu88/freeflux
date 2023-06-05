@@ -1,5 +1,5 @@
 '''Example of flux estimation at isotopically nonstationary (INST) state with a Synechocystis 
-model using synthetic data.
+model using experimental data.
 '''
 
 
@@ -8,19 +8,26 @@ import pandas as pd
 from freeflux import Model
 
 
-MODEL_FILE = '../models/synechocystis/synthetic_data/reactions.xlsx' 
-MEASURED_MDVS = '../models/synechocystis/synthetic_data/measured_inst_MDVs.xlsx'
-MEASURED_FLUXES = '../models/synechocystis/synthetic_data/measured_fluxes.xlsx'
-OUT_DIR = '../results/synechocystis/synthetic_data/inst_estimation'
+MODEL_FILE = '../models/synechocystis/experimental_data/reactions.xlsx' 
+MEASURED_MDVS = '../models/synechocystis/experimental_data/measured_inst_MDVs.xlsx'
+MEASURED_FLUXES = '../models/synechocystis/experimental_data/measured_fluxes.xlsx'
+OUT_DIR = '../results/synechocystis/experimental_data/inst_estimation'
+
+DILUTION_FROM = [
+    'DHAPu', 
+    'F6Pu', 
+    'GAPu', 
+    'R5Pu'
+]
 
 
 # estimate fluxes and concentrations at INST state
-def syn_inst_fitting():
+def inst_fitting():
 
-    model = Model('cyano')
-    model.read_from_file(MODEL_FILE)
+    cyano = Model('cyano')
+    cyano.read_from_file(MODEL_FILE)
     
-    with model.fitter('inst') as ifit:
+    with cyano.fitter('inst') as ifit:
         # specify the lableing strategy, 
         # use this method for every labeled substrate
         ifit.set_labeling_strategy(
@@ -36,15 +43,21 @@ def syn_inst_fitting():
         
         # set bounds for fluxes and concentrations
         ifit.set_flux_bounds('all', bounds = [-100, 100])
-        ifit.set_concentration_bounds('all', bounds = [0.1, 100])
+        ifit.set_concentration_bounds('all', bounds = [0.01, 20])
         
         # solve fluxes and concentrations
-        ifit.prepare(n_jobs = 3)
+        ifit.prepare(
+            dilution_from = DILUTION_FROM, 
+            n_jobs = 3
+        )
         while True:
-            res = ifit.solve(solver = 'ralg')
+            res = ifit.solve(
+                solver = 'ralg', 
+                max_iters = 1000,
+            )   
             if res.optimization_successful:
-                break
-
+                break    
+    
     # save the results
     pd.Series(res.opt_net_fluxes).to_excel(
         OUT_DIR+'/estimated_net_fluxes.xlsx'
@@ -60,21 +73,19 @@ def syn_inst_fitting():
         which = 'net', 
         confidence_level = 0.95
     )
-    pd.DataFrame(net_cis, index = ['LB', 'UB']).T.to_excel(
-        OUT_DIR+'/netflux_le_CIs.xlsx'
-    )
-
     total_cis = res.estimate_confidence_intervals(
         which = 'total', 
         confidence_level = 0.95
     )
-    pd.DataFrame(total_cis, index = ['LB', 'UB']).T.to_excel(
-        OUT_DIR+'/totalflux_le_CIs.xlsx'
-    )
-
     conc_cis = res.estimate_confidence_intervals(
         which = 'conc', 
         confidence_level = 0.95
+    )
+    pd.DataFrame(net_cis, index = ['LB', 'UB']).T.to_excel(
+        OUT_DIR+'/netflux_le_CIs.xlsx'
+    )
+    pd.DataFrame(total_cis, index = ['LB', 'UB']).T.to_excel(
+        OUT_DIR+'/totalflux_le_CIs.xlsx'
     )
     pd.DataFrame(conc_cis, index = ['LB', 'UB']).T.to_excel(
         OUT_DIR+'/conc_le_CIs.xlsx'
@@ -105,12 +116,12 @@ def syn_inst_fitting():
 
 
 # estimate with confidence intervals
-def syn_inst_fitting_CIs():
+def inst_fitting_CIs():
 
-    model = Model('cyano')
-    model.read_from_file(MODEL_FILE)
+    cyano = Model('cyano')
+    cyano.read_from_file(MODEL_FILE)
     
-    with model.fitter('inst') as ifit:
+    with cyano.fitter('inst') as ifit:
         # specify the lableing strategy, 
         # use this method for every labeled substrate
         ifit.set_labeling_strategy(
@@ -125,19 +136,22 @@ def syn_inst_fitting_CIs():
         ifit.set_measured_fluxes_from_file(MEASURED_FLUXES)
         
         # set bounds for fluxes and concentrations
-        ifit.set_flux_bounds('all', bounds = [-100, 100])
-        ifit.set_concentration_bounds('all', bounds = [0.1, 100])
-
+        ifit.set_flux_bounds('all', bounds = [-50, 50])
+        ifit.set_concentration_bounds('all', bounds = [0.01, 20])
+        
         # estimate the confidence intervals, 
         # highly recommended to run with parallel jobs
-        ifit.prepare(n_jobs = 3)
-        res = ifit.solve_with_confidence_intervals(
-            solver = 'ralg', 
-            max_iters = 800, 
-            n_runs = 500, 
+        ifit.prepare(
+            dilution_from = DILUTION_FROM, 
             n_jobs = 30
         )
-
+        res = ifit.solve_with_confidence_intervals(
+            solver = 'ralg', 
+            max_iters = 1000,
+            n_runs = 100, 
+            n_jobs = 30
+        )
+    
     # save the CIs
     net_cis = res.estimate_confidence_intervals(
         which = 'net', 
@@ -169,5 +183,5 @@ def syn_inst_fitting_CIs():
 if __name__ == '__main__':
 
     makedirs(OUT_DIR, exist_ok = True)
-    syn_inst_fitting()
-    syn_inst_fitting_CIs()
+    inst_fitting()
+    inst_fitting_CIs()
