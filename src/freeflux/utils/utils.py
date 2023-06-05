@@ -636,7 +636,7 @@ class Calculator():
                 Y.append(sourceMDV)    
             Y = np.array(Y)
             
-            X = pinv2(A)@B@Y
+            X = pinv2(A, check_finite = True)@B@Y
         
             simMDVs.update(zip(productEMUs, X))
             
@@ -667,7 +667,7 @@ class Calculator():
             A = lambA(*self.model.total_fluxes[fluxidsA])
             B = lambB(*self.model.total_fluxes[fluxidsB])
             
-            Ainv = pinv2(A)
+            Ainv = pinv2(A, check_finite = True)
             
             Ader = self.model.matrix_As_der_p[size]   
             Bder = self.model.matrix_Bs_der_p[size]   
@@ -742,10 +742,10 @@ class Calculator():
                     A = lambA(*self.model.total_fluxes[fluxidsA])
                     B = lambB(*self.model.total_fluxes[fluxidsB])
                     M = lambM(*self.model.concentrations[metabids])
-                    Minv = pinv2(M)
+                    Minv = pinv2(M, check_finite = True)
                     
                     F = Minv@A
-                    Finv = pinv2(F)
+                    Finv = pinv2(F, check_finite = True)
                     I = np.eye(*F.shape)
                     Phi = expm(F*deltat)
                     Gamma = (Phi - I)@Finv
@@ -832,7 +832,7 @@ class Calculator():
                     A = lambA(*self.model.total_fluxes[fluxidsA])
                     B = lambB(*self.model.total_fluxes[fluxidsB])
                     M = lambM(*self.model.concentrations[metabids])
-                    Minv = pinv2(M)
+                    Minv = pinv2(M, check_finite = True)
                     
                     Ader = self.model.matrix_As_der_p[size]   
                     Bder = self.model.matrix_Bs_der_p[size]   
@@ -840,7 +840,7 @@ class Calculator():
                     Minvder = -Minv@Mder@Minv
                     
                     F = Minv@A
-                    Finv = pinv2(F)
+                    Finv = pinv2(F, check_finite = True)
                     I = np.eye(*F.shape)
                     Phi = expm(F*deltat)
                     Gamma = (Phi - I)@Finv
