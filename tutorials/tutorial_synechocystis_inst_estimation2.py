@@ -148,7 +148,7 @@ def inst_fitting_CIs():
         res = ifit.solve_with_confidence_intervals(
             solver = 'ralg', 
             max_iters = 1000,
-            n_runs = 100, 
+            n_runs = 500, 
             n_jobs = 30
         )
     
