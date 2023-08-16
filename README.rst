@@ -99,4 +99,4 @@ FreeFlux is released under the GPL version 3 license, please see `here <https://
 Citation
 ========
 
-`FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
+`Chao Wu, Michael Guarnieri, Wei Xiong. FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis. ACS Synthetic Biology. 2023. <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
