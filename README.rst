@@ -95,3 +95,8 @@ License
 =======
 
 FreeFlux is released under the GPL version 3 license, please see `here <https://github.com/Chaowu88/freeflux/blob/main/LICENSE>`__ for more details.
+
+Citation
+========
+
+`FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
