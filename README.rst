@@ -99,6 +99,6 @@ FreeFlux is released under the GPL version 3 license, please see `here <https://
 Citation
 ========
 
-`Chao Wu, Michael Guarnieri, Wei Xiong. FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis. ACS Synthetic Biology. 2023. <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
+`Wu et al.. FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis. ACS Synthetic Biology. 2023. <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
 
 Feel free to provide feedback at chao.wu@nrel.gov or chaowu09@gmail.com.
