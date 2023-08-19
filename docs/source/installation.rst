@@ -47,7 +47,7 @@ FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt
   pip install openopt
   pip install FuncDesigner
   
-In addition, FreeFlux uses the modeling language `Pyomo <http://www.pyomo.org/>`__ to formulate linear optimization problems. By default, solvers are not installed together with Pyomo, so you will need to install them independently. For example, to install the glpk solver:
+In addition, FreeFlux uses the modeling language `Pyomo <http://www.pyomo.org/>`__ to formulate linear optimization problems. If the solvers are not installed together with Pyomo, you will need to install them independently. For example, to install the glpk solver:
 
 .. code-block:: python
   
