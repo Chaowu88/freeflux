@@ -11,6 +11,7 @@ sys.path.insert(0, SRC_PATH)
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.intersphinx',
+              'sphinx.ext.mathbase',
               'sphinx.ext.mathjax',
               'sphinx.ext.viewcode',
               'sphinx.ext.autosummary',
