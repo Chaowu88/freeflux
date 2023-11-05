@@ -21,10 +21,4 @@ formats:
 # Declare the Python requirements required to build your docs
 python:
   install:
-    - requirements: docs/requirements.txt  
-
-parse:
-  myst_enable_extensions:
-    # don't forget to list any other extensions you want enabled,
-    # including those that are enabled by default!
-    - amsmath
+    - requirements: docs/requirements.txt
