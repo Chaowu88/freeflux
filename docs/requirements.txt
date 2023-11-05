@@ -1,8 +1,2 @@
 nbsphinx
 sphinx-autoapi
-numpy
-pandas
-sympy
-scipy
-pyomo
-matplotlib
