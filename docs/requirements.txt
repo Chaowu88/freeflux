@@ -1,8 +1,8 @@
 nbsphinx
 sphinx-autoapi
-numpy~=1.20.2
-pandas~=1.0.5
-sympy~=1.6.1
-scipy~=1.5.0
-pyomo==6.2
-matplotlib~=3.2.2
+numpy>=1.20,<1.23
+pandas~=1.0
+sympy~=1.6
+scipy>=1.5,<1.9
+pyomo>=6.2,<=6.5
+matplotlib>=3.2,<=3.7
