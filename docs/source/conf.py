@@ -17,21 +17,6 @@ extensions = ['sphinx.ext.autodoc',
               'nbsphinx',
               'autoapi.extension']
 
-myst_enable_extensions = ['amsmath',
-                          'attrs_inline',
-                          'colon_fence',
-                          'deflist',
-                          'dollarmath',
-                          'fieldlist',
-                          'html_admonition',
-                          'html_image',
-                          'linkify',
-                          'replacements',
-                          'smartquotes',
-                          'strikethrough',
-                          'substitution',
-                          'tasklist']
-
 autoapi_type = 'python'
 autoapi_dirs = [join(SRC_PATH, 'freeflux')]
 autoapi_add_toctree_entry = False
@@ -54,7 +39,7 @@ pygments_style = 'sphinx'
 
 
 # ------------------------ Options for HTML output ------------------------
-mathjax_path = ('https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
+#mathjax_path = ('https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML')
 
 
 # ------------------------ Options for LaTeX output ------------------------
