@@ -107,7 +107,7 @@ We need to provide the labeling pattern or mass isotopomer distribution vector (
 .. Note::
    If you have a set of measured MDVs and fluxes, it is more convenient to read them from a .tsv or .xlsx file using the ``set_measured_MDVs_from_file`` and ``set_measured_fluxes_from_file`` methods.
    
-Solve the Fluxes
+Solving the Fluxes
 ----------------
 
 Now we can solve the flux distribution in the toy model using the following code:
@@ -119,7 +119,7 @@ Now we can solve the flux distribution in the toy model using the following code
    
 The ``solve`` method returns a FitResults object. You can access the estimated net and total (including both forward and backward fluxes in reversible reactions) fluxes using the ``opt_net_fluxes`` and ``opt_total_fluxes`` attributes.
 
-Using the with Statement
+Working with the "with" Statement
 ------------------------
 
 The ``fitter`` method returns a context manager, so you can also estimate the fluxes using the with statement, as shown in the following code:
