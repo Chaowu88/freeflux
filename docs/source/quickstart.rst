@@ -6,7 +6,7 @@ To start, we will demonstrate how to calculate the metabolic fluxes at steady st
 Loading a Toy Model
 -------------------
 
-A model can be defined in either a tab-separated values (.tsv) or Excel spreadsheet (.xlsx) file with the following required format:
+A model can be defined in either a tab-separated values (.tsv) or Excel spreadsheet (.xlsx) `file <https://github.com/Chaowu88/freeflux/blob/main/models/toy/reactions.tsv>` with the following required format:
 
 .. list-table:: reactions.tsv
    :widths: 25 50 50 15
