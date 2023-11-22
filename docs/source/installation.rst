@@ -35,7 +35,7 @@ If FreeFlux is installed on a Linux platform with Python>=3.8, using `JAX <https
 
 .. code-block:: python
 
-  pip install jax[cpu]~=0.4
+  pip install "jax[cpu]>=0.4,<=0.4.18"
 
 Solver Installation
 -------------------
