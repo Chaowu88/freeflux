@@ -105,7 +105,7 @@ We need to provide the labeling pattern or mass isotopomer distribution vector (
    fit.set_measured_flux('v1', mean = 10, sd = 1)
 
 .. Note::
-   1. Try not to use excessively small values for the unknown measurement standard deviations. The objective function involves the summation of weighted residuals based on measurement variances. Small standard deviation values might hinder the optimizer to converge within a limited number of steps to reach a minimum.
+   1. Try not to use excessively small values for the unknown measurement standard deviations. The objective function relies on summing weighted residuals based on the inverse variance of measurements. Small standard deviation values might hinder the optimizer to converge within a limited number of steps to reach a minimum.
    2. If you have a set of measured MDVs and fluxes, it is more convenient to read them from a .tsv or .xlsx file using the ``set_measured_MDVs_from_file`` and ``set_measured_fluxes_from_file`` methods.
    
 Solving the Fluxes
