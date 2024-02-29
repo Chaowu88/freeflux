@@ -145,7 +145,7 @@ class InstFitter(Fitter, InstSimulator):
         not set by set_concentration_bounds
         '''
         
-        defBnds = [0.0001, 1]
+        defBnds = [0.01, 100]
         
         metabids = []
         for metabid in self.model.metabolites:
