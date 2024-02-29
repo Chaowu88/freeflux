@@ -149,7 +149,7 @@ class InstFitter(Fitter, InstSimulator):
         
         metabids = []
         for metabid in self.model.metabolites:
-            if metabid not in self.model.net_fluxes_bounds:
+            if metabid not in self.model.concentrations_bounds:
                 self.model.concentrations_bounds[metabid] = defBnds
                 metabids.append(metabid)
                 
