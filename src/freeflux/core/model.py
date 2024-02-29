@@ -404,7 +404,7 @@ class Model():
         for rxn, col in netS.items():
             if self.reactions_info[rxn].reversible:
                 totalS.append(col)
-                totalS.append(-col)
+                totalS.append(-col+0.0)
                 totalScols.append(rxn+'_f')
                 totalScols.append(rxn+'_b')
             else:
