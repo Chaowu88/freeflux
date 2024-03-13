@@ -30,7 +30,7 @@ exclude_patterns = ['_build']
 
 # ------------------------ Project information ------------------------
 project = 'freeflux'
-copyright = '2022-2023, Chao Wu'
+copyright = '2022-2024, Chao Wu'
 author = 'Chao Wu'
 from freeflux import __version__ as version
 release = version
