@@ -1,3 +1,4 @@
+========
 FreeFlux
 ========
 
@@ -64,8 +65,6 @@ Below is an example script that performs flux estimation at steady state using t
 .. code-block:: python
    
    MODEL_FILE = 'path/to/reactions.tsv'
-   MEASURED_MDVS = 'path/to/measured_MDVs.tsv'
-   MEASURED_FLUXES = 'path/to/measured_fluxes.tsv'
    
    from freeflux import Model
    
