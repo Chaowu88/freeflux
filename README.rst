@@ -99,6 +99,6 @@ Citation
 ========
 
 Wu et al. (2023) FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis, ACS Synthetic Biology 12(9):2707-2714.
-doi:[10.1021/acssynbio.3c00265](https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265)
+doi:`10.1021/acssynbio.3c00265 <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
 
 Feel free to provide feedback at chao.wu@nrel.gov or chaowu09@gmail.com.
