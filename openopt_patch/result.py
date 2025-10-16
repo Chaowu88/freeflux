@@ -1,6 +1,6 @@
 from oologfcn import OpenOptException
 from numpy import ndarray, matrix, asscalar, asarray, asfarray
-from time import time, process_time, strftime
+from time import time, perf_counter, strftime
 
 class OpenOptResult: 
     # TODO: implement it
@@ -75,7 +75,7 @@ class OpenOptResult:
 
         self.elapsed = dict()
         self.elapsed['solver_time'] = round(100.0*(time() - p.timeStart))/100.0
-        self.elapsed['solver_cputime'] = round(100.0*(process_time() - p.cpuTimeStart))/100.0
+        self.elapsed['solver_cputime'] = round(100.0*(perf_counter() - p.cpuTimeStart))/100.0
         self.elapsed['initialization_time'] = round(100.0*p.initTime)/100.0
         self.elapsed['initialization_cputime'] = round(100.0*p.initCPUTime)/100.0
 

@@ -1,6 +1,6 @@
 __docformat__ = "restructuredtext en"
 
-from time import time, process_time
+from time import time, perf_counter
 from numpy import isscalar,  array_equal
 
 ######################
@@ -46,7 +46,7 @@ def ooIter(p, *args,  **kwargs):
         condEqualLastPoints = hasattr(p, 'xk_prev') and array_equal(p.xk,  p.xk_prev) 
         p.xk_prev = p.xk.copy()
         if p.graphics.xlabel == 'nf': p.iterValues.nf.append(p.nEvals['f'])
-        p.iterCPUTime.append(process_time() - p.cpuTimeStart)
+        p.iterCPUTime.append(perf_counter() - p.cpuTimeStart)
         p.iterTime.append(p.currtime - p.timeStart)
         
         if p.isManagerUsed:
@@ -114,7 +114,7 @@ def ooIter(p, *args,  **kwargs):
     p.currtime - p.lastDrawTime > p.graphics.rate * (p.currtime - p.iterTime[p.lastDrawIter] - p.timeStart)):
         for df in p.graphics.drawFuncs: df(p)
         T = time() - p.timeStart - p.iterTime[-1]
-        cpuT = process_time() - p.cpuTimeStart - p.iterCPUTime[-1]
+        cpuT = perf_counter() - p.cpuTimeStart - p.iterCPUTime[-1]
         p.lastDrawTime = time()
         p.lastDrawIter = p.iter
     if p.plot:
