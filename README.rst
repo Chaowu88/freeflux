@@ -12,6 +12,8 @@ Our goal is to increase the accessibility of :sup:`13`\ C fluxomics techniques t
 
 To get started, check out our `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`__, which provides an overview of FreeFlux's fundamental functions using a `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__. We've also included `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`__ for practical models of `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`__ and `Synechocystis <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`__.
 
+FreeFlux now support :sup:`15`\ N labeling data, which can be enabled by specifying nitrogen as the labeled atom when defining the labeling strategy.
+
 Installation
 ============
 
@@ -47,7 +49,7 @@ FreeFlux requires the numerical optimization framework `OpenOpt <https://openopt
   pip install openopt
   pip install FuncDesigner
 
-Note that the framework is known to work well in Python 3.7, but may have compatibility issues in Python 3.8 and above.  In such cases, please refer to this `link <https://freeflux.readthedocs.io/en/latest/installation.html#dependencies-and-compatibility>`__ for solutions.
+Note that OpenOpt is known to work well in Python 3.7, but may have compatibility issues in Python 3.8 and above. FreeFlux now automatically applies the necessary patches to ensure compatibility. If you prefer to apply the patch manually, please refer to this `link <https://freeflux.readthedocs.io/en/latest/installation.html#dependencies-and-compatibility>`__ for solutions.
 
 FreeFlux uses the modeling language Pyomo to formulate linear optimization problem. By default, solvers are not installed together with Pyomo and should be installed independently. For example, to install the glpk solver, run the following command:
 
@@ -76,7 +78,8 @@ Below is an example script that performs flux estimation at steady state using t
            'AcCoA', 
            labeling_pattern = ['01', '11'], 
            percentage = [0.25, 0.25], 
-           purity = [1, 1]
+           purity = [1, 1],
+           label_atom = 'C'
        )
        fit.set_flux_bounds('all', bounds = [-100, 100])
        fit.set_measured_MDV(
@@ -98,7 +101,6 @@ FreeFlux is released under the GPL version 3 license, please see `here <https://
 Citation
 ========
 
-Wu et al. (2023) FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis, ACS Synthetic Biology 12(9):2707-2714.
-doi:`10.1021/acssynbio.3c00265 <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
+`Wu et al.. FreeFlux: A Python Package for Time-Efficient Isotopically Nonstationary Metabolic Flux Analysis. ACS Synthetic Biology. 2023. <https://pubs.acs.org/doi/full/10.1021/acssynbio.3c00265>`__
 
 Feel free to provide feedback at chao.wu@nrel.gov or chaowu09@gmail.com.
