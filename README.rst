@@ -12,7 +12,7 @@ Our goal is to increase the accessibility of :sup:`13`\ C fluxomics techniques t
 
 To get started, check out our `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`__, which provides an overview of FreeFlux's fundamental functions using a `toy model <https://github.com/Chaowu88/freeflux/tree/main/models/toy>`__. We've also included `tutorials <https://github.com/Chaowu88/freeflux/tree/main/tutorials>`__ for practical models of `E. coli <https://github.com/Chaowu88/freeflux/tree/main/models/ecoli>`__ and `Synechocystis <https://github.com/Chaowu88/freeflux/tree/main/models/synechocystis>`__.
 
-FreeFlux now support :sup:`15`\ N labeling data, which can be enabled by specifying nitrogen as the labeled atom when defining the labeling strategy.
+FreeFlux now supports :sup:`15`\ N labeling data, which can be enabled by specifying nitrogen as the labeled atom when defining the labeling strategy.
 
 Installation
 ============
