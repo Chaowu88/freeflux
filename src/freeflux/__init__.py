@@ -1,6 +1,11 @@
 __author__ = 'Chao Wu'
-__version__ = '0.3.6'
+__version__ = '0.3.7'
 
+
+from importlib.util import find_spec
+from .utils.patch import apply_patch
+if find_spec('openopt') is not None:
+    apply_patch()
 
 from .core.metabolite import Metabolite
 from .core.reaction import Reaction

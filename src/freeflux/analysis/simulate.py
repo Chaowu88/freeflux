@@ -2,9 +2,9 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '03/30/2022'
 
 
+import re
 from collections.abc import Iterable
 from functools import partial
 from ..core.mdv import MDV
@@ -12,6 +12,7 @@ from ..io.inputs import read_preset_values_from_file
 from ..io.results import SimResults
 from ..utils.utils import Calculator
 from ..utils.context import Context
+from time import time
 
 
 class Simulator():
@@ -94,7 +95,8 @@ class Simulator():
             labeled_substrate, 
             labeling_pattern, 
             percentage, 
-            purity
+            purity,
+            label_atom='C'
     ):
         '''
         Use this method for every substrate tracer.
@@ -128,9 +130,13 @@ class Simulator():
 
             * If list, len(purity) should be equal to len(labeling_pattern).
             * If float, labeling_pattern should not be natural substrate.
+        label_atom: str
+            Labeled atom, i.e., base atom in the MDV. Currently supports only "H", 
+            "C" and "N".
         '''
-    
+        
         self.model.labeling_strategy[labeled_substrate] = [labeling_pattern, percentage, purity]
+        self.model.label_atom = label_atom
         
         if self.contexts:
             context = self.contexts[-1]

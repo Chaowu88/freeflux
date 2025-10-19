@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '04/14/2022'
 
 
 import numpy as np
@@ -13,6 +12,8 @@ from ..analysis.stats import (_chi2_test, _normal_probability, _simulated_vs_mea
                               _simulated_vs_measured_fluxes, _simulated_vs_measured_inst_MDVs,
                               _confidence_intervals_le, _confidence_intervals_mc, _MDV_kinetics,
                               _contribution_matrix, _sensitivity)
+import warnings
+warnings.filterwarnings('ignore', category = RuntimeWarning)
 
 
 class pDict(dict):

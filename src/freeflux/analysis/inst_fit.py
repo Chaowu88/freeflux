@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '06/14/2022'
 
 
 from functools import partial

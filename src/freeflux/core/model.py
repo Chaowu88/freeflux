@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/16/2022'
 
 
 import re
@@ -125,6 +124,9 @@ class Model():
         which is the derivatives of matrix M w.r.t. variables.
         # of vars = # of free fluxes for steady state MFA;
         # of vars = # of free fluxes + # of concentrations for INST MFA.    
+    label_atom: str
+        Labeled atom, i.e., the base atom in MDV, currently only supprts "H", "C" and
+        "N".
     labeling_strategy: dict
         Metabolite ID => [labeling_pattern(s), percentage(s), purity(s)].    
     measured_MDVs: dict
@@ -184,6 +186,7 @@ class Model():
         self.initial_matrix_Ys_der_p = {}
         self.initial_sim_MDVs = {}
         
+        self.label_atom = None
         self.labeling_strategy = {}
         self.measured_MDVs = {}
         self.measured_fluxes = {}
@@ -612,10 +615,10 @@ class Model():
             
             currentEMU = toSearch.pop()
             searched.append(currentEMU)
-                    
+            
             formingRxns = list(
                 set(chain(*[cell for cell in MAM[currentEMU.metabolite_id] if cell]))
-            )   
+            )
             for formingRxn in formingRxns:
                 
                 if formingRxn.reversible:
@@ -696,7 +699,7 @@ class Model():
                 else:
                     idx = tuple(preEMUs)
                 
-                EAM.loc[[idx], col] += flux   
+                EAM.loc[[idx], col] += flux
             
             EAMs[size] = EAM
         
@@ -782,7 +785,7 @@ class Model():
             for emu in lumpedEAM.columns:
                 
                 preEMUs = lumpedEAM.index[lumpedEAM[emu] != 0]
-                if preEMUs.size == 1:   
+                if preEMUs.size == 1:
                     preEMU = preEMUs[0]
                     
                     if (emu != iniEMU and 
@@ -792,11 +795,11 @@ class Model():
                         
                         lumpedEAM.index = self._replace_list_item(lumpedEAM.index, emu, preEMU)
                         
-                        for j in range(i):   
+                        for j in range(i):
                             largerEAM = lumpedEAMs[orderedSizes[j]]
                             largerEAM.index = self._replace_list_item(largerEAM.index, emu, preEMU)
                         
-                        lumpedEAM = self._uniquify_dataFrame_index(lumpedEAM)   
+                        lumpedEAM = self._uniquify_dataFrame_index(lumpedEAM)
                         upper = self._uniquify_dataFrame_index(
                             lumpedEAM.loc[lumpedEAM.columns, :]
                         )
@@ -832,7 +835,7 @@ class Model():
                 if emu not in combined:
                     
                     equivEMU = emu.equivalent
-                    if equivEMU in combinedEAM.columns:   
+                    if equivEMU in combinedEAM.columns:
                         
                         combinedEAM.loc[:, emu] = combinedEAM.loc[:, [emu, equivEMU]].sum(axis = 1)/2
                         combinedEAM.drop(equivEMU, axis = 1, inplace = True)
@@ -937,7 +940,7 @@ class Model():
                     [EAMs.get(size, 0) for EAMs in EAMsAll]
                 )
             )
-            if EAMCurrentSize:   
+            if EAMCurrentSize:
                 mergedEAMs[size] = reduce(self._merge_EAMs, EAMCurrentSize)
         
         return mergedEAMs            

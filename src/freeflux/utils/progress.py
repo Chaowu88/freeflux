@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '04/15/2022'
 
 
 from time import time, sleep

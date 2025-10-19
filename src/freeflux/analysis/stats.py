@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '05/08/2022'
 
 
 from os import makedirs
@@ -54,7 +53,7 @@ def _normal_probability(resids, show_fig, output_dir):
     probplot(resids, plot = plt)
     ax = plt.gca()
     for item in [ax.xaxis.label, ax.yaxis.label] + ax.get_xticklabels() + ax.get_yticklabels():
-        item.set_fontsize(15)
+        item.set_fontsize(20)
     ax.set_ylabel('Weighted residuals')
     ax.set_title('')
     
@@ -123,15 +122,15 @@ def _simulated_vs_measured_measurements(
         label = 'measured', 
         capsize = 3
     )
-    plt.xticks(ticks = xPos, labels = xticklabels, fontsize = 15)
-    plt.tick_params(axis = 'y', labelsize = 15)
-    plt.xlabel(xlabel, fontsize = 15)
-    plt.ylabel(ylabel, fontsize = 15)
+    plt.xticks(ticks = xPos, labels = xticklabels, fontsize = 20)
+    plt.tick_params(axis = 'y', labelsize = 20)
+    plt.xlabel(xlabel, fontsize = 20)
+    plt.ylabel(ylabel, fontsize = 20)
     
     plt.legend(
         loc = 'center', 
-        bbox_to_anchor = (1.2, 0.5), 
-        fontsize = 15, 
+        bbox_to_anchor = (1.25, 0.5), 
+        fontsize = 20, 
         frameon = False
     )
     
@@ -301,13 +300,13 @@ def _MDV_kinetics(emuid, simulated_inst_MDVs, show_fig, output_dir):
     for i in range(interpMDVs.shape[1]):
         plt.plot(ts, interpMDVs[:, i], label = 'M%s' % i, linewidth = 2)
         
-    plt.xlabel('Time (s)', fontsize = 15)
-    plt.ylabel('EMU %s' % emuid, fontsize = 15)
-    plt.tick_params(labelsize = 15)
+    plt.xlabel('Time (s)', fontsize = 20)
+    plt.ylabel('EMU %s' % emuid, fontsize = 20)
+    plt.tick_params(labelsize = 20)
     plt.legend(
         loc = 'center', 
         bbox_to_anchor = (1.15, 0.5), 
-        fontsize = 15, 
+        fontsize = 20, 
         frameon = False
     )
     
@@ -361,8 +360,8 @@ def _simulated_vs_measured_inst_MDVs(
             loc = 'center', 
             bbox_to_anchor = (1.15, 0.5), 
             title = 'simulated', 
-            title_fontsize = 15, 
-            fontsize = 15, 
+            title_fontsize = 20, 
+            fontsize = 20, 
             frameon = False
         )
         plt.gca().add_artist(legend)    
@@ -377,9 +376,9 @@ def _simulated_vs_measured_inst_MDVs(
                 color = colors[i], 
                 linestyle = '',
                 marker = '.', 
-                markersize = 7, 
+                markersize = 15, 
                 elinewidth = 2, 
-                capsize = 3
+                capsize = 5
             )
             handles.append(e[0])
             labels.append('M%s' % i)
@@ -387,16 +386,16 @@ def _simulated_vs_measured_inst_MDVs(
             handles = handles, 
             labels = labels, 
             loc = 'center', 
-            bbox_to_anchor = (1.4, 0.5), 
+            bbox_to_anchor = (1.45, 0.5), 
             title = 'measured', 
-            title_fontsize = 15, 
-            fontsize = 15, 
+            title_fontsize = 20, 
+            fontsize = 20, 
             frameon = False
         )
             
-        plt.xlabel('Time (s)', fontsize = 15)
-        plt.ylabel(f'EMU {emuid}', fontsize = 15)
-        plt.tick_params(labelsize = 15)
+        plt.xlabel('Time (s)', fontsize = 20)
+        plt.ylabel(f'EMU {emuid}', fontsize = 20)
+        plt.tick_params(labelsize = 20)
         
         if output_dir:
             makedirs(output_dir, exist_ok = True)

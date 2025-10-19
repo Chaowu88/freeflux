@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '05/19/2022'
 
 
 import numpy as np
@@ -16,6 +15,8 @@ except ModuleNotFoundError:
 else:
     OPENOPT_INSTALLED = True
 from ..utils.utils import Calculator
+import warnings
+warnings.filterwarnings('ignore', category = RuntimeWarning)
 
 
 class MFAModel():

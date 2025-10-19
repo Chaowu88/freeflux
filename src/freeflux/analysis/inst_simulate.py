@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '06/02/2022'
 
 
 from collections.abc import Iterable

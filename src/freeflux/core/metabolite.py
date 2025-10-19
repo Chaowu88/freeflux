@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/16/2022'
 
 
 import re

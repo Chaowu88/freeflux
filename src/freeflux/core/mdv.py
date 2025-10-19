@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/18/2022'
 
 
 import re
@@ -14,6 +13,8 @@ from numbers import Real
 import numpy as np
 from scipy.special import comb
 from scipy.linalg import inv
+import warnings
+warnings.filterwarnings('ignore', category = RuntimeWarning)
 
 
 natAbuns = {'H': [0.999885, 0.000115],
@@ -118,6 +119,8 @@ class MDV():
     
     def conv(self, mdv):
         '''
+        Note. Assume that the mdv convolved has the same base atom.
+
         Parameters
         ----------
         mdv: list or array or MDV 
@@ -128,7 +131,7 @@ class MDV():
         
         mdvConv = gen_conv(self.value, mdv.value)
             
-        return self.__class__(mdvConv)    
+        return self.__class__(mdvConv, base_atom=self.base_atom)
     
         
     def __mul__(self, other):
@@ -138,9 +141,14 @@ class MDV():
         other: scalar, list, array or MDV
         '''
         
-        if isinstance(other, Real):   
-            return self.__class__(other*self.value, nonnegative = False, normalize = False)                
-        elif isinstance(other, Iterable):      
+        if isinstance(other, Real):
+            return self.__class__(
+                other*self.value, 
+                nonnegative = False, 
+                normalize = False, 
+                base_atom=self.base_atom
+            )                
+        elif isinstance(other, Iterable):   
             return self.conv(other)    
         else:
             return NotImplemented
@@ -164,7 +172,12 @@ class MDV():
         '''
         
         if isinstance(other, type(self)):
-            return self.__class__(self.value+other.value, nonnegative = False, normalize = False)
+            return self.__class__(
+                self.value+other.value, 
+                nonnegative = False, 
+                normalize = False, 
+                base_atom=self.base_atom
+            )
         else:
             return NotImplemented
         
@@ -218,7 +231,7 @@ class MDV():
         
         corrMDV = np.dot(inv(corrMat), self.value)
 
-        return self.__class__(corrMDV)
+        return self.__class__(corrMDV, base_atom=self.base_atom)
         
         
     def correct_for_inoculum(self, fraction):
@@ -232,7 +245,7 @@ class MDV():
         natMDV = get_natural_MDV(self.n_atoms, base_atom = self.base_atom)
         corrMDV =  (self.value - fraction*natMDV.value)/(1 - fraction)
 
-        return self.__class__(corrMDV)
+        return self.__class__(corrMDV, base_atom=self.base_atom)
     
     
     @property
@@ -282,7 +295,7 @@ def _isotopomer_combination(n_atoms, n_natural_isotops):
     
     allCombos = combinations_with_replacement(range(n_natural_isotops), n_atoms)   
     
-    combos1 = {}   
+    combos1 = {}
     for combo in allCombos:
         combos1.setdefault(sum(combo), []).append(combo)
     
@@ -322,18 +335,18 @@ def get_natural_MDV(n_atoms, base_atom = 'C'):
             ele += item
         mdv.append(ele)
     
-    return MDV(mdv)
+    return MDV(mdv, base_atom=base_atom)
 
 
-def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
+def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity, label_atom='C'):
     '''
     Calculate the MDV of a fragment from labeled substrate. 
-    Currently this function only supports C-labeled substrate.
+    Currently this function only supports H, C or N-labeled substrate.
     
     Parameters
     ----------
     atom_nos: list of int
-        Atom NOs. 
+        Atom NOs, starting from 1. 
     labeling_pattern: str or list of str
         Labeling pattern of substrate, '0' for unlabeled atom, '1' for labeled atom, 
         e.g., '100000' for 1-13C glucose. 
@@ -358,6 +371,9 @@ def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
 
         * If list, len(purity) should be equal to len(labeling_pattern).
         * If float, labeling_pattern should not be natural substrate.
+    label_atom: str
+        Labeled atom, i.e., base atom in the MDV. Currently supports only "H", "C" 
+        and "N".
     '''
     
     if not isinstance(labeling_pattern, list):
@@ -371,35 +387,33 @@ def get_substrate_MDV(atom_nos, labeling_pattern, percentage, purity):
         percentage = [percentage]
         
     if sum(percentage) > 1:
-        raise ValueError('sum of tacer percentage should be <= 1')
+        raise ValueError('sum of tracer percentage should be <= 1')
 
     if not isinstance(purity, list):
         purity = [purity]
-
-    
-    baseAtom = 'C'
-    # natAbun = natAbuns[baseAtom]
     
     nAtoms = len(atom_nos)
     
     singleAtomMdv = {}
     for pat, pur, in zip(labeling_pattern, purity):
         singleAtomMdv[pat] = {
-            '1': MDV([1-pur, pur]), 
-            '0': get_natural_MDV(1, base_atom = baseAtom)
+            '1': MDV([1-pur, pur], base_atom=label_atom),
+            '0': get_natural_MDV(1, base_atom = label_atom)
         }
     
     
-    mdvAllTracer = MDV(np.zeros(nAtoms+1))
+    mdvAllTracer = MDV(np.zeros(nAtoms+1), base_atom=label_atom)
     for pat, per, pur in zip(labeling_pattern, percentage, purity):
         
-        mdvPerTracer = MDV([1])
+        mdvPerTracer = MDV([1], base_atom=label_atom)
         for atomNO in atom_nos:
             mdvPerTracer *= singleAtomMdv[pat][pat[atomNO-1]]
         
         mdvAllTracer += per*mdvPerTracer     
     
-    return mdvAllTracer + (1 - sum(percentage))*get_natural_MDV(nAtoms, base_atom = baseAtom)
+    mdvNatural = (1 - sum(percentage))*get_natural_MDV(nAtoms, base_atom = label_atom)
+
+    return mdvAllTracer + mdvNatural
     
     
 def gen_conv(arr1, arr2):

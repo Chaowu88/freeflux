@@ -2,7 +2,6 @@
 
 
 __author__ = 'Chao Wu'
-__date__ = '02/26/2022'
 
 
 from functools import lru_cache
