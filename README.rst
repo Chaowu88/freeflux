@@ -95,9 +95,9 @@ For more information, please refer to the `documentation <https://freeflux.readt
 
 Performance Tip
 ===============
-NumPy’s underlying BLAS/LAPACK implementation may automatically utilize multiple CPU cores to improve computational efficiency. It can introduce additional overhead and may cause high system CPU usage, particularly when using the `solve_with_confidence_intervals` method for confidence interval estimation. In such cases, it is recommended to explicitly limit the number of threads. For example, if OpenBLAS is used:
+NumPy's underlying BLAS/LAPACK implementation may automatically utilize multiple CPU cores to improve computational efficiency. It can introduce additional overhead and may cause high system CPU usage, particularly when using the ``solve_with_confidence_intervals`` method for confidence interval estimation. In such cases, it is recommended to explicitly limit the number of threads. For example, if OpenBLAS is used:
 
-.. code-block::
+.. code-block:: bash
   export OPENBLAS_NUM_THREADS=1
 
 License
