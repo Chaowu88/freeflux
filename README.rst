@@ -93,6 +93,13 @@ Below is an example script that performs flux estimation at steady state using t
 
 For more information, please refer to the `documentation <https://freeflux.readthedocs.io/en/latest/index.html>`__.
 
+Performance Tip
+===============
+NumPy’s underlying BLAS/LAPACK implementation may automatically utilize multiple CPU cores to improve computational efficiency. It can introduce additional overhead and may cause high system CPU usage, particularly when using the `solve_with_confidence_intervals` method for confidence interval estimation. In such cases, it is recommended to explicitly limit the number of threads. For example, if OpenBLAS is used:
+
+.. code-block::
+  export OPENBLAS_NUM_THREADS=1
+
 License
 =======
 
