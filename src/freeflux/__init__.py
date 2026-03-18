@@ -1,5 +1,5 @@
 __author__ = 'Chao Wu'
-__version__ = '0.3.7'
+__version__ = '0.3.8'
 
 
 from importlib.util import find_spec
