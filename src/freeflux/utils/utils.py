@@ -235,6 +235,8 @@ class Calculator():
         
         self.ori_measured_fluxes = deepcopy(self.model.measured_fluxes)
         
+        np.random.seed()
+
         for fluxid, [mean, sd] in self.model.measured_fluxes.items():
             while True:
                 meanNew = normal(mean, sd)
@@ -270,6 +272,8 @@ class Calculator():
         
         self.ori_measured_MDVs = deepcopy(self.model.measured_MDVs)
         
+        np.random.seed()
+
         for emuid, [means, sds] in self.model.measured_MDVs.items():
             mdv = MDV(normal(means, sds))
             self.model.measured_MDVs[emuid][0] = mdv.value
@@ -284,6 +288,8 @@ class Calculator():
         
         self.ori_measured_inst_MDVs = deepcopy(self.model.measured_inst_MDVs)
 
+        np.random.seed()
+        
         for emuid, instMDVs in self.model.measured_inst_MDVs.items():
             for t, [means, sds] in instMDVs.items():
                 if t != 0:
